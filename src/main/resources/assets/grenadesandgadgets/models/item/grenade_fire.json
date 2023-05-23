@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "thatchermod:item/grenade3d/grenade-fire-body-texture",
-		"1": "thatchermod:item/grenade3d/grenade-fire-handle-texture",
-		"particle": "thatchermod:item/grenade3d/grenade-fire-body-texture"
+		"0": "grenadesandgadgets:item/grenade3d/grenade-fire-body-texture",
+		"1": "grenadesandgadgets:item/grenade3d/grenade-fire-handle-texture",
+		"particle": "grenadesandgadgets:item/grenade3d/grenade-fire-body-texture"
 	},
 	"elements": [
 		{
