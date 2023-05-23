@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "grenadesmod",
+	"version": "${version}",
+	"name": "Grenades and Gadgets",
+	"description": "Blow away all your problems with an awesome arsenal of explosives!",
+	"authors": [
+		"fenn7"
+	],
+	"contact": {
+		"homepage": "https://github.com/fenn7/Grenades-And-Gadgets,",
+		"sources": "https://github.com/fenn7/Grenades-And-Gadgets",
+		"issues": "https://github.com/fenn7/Grenades-And-Gadgets/issues"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/grenadesandgadgets/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"fenn7.grenadesandgadgets.commonside.GrenadesMod"
+		],
+		"client": [
+			"fenn7.grenadesandgadgets.client.GrenadesModClient"
+		],
+		"fabric-datagen": [
+			"fenn7.grenadesandgadgets.commonside.GrenadesModDataGenerator"
+		]
+	},
+	"mixins": [
+		"grenadesandgadgets.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.19",
+		"minecraft": "~1.18.2",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
