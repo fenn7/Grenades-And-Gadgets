@@ -1,8 +1,9 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
+import java.util.List;
+
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,17 +14,15 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
-import software.bernie.geckolib3.core.IAnimatable;
 
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
-public class GrenadeEntity extends AbstractGrenadeEntity implements IAnimatable {
+public class GrenadeEntity extends AbstractGrenadeEntity {
     private static final float EXPLOSION_POWER = 1.2F;
-    private static final Block IRON = Blocks.IRON_BLOCK;
+    private static final ParticleEffect GRENADE_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.IRON_BLOCK.getDefaultState());
 
     public GrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -39,22 +38,9 @@ public class GrenadeEntity extends AbstractGrenadeEntity implements IAnimatable 
 
     @Override
     protected void initDataTracker() {
-        setPower(EXPLOSION_POWER);
+        this.setPower(EXPLOSION_POWER);
+        this.setExplosionEffect(GRENADE_EFFECT);
         super.initDataTracker();
-    }
-
-    public void handleStatus(byte status) {
-        if (status == 3) {
-            ParticleEffect effect = new BlockStateParticleEffect(ParticleTypes.BLOCK, IRON.getDefaultState());
-            for (int i = 0; i < 3; i++) {
-                double x = ThreadLocalRandom.current().nextDouble(-this.power, this.power);
-                double z = ThreadLocalRandom.current().nextDouble(-this.power, this.power);
-                this.world.addParticle(effect, this.getX(), this.getY(), this.getZ(),
-                        this.power + x, 2 * this.power, this.power + z);
-            }
-        } else {
-            super.handleStatus(status);
-        }
     }
 
     protected void onCollision(HitResult hitResult) {
