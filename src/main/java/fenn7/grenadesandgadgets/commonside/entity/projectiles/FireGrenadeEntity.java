@@ -3,9 +3,11 @@ package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 import java.util.List;
 import java.util.stream.Stream;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -83,10 +85,8 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
                 });
 
         if (this.state != LingeringState.LINGERING) {
-            List<LivingEntity> list = world.getNonSpectatingEntities(LivingEntity.class, impactBox);
-            list.stream().filter(e -> Math.sqrt(e.squaredDistanceTo(
-                            impactPos.getX(), impactPos.getY(), impactPos.getZ())) <= 1.5F)
-                    .forEach(Entity::setOnFireFromLava);
+            List<LivingEntity> list = GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, 1.75F);
+            list.stream().forEach(Entity::setOnFireFromLava);
         }
     }
 }

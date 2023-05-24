@@ -77,9 +77,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        this.world.sendEntityStatus(this, (byte) 3);
-        entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 1.0F);
-        explode(this.power);
+        entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 2.0F);
+        this.explodeWithEffects(this.power);
         super.onEntityHit(entityHitResult);
     }
 

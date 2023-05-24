@@ -1,11 +1,15 @@
 package fenn7.grenadesandgadgets.commonside.util;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -27,4 +31,16 @@ public interface GrenadesModUtil {
     static void playExplosionSound(World world, GrenadesModSoundProfile soundProfile, Vec3d location) {
         world.playSound(location.x, location.y, location.z, soundProfile.soundEvent(), SoundCategory.HOSTILE, soundProfile.volume(), soundProfile.pitch(), true);
     }
+
+    static List<LivingEntity> getLivingEntitiesAtRangeFromEntity(World world, Entity entity, double radius) {
+        return world.getNonSpectatingEntities(LivingEntity.class, getBoxAroundEntity(entity, radius)).stream()
+            .filter(e -> e.distanceTo(entity) <= radius)
+            .toList();
+    }
+
+    static Box getBoxAroundEntity(Entity entity, double radius) {
+        return new Box(entity.getX() - radius, entity.getY() - radius, entity.getZ() - radius,
+            entity.getX() + radius, entity.getY() + radius, entity.getZ() + radius);
+    }
+
 }
