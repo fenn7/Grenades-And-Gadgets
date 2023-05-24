@@ -34,14 +34,17 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     public AbstractGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
+        this.initialise();
     }
 
     public AbstractGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world, LivingEntity owner) {
         super(entityType, owner, world);
+        this.initialise();
     }
 
     public AbstractGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world, double x, double y, double z) {
         super(entityType, x, y, z, world);
+        this.initialise();
     }
 
     public void tick() {
@@ -50,7 +53,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                 0.7F, 1.5F, true);
         }
         if (this.age >= this.maxAgeTicks) {
-            explode(this.power);
+            explodeWithEffects(this.power);
         }
         super.tick();
     }
@@ -66,7 +69,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                 case "north", "south" -> this.setVelocity(velocity.getX(), velocity.getY(), -velocity.getZ());
             }
         } else {
-            this.world.sendEntityStatus(this, (byte) STATUS_BYTE);
+            this.world.sendEntityStatus(this, STATUS_BYTE);
             explode(this.power);
         }
         super.onBlockHit(blockHitResult);
@@ -103,6 +106,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     protected abstract void explode(float power);
+
+    protected abstract void initialise();
 
     public void setMaxAgeTicks(int maxAgeTicks) {
         this.maxAgeTicks = maxAgeTicks;
@@ -149,7 +154,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     public void registerControllers(AnimationData animationData) {
-        animationData.addAnimationController(new AnimationController(this, "controller", 0, this::flyingAnimation));
+        animationData.addAnimationController(new AnimationController<>(this, "controller", 0, this::flyingAnimation));
     }
 
     @Override

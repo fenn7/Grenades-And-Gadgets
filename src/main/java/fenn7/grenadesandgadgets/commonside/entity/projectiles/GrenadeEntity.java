@@ -37,10 +37,9 @@ public class GrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
-    protected void initDataTracker() {
+    protected void initialise() {
         this.setPower(EXPLOSION_POWER);
         this.setExplosionEffect(GRENADE_EFFECT);
-        super.initDataTracker();
     }
 
     protected void onCollision(HitResult hitResult) {

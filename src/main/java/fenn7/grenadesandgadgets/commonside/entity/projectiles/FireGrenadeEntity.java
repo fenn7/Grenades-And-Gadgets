@@ -20,17 +20,13 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FireGrenadeEntity extends AbstractGrenadeEntity {
+public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     private static final float FIRE_RANGE = 2.8F;
+    private static final int MAX_LINGERING_TICKS = 8;
     private static final ParticleEffect FIRE_GRENADE_EFFECT = ParticleTypes.LAVA;
     private static final GrenadesModSoundProfile FIRE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5F, 0.675F);
-
-    private boolean shouldDiscard = false;
-    private boolean shouldLinger = false;
-    private int postExplosionTicks = 0;
 
     public FireGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -45,36 +41,27 @@ public class FireGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
-    protected void initDataTracker() {
+    protected void initialise() {
+        this.maxLingeringTicks = MAX_LINGERING_TICKS;
         this.setPower(FIRE_RANGE);
         this.setExplosionEffect(FIRE_GRENADE_EFFECT);
         this.setExplosionSoundProfile(FIRE_GRENADE_SOUND_PROFILE);
-        super.initDataTracker();
     }
 
     @Override
     protected void onCollision(HitResult hitResult) {
         if (!this.world.isClient()) {
-            world.sendEntityStatus(this, (byte) 3);
-            this.setVelocity(Vec3d.ZERO);
-            this.setNoGravity(true);
-            explode(this.power * 0.66F);
-            this.shouldLinger = true;
+            this.setInactive();
+            this.explodeWithEffects(this.power * 0.66F);
+            this.setState(LingeringState.LINGERING);
         }
         super.onCollision(hitResult);
     }
 
     @Override
-    public void tick() {
-        if (this.shouldLinger) {
-            this.postExplosionTicks++;
-        }
-        if (this.postExplosionTicks >= 10) {
-            this.shouldLinger = false;
-            this.shouldDiscard = true;
-            explode(this.power);
-        }
-        super.tick();
+    protected void handleDiscard() {
+        this.explode(this.power);
+        super.handleDiscard();
     }
 
     @Override
@@ -95,15 +82,11 @@ public class FireGrenadeEntity extends AbstractGrenadeEntity {
                     world.setBlockState(pos, fireState, 11);
                 });
 
-        if (this.shouldLinger) {
+        if (this.state != LingeringState.LINGERING) {
             List<LivingEntity> list = world.getNonSpectatingEntities(LivingEntity.class, impactBox);
             list.stream().filter(e -> Math.sqrt(e.squaredDistanceTo(
                             impactPos.getX(), impactPos.getY(), impactPos.getZ())) <= 1.5F)
                     .forEach(Entity::setOnFireFromLava);
-        }
-
-        if (this.shouldDiscard) {
-            this.discard();
         }
     }
 }
