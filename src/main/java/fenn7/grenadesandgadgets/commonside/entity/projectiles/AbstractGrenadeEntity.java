@@ -1,25 +1,19 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
-import java.util.concurrent.ThreadLocalRandom;
-
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -36,9 +30,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     protected boolean shouldBounce = true;
     protected float power;
     protected ParticleEffect explosionEffect;
-    protected SoundEvent explosionSound;
-    protected float explosionSoundVolume;
-    protected float explosionSoundPitch;
+    protected GrenadesModSoundProfile explosionSoundProfile;
 
     public AbstractGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -55,7 +47,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     public void tick() {
         if (this.age == 1) {
             world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE,
-                0.3F, 1.5F, true);
+                0.7F, 1.5F, true);
         }
         if (this.age >= this.maxAgeTicks) {
             explode(this.power);
@@ -132,10 +124,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.explosionEffect = effect;
     }
 
-    public void setExplosionSound(SoundEvent sound, float volume, float pitch) {
-        this.explosionSound = sound;
-        this.explosionSoundVolume = volume;
-        this.explosionSoundPitch = pitch;
+    public void setExplosionSoundProfile(GrenadesModSoundProfile sound) {
+        this.explosionSoundProfile = sound;
     }
 
     @Override
@@ -144,8 +134,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             if (this.explosionEffect != null) {
                 GrenadesModUtil.createExplosionEffects(this.world, this.explosionEffect, this.getPos(), 3, this.power);
             }
-            if (this.explosionSound != null) {
-                GrenadesModUtil.playExplosionSound(this.world, this.explosionSound, this.getPos(), this.explosionSoundVolume, this.explosionSoundPitch);
+            if (this.explosionSoundProfile != null) {
+                GrenadesModUtil.playExplosionSound(this.world, this.explosionSoundProfile, this.getPos());
             }
         } else {
             super.handleStatus(status);

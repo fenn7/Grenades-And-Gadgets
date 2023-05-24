@@ -24,7 +24,7 @@ public interface GrenadesModUtil {
         }
     }
 
-    static void playExplosionSound(World world, SoundEvent sound, Vec3d location, float volume, float pitch) {
-        world.playSound(location.x, location.y, location.z, sound, SoundCategory.HOSTILE, volume, pitch, true);
+    static void playExplosionSound(World world, GrenadesModSoundProfile soundProfile, Vec3d location) {
+        world.playSound(location.x, location.y, location.z, soundProfile.soundEvent(), SoundCategory.HOSTILE, soundProfile.volume(), soundProfile.pitch(), true);
     }
 }

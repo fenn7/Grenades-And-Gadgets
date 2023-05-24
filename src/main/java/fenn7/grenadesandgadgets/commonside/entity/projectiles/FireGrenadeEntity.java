@@ -1,25 +1,21 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
-import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -30,9 +26,7 @@ import net.minecraft.world.World;
 public class FireGrenadeEntity extends AbstractGrenadeEntity {
     private static final float FIRE_RANGE = 2.8F;
     private static final ParticleEffect FIRE_GRENADE_EFFECT = ParticleTypes.LAVA;
-    private static final SoundEvent EXPLOSION_SOUND = SoundEvents.ENTITY_BLAZE_SHOOT;
-    private static final float EXPLOSION_SOUND_VOLUME = 1.5F;
-    public static final float EXPLOSION_SOUND_PITCH = 0.675F;
+    private static final GrenadesModSoundProfile FIRE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5F, 0.675F);
 
     private boolean shouldDiscard = false;
     private boolean shouldLinger = false;
@@ -54,7 +48,7 @@ public class FireGrenadeEntity extends AbstractGrenadeEntity {
     protected void initDataTracker() {
         this.setPower(FIRE_RANGE);
         this.setExplosionEffect(FIRE_GRENADE_EFFECT);
-        this.setExplosionSound(EXPLOSION_SOUND, EXPLOSION_SOUND_VOLUME, EXPLOSION_SOUND_PITCH);
+        this.setExplosionSoundProfile(FIRE_GRENADE_SOUND_PROFILE);
         super.initDataTracker();
     }
 
