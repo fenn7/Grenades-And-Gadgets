@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
+import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
@@ -140,10 +141,10 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     public void handleStatus(byte status) {
         if (status == STATUS_BYTE) {
             if (this.explosionEffect != null) {
-                GrenadesModUtil.createExplosionEffects(this.world, this.explosionEffect, this.getPos(), 3, this.power);
+                GrenadesModClientUtil.createExplosionEffects(this.world, this.explosionEffect, this.getPos(), 3, this.power);
             }
             if (this.explosionSoundProfile != null) {
-                GrenadesModUtil.playExplosionSound(this.world, this.explosionSoundProfile, this.getPos());
+                GrenadesModClientUtil.playExplosionSound(this.world, this.explosionSoundProfile, this.getPos());
             }
         } else {
             super.handleStatus(status);

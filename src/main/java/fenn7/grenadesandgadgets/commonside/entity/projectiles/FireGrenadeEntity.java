@@ -23,6 +23,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {

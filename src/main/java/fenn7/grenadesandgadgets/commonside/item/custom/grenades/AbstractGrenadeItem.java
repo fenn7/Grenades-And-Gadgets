@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public abstract class AbstractGrenadeItem extends Item {
     protected float defaultRoll = 0.1F;
-    protected float defaultSpeed = 0.7F;
+    protected float defaultSpeed = 0.75F;
     protected float defaultDiv = 0.2F;
 
     public AbstractGrenadeItem(Settings settings) {

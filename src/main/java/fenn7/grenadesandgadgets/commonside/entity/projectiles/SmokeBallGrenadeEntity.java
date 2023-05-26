@@ -1,25 +1,22 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Stream;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
@@ -30,8 +27,9 @@ import software.bernie.geckolib3.core.IAnimatable;
 
 public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity implements IAnimatable {
     private static final float SMOKE_RANGE = 2.8F;
-    private static final int MAX_LINGERING_TICKS = 180;
-    private static final GrenadesModSoundProfile SMOKE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_GENERIC_BURN, 1.35F, 0.8F);
+    private static final int MAX_LINGERING_TICKS = 300;
+    private static final int DEFAULT_COLOR = 0x696969;
+    private static final GrenadesModSoundProfile SMOKEBALL_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_GENERIC_BURN, 1.35F, 0.8F);
     private List<BlockPos> smokeBlocks;
 
     public SmokeBallGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
@@ -39,73 +37,54 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
     }
 
     public SmokeBallGrenadeEntity(World world, PlayerEntity user) {
-        super(GrenadesModEntities.SMOKE_GRENADE_ENTITY, world, user);
+        super(GrenadesModEntities.SMOKE_BALL_GRENADE_ENTITY, world, user);
     }
 
     public SmokeBallGrenadeEntity(World world, double x, double y, double z) {
-        super(GrenadesModEntities.SMOKE_GRENADE_ENTITY, world, x, y, z);
+        super(GrenadesModEntities.SMOKE_BALL_GRENADE_ENTITY, world, x, y, z);
     }
 
     @Override
     protected void initialise() {
         this.maxLingeringTicks = MAX_LINGERING_TICKS;
         this.setPower(SMOKE_RANGE);
-        this.setExplosionSoundProfile(SMOKE_GRENADE_SOUND_PROFILE);
-    }
-
-    @Override
-    public void handleStatus(byte status) {
-        if (status == 33) {
-            Box smokeBox = new Box(this.getBlockPos()).expand(this.power, this.power, this.power);
-            Stream<BlockPos> posStream = BlockPos.stream(smokeBox);
-            posStream.filter(pos -> Math.sqrt(pos.getSquaredDistance(this.getPos())) <= this.power)
-                    .filter(pos -> this.world.getBlockState(pos).isAir())
-                    .forEach(pos -> {
-                        ParticleEffect smoke1 = ParticleTypes.CAMPFIRE_COSY_SMOKE;
-                        ParticleEffect smoke2 = ParticleTypes.CAMPFIRE_SIGNAL_SMOKE;
-                        double x = ThreadLocalRandom.current().nextDouble(-0.5D, 0.5D);
-                        double z = ThreadLocalRandom.current().nextDouble(-0.5D, 0.5D);
-                        this.world.addParticle(smoke1, pos.getX() - x, pos.getY() + 0.4, pos.getZ() - z, 0, 0.01, 0);
-                        this.world.addParticle(smoke2, pos.getX() + x, pos.getY() - 0.4, pos.getZ() + z, 0, 0.01, 0);
-                    });
-
-            List<LivingEntity> list = world.getNonSpectatingEntities(LivingEntity.class, smokeBox);
-            list.stream().filter(e -> Math.sqrt(e.squaredDistanceTo(this.getX(), this.getY(), this.getZ())) <= this.power)
-                    .forEach(e -> {
-                        if (e.isOnFire()) {
-                            e.setOnFire(false);
-                        }
-                    });
-        } else {
-            super.handleStatus(status);
-        }
+        this.setExplosionSoundProfile(SMOKEBALL_SOUND_PROFILE);
     }
 
     @Override
     public void tick() {
-        if (this.state == LingeringState.LINGERING) {
-            if (this.lingeringTicks >= 0 && this.lingeringTicks % 5 == 0) {
-                if (this.world.isClient) {
-                    this.world.addParticle(ParticleTypes.ANGRY_VILLAGER, this.getX(), this.getY() + 0.4, this.getZ(), 0, 0.01, 0);
-                }
-                /*this.world.sendEntityStatus(this, (byte) 33);*/
+        if (this.state == LingeringState.LINGERING && this.lingeringTicks % 20 == 0) {
+            var smokeBlocks = this.getOrCreateSmokeBlocks();
+            if (this.world.isClient) {
+                ParticleEffect smokeEffect = GrenadesModClientUtil.getDustParticleType(DEFAULT_COLOR);
+                smokeBlocks.forEach(pos -> {
+                        double xRand = this.random.nextDouble(0.25D, 0.75D);
+                        double yRand = this.random.nextDouble(0.25D, 0.75D);
+                        double zRand = this.random.nextDouble(0.25D, 0.75D);
+                        this.world.addParticle(smokeEffect, pos.getX() + xRand, pos.getY() + yRand, pos.getZ() + zRand,
+                            0, 0, 0);
+                    }
+                );
+            } else {
+                smokeBlocks.forEach(pos -> {
+                        BlockState blockState = this.world.getBlockState(pos);
+                        if (blockState.getProperties().contains(Properties.LIT)) {
+                            this.world.setBlockState(pos, blockState.with(Properties.LIT, false), 11);
+                        } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
+                            this.world.removeBlock(pos, false);
+                        }
+
+                        this.world.getNonSpectatingEntities(Entity.class, new Box(pos)).forEach(entity -> {
+                            entity.setOnFire(false);
+                            if (entity instanceof LivingEntity alive) {
+                                alive.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 0));
+                            }
+                        });
+                    }
+                );
             }
         }
         super.tick();
-    }
-
-    @Override
-    protected void explode(float power) {
-        super.explode(power);
-        this.getOrCreateSmokeBlocks().forEach(pos -> {
-                BlockState blockState = this.world.getBlockState(pos);
-                if (blockState.getProperties().contains(Properties.LIT)) {
-                    this.world.setBlockState(pos, blockState.with(Properties.LIT, false), 11);
-                } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
-                    this.world.removeBlock(pos, false);
-                }
-            }
-        );
     }
 
     private List<BlockPos> getOrCreateSmokeBlocks() {

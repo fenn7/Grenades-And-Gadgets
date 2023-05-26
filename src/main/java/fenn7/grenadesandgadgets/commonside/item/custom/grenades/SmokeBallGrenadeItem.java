@@ -5,8 +5,8 @@ import fenn7.grenadesandgadgets.commonside.entity.projectiles.SmokeBallGrenadeEn
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
-public class SmokeGrenadeItem extends AbstractGrenadeItem {
-    public SmokeGrenadeItem(Settings settings) {
+public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
+    public SmokeBallGrenadeItem(Settings settings) {
         super(settings);
         this.defaultSpeed = 0.8F;
     }

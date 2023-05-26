@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 public class FireGrenadeItem extends AbstractGrenadeItem {
     public FireGrenadeItem(Settings settings) {
         super(settings);
-        this.defaultSpeed = 0.675F;
+        this.defaultSpeed = 0.7F;
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
