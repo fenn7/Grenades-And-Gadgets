@@ -3,7 +3,7 @@ package fenn7.grenadesandgadgets.commonside.entity;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.projectiles.FireGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.projectiles.GrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.SmokeGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.projectiles.SmokeBallGrenadeEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -24,9 +24,9 @@ public class GrenadesModEntities {
             .dimensions(EntityDimensions.fixed(0.275F, 0.275F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
-    public static final EntityType<SmokeGrenadeEntity> SMOKE_GRENADE_ENTITY = Registry.register(
+    public static final EntityType<SmokeBallGrenadeEntity> SMOKE_GRENADE_ENTITY = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_smoke_ball"),
-        FabricEntityTypeBuilder.<SmokeGrenadeEntity>create(SpawnGroup.MISC, SmokeGrenadeEntity::new)
+        FabricEntityTypeBuilder.<SmokeBallGrenadeEntity>create(SpawnGroup.MISC, SmokeBallGrenadeEntity::new)
             .dimensions(EntityDimensions.fixed(0.27F, 0.27F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 }

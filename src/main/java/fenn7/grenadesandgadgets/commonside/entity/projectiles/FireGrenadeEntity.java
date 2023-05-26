@@ -1,6 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
@@ -53,9 +54,7 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         if (!this.world.isClient()) {
-            this.setInactive();
             this.explodeWithEffects(this.power * 0.66F);
-            this.setState(LingeringState.LINGERING);
         }
         super.onCollision(hitResult);
     }
@@ -73,20 +72,36 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
 
     @Override
     protected void explode(float power) {
+        super.explode(power);
         BlockPos impactPos = this.getBlockPos();
         Box impactBox = new Box(impactPos).expand(power, power / 2, power);
 
         Stream<BlockPos> posStream = BlockPos.stream(impactBox);
         posStream.filter(pos -> Math.sqrt(pos.getSquaredDistance(impactPos)) <= power)
-                .filter(pos -> AbstractFireBlock.canPlaceAt(world, pos, this.getMovementDirection()))
+                .filter(pos -> AbstractFireBlock.canPlaceAt(world, pos, this.getMovementDirection())
+                    && this.shouldSetOnFire(this.world, pos))
                 .forEach(pos -> {
                     BlockState fireState = AbstractFireBlock.getState(world, pos.offset(this.getMovementDirection()));
-                    world.setBlockState(pos, fireState, 11);
+                    this.world.setBlockState(pos, fireState, 11);
                 });
 
         if (this.state != LingeringState.LINGERING) {
             List<LivingEntity> list = GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, 1.75F);
             list.stream().forEach(Entity::setOnFireFromLava);
         }
+    }
+
+    private boolean shouldSetOnFire(World world, BlockPos firePos) {
+        for (double x = Math.min(firePos.getX(), this.getX()); x <= Math.max(firePos.getX(), this.getX()); x++) {
+            for (double y = Math.min(firePos.getY(), this.getY()); y <= Math.max(firePos.getY(), this.getY()); y++) {
+                for (double z = Math.min(firePos.getZ(), this.getZ()); z <= Math.max(firePos.getZ(), this.getZ()); z++) {
+                    BlockState between = world.getBlockState(new BlockPos(x, y, z));
+                    if (between != null && between.getMaterial().isSolid() && !between.getMaterial().isBurnable()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

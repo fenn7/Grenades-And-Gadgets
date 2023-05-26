@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.EntityType;
@@ -22,9 +23,10 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.shadowed.eliotlash.mclib.math.functions.classic.Abs;
 
 public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements IAnimatable {
-    private final static byte STATUS_BYTE = (byte) 3;
+    protected final static byte STATUS_BYTE = (byte) 3;
     protected final AnimationFactory factory = new AnimationFactory(this);
     protected int maxAgeTicks = 100;
     protected boolean shouldBounce = true;
@@ -52,7 +54,9 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE,
                 0.7F, 1.5F, true);
         }
-        if (this.age >= this.maxAgeTicks) {
+        if (this.age >= this.maxAgeTicks && !(this instanceof AbstractLingeringGrenadeEntity lingering
+            && lingering.state != AbstractLingeringGrenadeEntity.LingeringState.UNEXPLODED)) {
+            // TODO: Make nades not rely on entity status?
             explodeWithEffects(this.power);
         }
         super.tick();

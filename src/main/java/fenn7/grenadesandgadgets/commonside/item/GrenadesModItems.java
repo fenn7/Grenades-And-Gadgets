@@ -2,7 +2,6 @@ package fenn7.grenadesandgadgets.commonside.item;
 
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.SmokeGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FireGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.GrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeGrenadeItem;
@@ -16,7 +15,7 @@ public class GrenadesModItems {
         new GrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(16)));
     public static final Item GRENADE_FIRE = register("grenade_fire",
         new FireGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
-    public static final Item GRENADE_SMOKE = register("grenade_smoke_ball",
+    public static final Item GRENADE_SMOKE_BALL = register("grenade_smoke_ball",
         new SmokeGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
 
     public static void registerItems() {

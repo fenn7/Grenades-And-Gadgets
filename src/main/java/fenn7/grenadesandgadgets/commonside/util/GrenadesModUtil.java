@@ -1,14 +1,18 @@
 package fenn7.grenadesandgadgets.commonside.util;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -33,14 +37,25 @@ public interface GrenadesModUtil {
     }
 
     static List<LivingEntity> getLivingEntitiesAtRangeFromEntity(World world, Entity entity, double radius) {
-        return world.getNonSpectatingEntities(LivingEntity.class, getBoxAroundEntity(entity, radius)).stream()
+        return world.getNonSpectatingEntities(LivingEntity.class, getCubicBoxAroundEntity(entity, radius)).stream()
             .filter(e -> e.distanceTo(entity) <= radius)
             .toList();
     }
 
-    static Box getBoxAroundEntity(Entity entity, double radius) {
+    static Box getCubicBoxAroundEntity(Entity entity, double radius) {
         return new Box(entity.getX() - radius, entity.getY() - radius, entity.getZ() - radius,
             entity.getX() + radius, entity.getY() + radius, entity.getZ() + radius);
     }
 
+    static Box getCubicBoxAroundPos(BlockPos pos, double radius) {
+        return new Box(pos).expand(radius, radius, radius);
+    }
+
+    static List<BlockPos> getBlocksInSphereAroundPos(BlockPos centre, double radius) {
+        List<BlockPos> blocks = new LinkedList<>();
+        BlockPos.stream(getCubicBoxAroundPos(centre, radius))
+            .filter(pos -> pos.isWithinDistance(centre, radius))
+            .forEach(pos -> blocks.add(pos.toImmutable()));
+        return blocks;
+    }
 }
