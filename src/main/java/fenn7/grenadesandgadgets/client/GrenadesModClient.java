@@ -16,5 +16,7 @@ public class GrenadesModClient implements ClientModInitializer {
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_smoke_ball"));
         EntityRendererRegistry.register(GrenadesModEntities.SMOKE_FLARE_GRENADE_ENTITY,
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_smoke_flare"));
+        EntityRendererRegistry.register(GrenadesModEntities.HIGH_EXPLOSIVE_GRENADE_ENTITY,
+            ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_high_explosive"));
     }
 }

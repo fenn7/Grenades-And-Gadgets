@@ -20,8 +20,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class GrenadeEntity extends AbstractGrenadeEntity {
-    private static final float EXPLOSION_POWER = 1.2F;
+    private static final float EXPLOSION_POWER = 1.25F;
     private static final ParticleEffect GRENADE_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.IRON_BLOCK.getDefaultState());
+    private static final float PROXIMITY_DAMAGE = 3.0F;
 
     public GrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -49,8 +50,8 @@ public class GrenadeEntity extends AbstractGrenadeEntity {
     protected void explode(float power) {
         if (!this.world.isClient()) {
             List<LivingEntity> list =
-                GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, this.power);
-            list.stream().forEach(e -> e.damage(DamageSource.thrownProjectile(this, this.getOwner()), 3.0F));
+                GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, power);
+            list.stream().forEach(e -> e.damage(DamageSource.thrownProjectile(this, this.getOwner()), PROXIMITY_DAMAGE));
             this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), power, Explosion.DestructionType.NONE);
         }
         this.discard();
