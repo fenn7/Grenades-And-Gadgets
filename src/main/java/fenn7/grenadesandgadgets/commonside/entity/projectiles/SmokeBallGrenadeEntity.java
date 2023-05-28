@@ -9,16 +9,12 @@ import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,9 +35,6 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
     private static final int MAX_LINGERING_TICKS = 300;
     private static final int DEFAULT_COLOR = 0x696969;
     private static final GrenadesModSoundProfile SMOKEBALL_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_GENERIC_BURN, 1.35F, 0.8F);
-
-    private static final TrackedData<NbtCompound> SMOKE_COLOURS =
-        DataTracker.registerData(SmokeBallGrenadeEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     private List<Integer> colours;
     private List<BlockPos> smokeBlocks;
 
@@ -62,19 +55,6 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
         this.maxLingeringTicks = MAX_LINGERING_TICKS;
         this.setPower(SMOKE_RANGE);
         this.setExplosionSoundProfile(SMOKEBALL_SOUND_PROFILE);
-    }
-
-    @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(SMOKE_COLOURS, ((GrenadesModEntityData) this).getPersistentData());
-    }
-
-    @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        NbtCompound customData = ((GrenadesModEntityData) this).getPersistentData();
-        this.dataTracker.set(SMOKE_COLOURS, customData);
     }
 
     @Override
@@ -132,8 +112,8 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
             return this.colours;
         } else {
             List<Integer> newColours = new ArrayList<>();
-            NbtCompound colourNBT = this.dataTracker.get(SMOKE_COLOURS);
-            int[] colours = (colourNBT == null) ? new int[]{DEFAULT_COLOR} : colourNBT.getIntArray(SmokeBallGrenadeItem.COLOUR_SUB_TAG);
+            NbtCompound colourNBT = this.getItem().getOrCreateSubNbt(SmokeBallGrenadeItem.SMOKE_BALL_COLOUR);
+            int[] colours = (colourNBT.isEmpty()) ? new int[]{DEFAULT_COLOR} : colourNBT.getIntArray(SmokeBallGrenadeItem.COLOUR_SUB_TAG);
             Arrays.stream(colours).forEach(newColours::add);
             this.colours = newColours;
             return newColours;

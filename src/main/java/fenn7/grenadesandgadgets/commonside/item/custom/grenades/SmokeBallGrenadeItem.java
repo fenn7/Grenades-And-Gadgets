@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
     public static final String SMOKE_BALL_COLOUR = "smoke.colour";
     public static final String COLOUR_SUB_TAG = "colours";
-    private NbtCompound smokeNbt;
 
     public SmokeBallGrenadeItem(Settings settings) {
         super(settings);
@@ -47,18 +46,11 @@ public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
             }
             tooltip.add(colourNames);
         }
-        this.smokeNbt = nbt;
         super.appendTooltip(stack, world, tooltip, context);
     }
 
     @Override
     protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, Hand hand) {
-        SmokeBallGrenadeEntity smoke = new SmokeBallGrenadeEntity(world, player);
-        GrenadesModEntityData smokeData = (GrenadesModEntityData) smoke;
-        NbtCompound smokeNBT = player.getStackInHand(hand).getOrCreateSubNbt(SMOKE_BALL_COLOUR);
-        if (!smokeNBT.isEmpty()) {
-            smokeData.getPersistentData().put(COLOUR_SUB_TAG, smokeNBT.get(COLOUR_SUB_TAG));
-        }
-        return smoke;
+        return new SmokeBallGrenadeEntity(world, player);
     }
 }
