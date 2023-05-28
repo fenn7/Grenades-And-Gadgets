@@ -13,6 +13,7 @@ import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -23,6 +24,10 @@ import net.minecraft.world.World;
 public interface GrenadesModUtil {
     static Text textOf(String text) {
         return Text.of(text);
+    }
+
+    static MutableText mutableTextOf(String text) {
+        return Text.of(text).copy();
     }
 
     private ParticleEffect getSmokeParticleType(int hexColour) {

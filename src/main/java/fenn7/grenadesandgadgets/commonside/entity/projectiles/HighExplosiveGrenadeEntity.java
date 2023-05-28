@@ -30,7 +30,7 @@ public class HighExplosiveGrenadeEntity extends AbstractGrenadeEntity {
     private static final GrenadesModSoundProfile HIGHEXPLOSIVE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.8F, 0.75F);
     private static final float PROXIMITY_DAMAGE = 5.0F;
 
-    private static final int MAX_ARMOUR_BREAK_DURATION = 120;
+    private static final int MAX_ARMOUR_BREAK_DURATION = 160;
     private static final int MAX_ARMOUR_BREAK_LEVEL = 2;
 
     public HighExplosiveGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
@@ -60,7 +60,7 @@ public class HighExplosiveGrenadeEntity extends AbstractGrenadeEntity {
             list.forEach(e -> {
                 e.damage(DamageSource.thrownProjectile(this, this.getOwner()), PROXIMITY_DAMAGE);
                 StatusEffectInstance currentAB = e.getStatusEffect(GrenadesModStatus.ARMOUR_BREAK);
-                int currentABLevel = currentAB == null ? 0 : currentAB.getAmplifier();
+                int currentABLevel = currentAB == null ? -1 : currentAB.getAmplifier();
                 e.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.ARMOUR_BREAK,
                     MAX_ARMOUR_BREAK_DURATION, Math.min(currentABLevel + 1, MAX_ARMOUR_BREAK_LEVEL)));
             });

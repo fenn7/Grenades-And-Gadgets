@@ -18,7 +18,7 @@ public class FireGrenadeItem extends AbstractGrenadeItem {
         return super.use(world, user, hand);
     }
 
-    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player) {
+    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, Hand hand) {
         return new FireGrenadeEntity(world, player);
     }
 }

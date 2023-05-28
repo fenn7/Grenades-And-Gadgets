@@ -1,7 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
 import fenn7.grenadesandgadgets.commonside.entity.projectiles.AbstractGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.GrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.projectiles.HighExplosiveGrenadeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,7 +18,7 @@ public class HighExplosiveGrenadeItem extends AbstractGrenadeItem {
         return super.use(world, user, hand);
     }
 
-    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player) {
+    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, Hand hand) {
         return new HighExplosiveGrenadeEntity(world, player);
     }
 }

@@ -1,6 +1,7 @@
 package fenn7.grenadesandgadgets.commonside;
 
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
+import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import net.fabricmc.api.ModInitializer;
 
@@ -21,6 +22,7 @@ public class GrenadesMod implements ModInitializer {
         // Proceed with mild caution.
         LOGGER.info("Initializing Grenades And Gadgets...");
         GrenadesModItems.registerItems();
+        GrenadesModSpecialRecipes.registerRecipes();
         GrenadesModStatus.registerEffects();
     }
 }

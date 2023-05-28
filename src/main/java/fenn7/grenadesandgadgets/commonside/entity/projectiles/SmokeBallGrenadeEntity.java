@@ -1,21 +1,30 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -30,6 +39,10 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
     private static final int MAX_LINGERING_TICKS = 300;
     private static final int DEFAULT_COLOR = 0x696969;
     private static final GrenadesModSoundProfile SMOKEBALL_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_GENERIC_BURN, 1.35F, 0.8F);
+
+    private static final TrackedData<NbtCompound> SMOKE_COLOURS =
+        DataTracker.registerData(SmokeBallGrenadeEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
+    private List<Integer> colours;
     private List<BlockPos> smokeBlocks;
 
     public SmokeBallGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
@@ -52,12 +65,28 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
     }
 
     @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(SMOKE_COLOURS, ((GrenadesModEntityData) this).getPersistentData());
+    }
+
+    @Override
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        NbtCompound customData = ((GrenadesModEntityData) this).getPersistentData();
+        this.dataTracker.set(SMOKE_COLOURS, customData);
+    }
+
+    @Override
     public void tick() {
         if (this.state == LingeringState.LINGERING && this.lingeringTicks % 20 == 0) {
             var smokeBlocks = this.getOrCreateSmokeBlocks();
             if (this.world.isClient) {
-                ParticleEffect smokeEffect = GrenadesModClientUtil.getDustParticleType(DEFAULT_COLOR);
                 smokeBlocks.forEach(pos -> {
+                        GrenadesMod.LOGGER.warn(this.getItem().getOrCreateNbt().toString());
+                        ParticleEffect smokeEffect = GrenadesModClientUtil.getDustParticleType(
+                            this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
+                        );
                         double xRand = this.random.nextDouble(0.25D, 0.75D);
                         double yRand = this.random.nextDouble(0.25D, 0.75D);
                         double zRand = this.random.nextDouble(0.25D, 0.75D);
@@ -95,6 +124,19 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
                 .stream().filter(pos -> this.shouldSmokeAt(this.world, pos)).toList();
             this.smokeBlocks = newSmokeBlocks;
             return newSmokeBlocks;
+        }
+    }
+
+    private List<Integer> getOrCreateColours() {
+        if (this.colours != null) {
+            return this.colours;
+        } else {
+            List<Integer> newColours = new ArrayList<>();
+            NbtCompound colourNBT = this.dataTracker.get(SMOKE_COLOURS);
+            int[] colours = (colourNBT == null) ? new int[]{DEFAULT_COLOR} : colourNBT.getIntArray(SmokeBallGrenadeItem.COLOUR_SUB_TAG);
+            Arrays.stream(colours).forEach(newColours::add);
+            this.colours = newColours;
+            return newColours;
         }
     }
 
