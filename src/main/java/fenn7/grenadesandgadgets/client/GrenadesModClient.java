@@ -1,6 +1,7 @@
 package fenn7.grenadesandgadgets.client;
 
-import fenn7.grenadesandgadgets.client.entity.projectiles.renderer.SimpleGrenadeRenderer;
+import fenn7.grenadesandgadgets.client.entity.grenades.renderer.SimpleGrenadeRenderer;
+import fenn7.grenadesandgadgets.client.entity.misc.renderer.FragmentRenderer;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import net.fabricmc.api.ClientModInitializer;
@@ -22,5 +23,7 @@ public class GrenadesModClient implements ClientModInitializer {
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_high_explosive"));
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENTATION_GRENADE_ENTITY,
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_fragmentation"));
+
+        EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);
     }
 }

@@ -1,10 +1,8 @@
-package fenn7.grenadesandgadgets.commonside.entity.projectiles;
+package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
@@ -23,7 +21,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {

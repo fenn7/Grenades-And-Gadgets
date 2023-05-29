@@ -1,8 +1,6 @@
-package fenn7.grenadesandgadgets.commonside.entity.projectiles;
+package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;

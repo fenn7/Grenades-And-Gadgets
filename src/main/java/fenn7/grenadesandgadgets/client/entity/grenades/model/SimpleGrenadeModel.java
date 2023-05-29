@@ -1,14 +1,14 @@
-package fenn7.grenadesandgadgets.client.entity.projectiles.model;
+package fenn7.grenadesandgadgets.client.entity.grenades.model;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.AbstractGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class SimpleGrenadeModel<T extends AbstractGrenadeEntity> extends AnimatedGeoModel<T> {
-    public static final String MODEL_LOCATION = "geo/";
-    public static final String TEXTURE_LOCATION = "textures/entity/grenade3d/";
-    public static final String ANIMATION_LOCATION = "animations/grenade.animation.json";
+    private static final String MODEL_LOCATION = "geo/";
+    private static final String TEXTURE_LOCATION = "textures/entity/grenade3d/";
+    private static final String ANIMATION_LOCATION = "animations/grenade.animation.json";
     private final String name;
 
     public SimpleGrenadeModel(String name) {

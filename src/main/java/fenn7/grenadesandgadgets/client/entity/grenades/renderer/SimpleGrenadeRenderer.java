@@ -1,7 +1,7 @@
-package fenn7.grenadesandgadgets.client.entity.projectiles.renderer;
+package fenn7.grenadesandgadgets.client.entity.grenades.renderer;
 
-import fenn7.grenadesandgadgets.client.entity.projectiles.model.SimpleGrenadeModel;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.AbstractGrenadeEntity;
+import fenn7.grenadesandgadgets.client.entity.grenades.model.SimpleGrenadeModel;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import software.bernie.geckolib3.renderers.geo.GeoProjectilesRenderer;
 

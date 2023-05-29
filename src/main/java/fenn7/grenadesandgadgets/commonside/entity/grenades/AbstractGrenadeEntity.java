@@ -1,9 +1,7 @@
-package fenn7.grenadesandgadgets.commonside.entity.projectiles;
+package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -24,7 +22,6 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.shadowed.eliotlash.mclib.math.functions.classic.Abs;
 
 public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements IAnimatable {
     protected final static byte STATUS_BYTE = (byte) 3;

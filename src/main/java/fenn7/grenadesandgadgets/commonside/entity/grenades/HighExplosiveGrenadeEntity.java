@@ -1,4 +1,4 @@
-package fenn7.grenadesandgadgets.commonside.entity.projectiles;
+package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import java.util.List;
 
@@ -19,8 +19,6 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ModStatus;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 

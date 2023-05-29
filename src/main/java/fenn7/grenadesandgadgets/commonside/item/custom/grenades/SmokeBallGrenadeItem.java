@@ -2,20 +2,13 @@ package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
 import java.util.List;
 
-import fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.AbstractGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.SmokeBallGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;

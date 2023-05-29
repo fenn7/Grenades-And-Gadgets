@@ -1,4 +1,4 @@
-package fenn7.grenadesandgadgets.commonside.entity.projectiles;
+package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
@@ -12,6 +12,11 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
     private static final float EXPLOSION_POWER = 0.75F;
@@ -42,6 +47,12 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
     protected void explode(float power) {
         GrenadesMod.LOGGER.warn(this.getItem().getOrCreateNbt().toString());
         this.discard();
+    }
+
+    @Override
+    protected <E extends IAnimatable> PlayState flyingAnimation(AnimationEvent<E> event) {
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.grenade.flying_large", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.CONTINUE;
     }
 
     @Override
