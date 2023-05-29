@@ -13,10 +13,7 @@ public class GrenadeItem extends AbstractGrenadeItem {
         super(settings);
     }
 
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        return super.use(world, user, hand);
-    }
-
+    @Override
     public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, Hand hand) {
         return new GrenadeEntity(world, player);
     }

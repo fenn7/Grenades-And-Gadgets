@@ -70,6 +70,6 @@ public class HighExplosiveGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     protected Item getDefaultItem() {
-        return GrenadesModItems.GRENADE;
+        return GrenadesModItems.GRENADE_HIGH_EXPLOSIVE;
     }
 }

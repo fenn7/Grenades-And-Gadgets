@@ -1,12 +1,13 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe.custom;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
+import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
@@ -18,23 +19,24 @@ import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-public class SmokeBallGrenadeRecipe extends SpecialCraftingRecipe {
-    private static final Ingredient IRON = Ingredient.ofItems(Items.IRON_INGOT);
+public class FragmentationGrenadeRecipe extends SpecialCraftingRecipe {
+    private static final Ingredient SHRAPNEL = Ingredient.fromTag(GrenadesModTags.Items.SHRAPNEL_MATERIALS);
     private static final Ingredient GUNPOWDER = Ingredient.ofItems(Items.GUNPOWDER);
 
-    public SmokeBallGrenadeRecipe(Identifier id) {
+    public FragmentationGrenadeRecipe(Identifier id) {
         super(id);
     }
 
     @Override
     public boolean matches(CraftingInventory inventory, World world) {
+        GrenadesMod.LOGGER.warn(Arrays.toString(SHRAPNEL.getMatchingStacks()));
         boolean hasIron = false;
         boolean hasGunpowder = false;
         boolean hasDye = false;
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
             if (stack.isEmpty()) continue;
-            if (IRON.test(stack)) {
+            if (SHRAPNEL.test(stack)) {
                 if (hasIron) return false;
                 hasIron = true;
                 continue;
@@ -75,6 +77,6 @@ public class SmokeBallGrenadeRecipe extends SpecialCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return GrenadesModSpecialRecipes.FRAGMENTATION_GRENADE;
+        return GrenadesModSpecialRecipes.SMOKE_BALL;
     }
 }
