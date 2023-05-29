@@ -10,6 +10,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class FragmentationGrenadeItem extends AbstractGrenadeItem {
+    public static final String FRAGMENTS = "Fragments";
+
     public FragmentationGrenadeItem(Settings settings) {
         super(settings);
         this.defaultSpeed = 0.9F;

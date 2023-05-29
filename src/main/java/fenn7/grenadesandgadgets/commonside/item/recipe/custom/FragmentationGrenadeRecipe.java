@@ -1,10 +1,13 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe.custom;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FragmentationGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
 import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
@@ -13,6 +16,8 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
@@ -20,7 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class FragmentationGrenadeRecipe extends SpecialCraftingRecipe {
-    private static final Ingredient SHRAPNEL = Ingredient.fromTag(GrenadesModTags.Items.SHRAPNEL_MATERIALS);
+    private static final Ingredient FRAGMENTS = Ingredient.fromTag(GrenadesModTags.Items.FRAGMENT_MATERIALS);
     private static final Ingredient GUNPOWDER = Ingredient.ofItems(Items.GUNPOWDER);
 
     public FragmentationGrenadeRecipe(Identifier id) {
@@ -29,44 +34,40 @@ public class FragmentationGrenadeRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean matches(CraftingInventory inventory, World world) {
-        GrenadesMod.LOGGER.warn(Arrays.toString(SHRAPNEL.getMatchingStacks()));
-        boolean hasIron = false;
-        boolean hasGunpowder = false;
-        boolean hasDye = false;
+        int fragmentCount = 0;
+        int gunPowderCount = 0;
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
             if (stack.isEmpty()) continue;
-            if (SHRAPNEL.test(stack)) {
-                if (hasIron) return false;
-                hasIron = true;
+            if (FRAGMENTS.test(stack)) {
+                if (fragmentCount > 2) return false;
+                ++fragmentCount;
                 continue;
             }
             if (GUNPOWDER.test(stack)) {
-                if (hasGunpowder) return false;
-                hasGunpowder = true;
-                continue;
-            }
-            if (stack.getItem() instanceof DyeItem) {
-                hasDye = true;
+                if (gunPowderCount > 2) return false;
+                ++gunPowderCount;
                 continue;
             }
             return false;
         }
-        return hasIron && hasGunpowder && hasDye;
+        return gunPowderCount == 2 && fragmentCount > 0;
     }
 
     @Override
     public ItemStack craft(CraftingInventory inventory) {
-        HashSet<Integer> dyes = new HashSet<>();
-        ItemStack output = new ItemStack(GrenadesModItems.GRENADE_SMOKE_BALL, 3);
-        NbtCompound nbt = output.getOrCreateSubNbt(SmokeBallGrenadeItem.SMOKE_BALL_COLOUR);
+        ItemStack output = new ItemStack(GrenadesModItems.GRENADE_FRAGMENTATION, 4);
+        NbtCompound outputNbt = output.getOrCreateNbt();
+        NbtList fragmentNbtList = new NbtList();
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack currentStack = inventory.getStack(i);
-            if (currentStack.isEmpty() || !(currentStack.getItem() instanceof DyeItem dye))
+            if (currentStack.isEmpty())
                 continue;
-            dyes.add(dye.getColor().getFireworkColor());
+            if (FRAGMENTS.test(currentStack)) {
+                fragmentNbtList.add(currentStack.writeNbt(new NbtCompound()));
+            }
         }
-        nbt.putIntArray(SmokeBallGrenadeItem.COLOUR_SUB_TAG, dyes.stream().toList());
+        outputNbt.put(FragmentationGrenadeItem.FRAGMENTS, fragmentNbtList);
         return output;
     }
 
