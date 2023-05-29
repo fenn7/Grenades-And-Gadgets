@@ -38,13 +38,10 @@ public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
         if (nbt != null) {
             tooltip.add(GrenadesModUtil.textOf("§o" + "Possible Colours:"));
             int[] colours = nbt.getIntArray(COLOUR_SUB_TAG);
-            MutableText colourNames = GrenadesModUtil.mutableTextOf("");
             for (int i = 0; i < colours.length; ++i) {
                 DyeColor colour = DyeColor.byFireworkColor(colours[i]);
-                colourNames.append(new TranslatableText("item.minecraft.firework_star." + colour.getName())
-                    .append(i == (colours.length - 1) ? GrenadesModUtil.textOf("") : GrenadesModUtil.textOf(", ")));
+                tooltip.add(new TranslatableText("item.minecraft.firework_star." + colour.getName()));
             }
-            tooltip.add(colourNames);
         }
         super.appendTooltip(stack, world, tooltip, context);
     }

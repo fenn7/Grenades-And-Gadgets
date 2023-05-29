@@ -40,13 +40,11 @@ public class FragmentationGrenadeRecipe extends SpecialCraftingRecipe {
             ItemStack stack = inventory.getStack(i);
             if (stack.isEmpty()) continue;
             if (FRAGMENTS.test(stack)) {
-                if (fragmentCount > 2) return false;
-                ++fragmentCount;
+                if (++fragmentCount > 3) return false;
                 continue;
             }
             if (GUNPOWDER.test(stack)) {
-                if (gunPowderCount > 2) return false;
-                ++gunPowderCount;
+                if (++gunPowderCount > 2) return false;
                 continue;
             }
             return false;

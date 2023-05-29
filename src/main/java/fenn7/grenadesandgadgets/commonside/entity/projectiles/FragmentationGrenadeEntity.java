@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.projectiles;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
@@ -7,14 +8,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
     private static final float EXPLOSION_POWER = 0.75F;
-    private static final GrenadesModSoundProfile FRAGMENTATION_SOUND_PROFILE = new GrenadesModSoundProfile(null, 1.0F, 1.0F);
+    private static final ParticleEffect FRAGMENTATION_EFFECT = ParticleTypes.LARGE_SMOKE;
+    private static final GrenadesModSoundProfile FRAGMENTATION_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_DISPENSER_LAUNCH, 0.5F, 0.4F);
 
     public FragmentationGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -29,13 +31,17 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
-    protected void explode(float power) {
-
+    protected void initialise() {
+        this.setPower(EXPLOSION_POWER);
+        this.setExplosionEffect(FRAGMENTATION_EFFECT);
+        this.setExplosionSoundProfile(FRAGMENTATION_SOUND_PROFILE);
     }
 
-    @Override
-    protected void initialise() {
 
+    @Override
+    protected void explode(float power) {
+        GrenadesMod.LOGGER.warn(this.getItem().getOrCreateNbt().toString());
+        this.discard();
     }
 
     @Override
