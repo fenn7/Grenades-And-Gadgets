@@ -3,9 +3,12 @@ package fenn7.grenadesandgadgets.commonside.entity.misc;
 import java.util.HashMap;
 import java.util.Map;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FlyingItemEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
@@ -23,16 +26,24 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class FragmentEntity extends ThrownItemEntity implements IAnimatable {
+public class FragmentEntity extends ThrownItemEntity implements IAnimatable, FlyingItemEntity {
     private final AnimationFactory factory = new AnimationFactory(this);
     private static final Map<Item, Pair<Float, StatusEffectInstance>> FRAGMENT_EFFECTS = new HashMap<>();
     static {
-        FRAGMENT_EFFECTS.put(Items.COPPER_INGOT, new Pair<>(3.0F, null));
         FRAGMENT_EFFECTS.put(Items.GOLD_INGOT, new Pair<>(2.0F, null));
+        FRAGMENT_EFFECTS.put(Items.COPPER_INGOT, new Pair<>(3.0F, null));
+        FRAGMENT_EFFECTS.put(Items.IRON_INGOT, new Pair<>(5.0F, null));
+        FRAGMENT_EFFECTS.put(Items.AMETHYST_SHARD, new Pair<>(6.0F, null));
+        FRAGMENT_EFFECTS.put(Items.PRISMARINE_SHARD, new Pair<>(6.0F, null));
+        FRAGMENT_EFFECTS.put(Items.DIAMOND, new Pair<>(8.0F, null));
+        FRAGMENT_EFFECTS.put(Items.OBSIDIAN, new Pair<>(8.0F, null));
+        FRAGMENT_EFFECTS.put(Items.MAGMA_BLOCK, new Pair<>(7.0F, null));
+        FRAGMENT_EFFECTS.put(Items.NETHERITE_SCRAP, new Pair<>(11.0F, null));
+        FRAGMENT_EFFECTS.put(Items.SHULKER_SHELL, new Pair<>(9.0F, null));
     }
 
     public FragmentEntity(World world, ItemStack fragmentStack) {
-        super(GrenadesModEntities.FRAGMENTATION_GRENADE_ENTITY, world);
+        super(GrenadesModEntities.FRAGMENT_ENTITY, world);
         this.setItem(fragmentStack);
     }
 
@@ -43,6 +54,12 @@ public class FragmentEntity extends ThrownItemEntity implements IAnimatable {
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity target = entityHitResult.getEntity();
+        GrenadesMod.LOGGER.warn(target.toString());
+        var dmg = FRAGMENT_EFFECTS.getOrDefault(this.getFragmentItem(), new Pair<>(2.0F, null)).getLeft();
+        GrenadesMod.LOGGER.warn(dmg.toString());
+        GrenadesMod.LOGGER.warn(FRAGMENT_EFFECTS.toString());
+        target.damage(DamageSource.thrownProjectile(this, this.getOwner()),
+            FRAGMENT_EFFECTS.getOrDefault(this.getFragmentItem(), new Pair<>(2.0F, null)).getLeft());
         super.onEntityHit(entityHitResult);
     }
 

@@ -49,9 +49,11 @@ public class GrenadesModEntities {
     public static final EntityType<FragmentationGrenadeEntity> FRAGMENTATION_GRENADE_ENTITY = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_fragmentation"),
         FabricEntityTypeBuilder.<FragmentationGrenadeEntity>create(SpawnGroup.MISC, FragmentationGrenadeEntity::new)
-            .dimensions(EntityDimensions.fixed(0.225F, 0.25F))
+            .dimensions(EntityDimensions.fixed(0.225F, 0.35F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
+
+    // misc
     public static final EntityType<FragmentEntity> FRAGMENT_ENTITY = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "fragment"),
         FabricEntityTypeBuilder.<FragmentEntity>create(SpawnGroup.MISC, FragmentEntity::new)
