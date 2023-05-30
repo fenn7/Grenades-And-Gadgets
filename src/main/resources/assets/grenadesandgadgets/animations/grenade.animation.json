@@ -18,6 +18,24 @@
 					"scale": [0.9, 0.9, 0.9]
 				}
 			}
+		},
+		"animation.grenade.flying_large": {
+			"loop": true,
+			"animation_length": 0.5,
+			"bones": {
+				"Top": {
+					"rotation": [0, 0, 0]
+				},
+				"Grenade": {
+					"rotation": {
+						"0.0": [0, 90, 0],
+						"0.25": [0, 90, -180],
+						"0.5": [0, 90, -360]
+					},
+					"position": [0, 0, 0],
+					"scale": 1.3
+				}
+			}
 		}
 	}
 }

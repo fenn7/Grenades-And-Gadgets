@@ -1,4 +1,4 @@
-package fenn7.grenadesandgadgets.commonside.entity.projectiles;
+package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +63,6 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
             var smokeBlocks = this.getOrCreateSmokeBlocks();
             if (this.world.isClient) {
                 smokeBlocks.forEach(pos -> {
-                        GrenadesMod.LOGGER.warn(this.getItem().getOrCreateNbt().toString());
                         ParticleEffect smokeEffect = GrenadesModClientUtil.getDustParticleType(
                             this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
                         );

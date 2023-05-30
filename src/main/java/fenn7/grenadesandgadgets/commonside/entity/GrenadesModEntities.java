@@ -1,11 +1,13 @@
 package fenn7.grenadesandgadgets.commonside.entity;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.FireGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.GrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.HighExplosiveGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.SmokeBallGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.projectiles.SmokeFlareGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.FireGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.FragmentationGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.GrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.HighExplosiveGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeFlareGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.misc.FragmentEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -43,4 +45,22 @@ public class GrenadesModEntities {
         FabricEntityTypeBuilder.<HighExplosiveGrenadeEntity>create(SpawnGroup.MISC, HighExplosiveGrenadeEntity::new)
             .dimensions(EntityDimensions.fixed(0.275F, 0.45F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
+
+    public static final EntityType<FragmentationGrenadeEntity> FRAGMENTATION_GRENADE_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_fragmentation"),
+        FabricEntityTypeBuilder.<FragmentationGrenadeEntity>create(SpawnGroup.MISC, FragmentationGrenadeEntity::new)
+            .dimensions(EntityDimensions.fixed(0.225F, 0.35F))
+            .trackRangeBlocks(48).trackedUpdateRate(10).build());
+
+
+    // misc
+    public static final EntityType<FragmentEntity> FRAGMENT_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "fragment"),
+        FabricEntityTypeBuilder.<FragmentEntity>create(SpawnGroup.MISC, FragmentEntity::new)
+            .dimensions(EntityDimensions.fixed(0.15F, 0.15F))
+            .trackRangeBlocks(24).trackedUpdateRate(10).build());
+
+    public static void registerEntities() {
+        GrenadesMod.LOGGER.warn("Initialising Grenades And Gadgets Entities...");
+    }
 }

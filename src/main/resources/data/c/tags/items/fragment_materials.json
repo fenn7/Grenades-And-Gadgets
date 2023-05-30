@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:gold_ingot",
+    "minecraft:copper_ingot",
+    "minecraft:iron_ingot",
+    "minecraft:amethyst_shard",
+    "minecraft:prismarine_shard",
+    "minecraft:diamond",
+    "minecraft:obsidian",
+    "minecraft:magma_block",
+    "minecraft:netherite_scrap",
+    "minecraft:shulker_shell"
+  ]
+}
