@@ -3,7 +3,9 @@
 	"package": "fenn7.grenadesandgadgets.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"GrenadesModEntityDataMixin"
+		"commonside.GrenadesModEntityDataMixin",
+		"client.InGameHudMixin",
+		"client.WorldRendererAccessorMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

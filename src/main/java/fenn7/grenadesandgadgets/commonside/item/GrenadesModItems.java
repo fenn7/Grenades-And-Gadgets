@@ -6,6 +6,7 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FireGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FragmentationGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.GrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.HighExplosiveGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.RadiantGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeFlareGrenadeItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -26,6 +27,8 @@ public class GrenadesModItems {
         new HighExplosiveGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
     public static final Item GRENADE_FRAGMENTATION = register("grenade_fragmentation",
         new FragmentationGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(10)));
+    public static final Item GRENADE_RADIANT = register("grenade_radiant",
+        new RadiantGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
 
 
     public static void registerItems() {

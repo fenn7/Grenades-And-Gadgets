@@ -5,6 +5,7 @@ import fenn7.grenadesandgadgets.commonside.entity.grenades.FireGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.FragmentationGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.GrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.HighExplosiveGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.RadiantGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeFlareGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.misc.FragmentEntity;
@@ -50,6 +51,12 @@ public class GrenadesModEntities {
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_fragmentation"),
         FabricEntityTypeBuilder.<FragmentationGrenadeEntity>create(SpawnGroup.MISC, FragmentationGrenadeEntity::new)
             .dimensions(EntityDimensions.fixed(0.225F, 0.35F))
+            .trackRangeBlocks(48).trackedUpdateRate(10).build());
+
+    public static final EntityType<RadiantGrenadeEntity> RADIANT_GRENADE_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_radiant"),
+        FabricEntityTypeBuilder.<RadiantGrenadeEntity>create(SpawnGroup.MISC, RadiantGrenadeEntity::new)
+            .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
 
