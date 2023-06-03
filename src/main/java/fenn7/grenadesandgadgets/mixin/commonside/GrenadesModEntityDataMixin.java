@@ -1,4 +1,4 @@
-package fenn7.grenadesandgadgets.mixin;
+package fenn7.grenadesandgadgets.mixin.commonside;
 
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import net.minecraft.entity.Entity;

@@ -12,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +39,7 @@ public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
     }
 
     @Override
-    protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, Hand hand) {
+    protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new SmokeBallGrenadeEntity(world, player);
     }
 }

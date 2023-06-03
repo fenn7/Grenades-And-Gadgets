@@ -81,9 +81,8 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
                         } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
                             this.world.removeBlock(pos, false);
                         }
-
                         this.world.getNonSpectatingEntities(Entity.class, new Box(pos)).forEach(entity -> {
-                            entity.setOnFire(false);
+                            entity.extinguish();
                             if (entity instanceof LivingEntity alive) {
                                 alive.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 0));
                             }

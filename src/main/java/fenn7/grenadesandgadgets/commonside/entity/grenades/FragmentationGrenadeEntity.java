@@ -77,6 +77,7 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
                         FragmentEntity fragment = new FragmentEntity(this.world, fragmentStack);
                         fragment.setPos(this.getBlockPos().getX() + 0.5, this.getBlockPos().getY() + 0.5, this.getBlockPos().getZ() + 0.5);
                         fragment.setOwner(this.getOwner());
+                        fragment.setNoGravity(true);
                         fragmentList.add(fragment);
                     }
                 }

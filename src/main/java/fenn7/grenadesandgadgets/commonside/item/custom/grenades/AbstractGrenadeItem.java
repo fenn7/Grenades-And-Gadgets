@@ -23,7 +23,7 @@ public abstract class AbstractGrenadeItem extends Item {
         user.getItemCooldownManager().set(this, 20);
 
         if (!world.isClient) {
-            AbstractGrenadeEntity grenade = createGrenadeAt(world, user, hand);
+            AbstractGrenadeEntity grenade = createGrenadeAt(world, user, user.getStackInHand(hand));
             grenade.setItem(itemStack);
             setPitchYawVelocity(user, grenade, this.defaultRoll, this.defaultSpeed, this.defaultDiv);
             world.spawnEntity(grenade);
@@ -40,7 +40,7 @@ public abstract class AbstractGrenadeItem extends Item {
         grenade.setVelocity(user, user.getPitch(), user.getYaw(), roll, speed, divergence);
     }
 
-    protected abstract AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, Hand hand);
+    protected abstract AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack);
 
     public float getDefaultSpeed() {
         return this.defaultSpeed;
