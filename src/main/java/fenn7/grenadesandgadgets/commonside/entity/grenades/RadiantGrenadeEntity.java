@@ -73,7 +73,7 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
         float proportionalDistance = distance / this.power;
         return proportionalDistance <= 0.2F
             ? new Pair<>(MAX_RADIANCE_DURATION, MAX_RADIANCE_LEVEL)
-            : new Pair<>(MAX_RADIANCE_LEVEL - (int) (proportionalDistance * 20), MAX_RADIANCE_LEVEL - (int) (proportionalDistance * 2));
+            : new Pair<>(MAX_RADIANCE_DURATION - (int) (proportionalDistance * 20), MAX_RADIANCE_LEVEL - (int) (proportionalDistance * 2));
     }
 
     private boolean canPlayerSeeThis() {

@@ -5,6 +5,7 @@ import fenn7.grenadesandgadgets.commonside.entity.grenades.FireGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.FragmentationGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.GrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.HighExplosiveGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.MagicGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.RadiantGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeFlareGrenadeEntity;
@@ -56,6 +57,12 @@ public class GrenadesModEntities {
     public static final EntityType<RadiantGrenadeEntity> RADIANT_GRENADE_ENTITY = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_radiant"),
         FabricEntityTypeBuilder.<RadiantGrenadeEntity>create(SpawnGroup.MISC, RadiantGrenadeEntity::new)
+            .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
+            .trackRangeBlocks(48).trackedUpdateRate(10).build());
+
+    public static final EntityType<MagicGrenadeEntity> MAGIC_GRENADE_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_magic"),
+        FabricEntityTypeBuilder.<MagicGrenadeEntity>create(SpawnGroup.MISC, MagicGrenadeEntity::new)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
