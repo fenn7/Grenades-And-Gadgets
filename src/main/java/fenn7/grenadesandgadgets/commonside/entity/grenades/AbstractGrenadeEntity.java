@@ -1,7 +1,10 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import java.util.List;
+
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -12,6 +15,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -109,6 +113,13 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     protected abstract void explode(float power);
 
     protected abstract void initialise();
+
+    protected List<BlockPos> getAffectedBlocksAtRange(float power) {
+        BlockPos thisPos = this.getBlockPos();
+        return GrenadesModUtil.getBlocksInSphereAroundPos(thisPos, power).stream()
+            .filter(pos -> !GrenadesModUtil.areAnyBlocksBetween(this.world, thisPos, pos))
+            .toList();
+    }
 
     public void setMaxAgeTicks(int maxAgeTicks) {
         this.maxAgeTicks = maxAgeTicks;

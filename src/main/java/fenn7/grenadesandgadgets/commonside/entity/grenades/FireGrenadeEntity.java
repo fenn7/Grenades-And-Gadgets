@@ -72,7 +72,7 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     protected void explode(float power) {
         super.explode(power);
         BlockPos impactPos = this.getBlockPos();
-        Box impactBox = new Box(impactPos).expand(power, power / 2, power);
+        Box impactBox = new Box(impactPos).expand(power, power / 2F, power);
 
         Stream<BlockPos> posStream = BlockPos.stream(impactBox);
         posStream.filter(pos -> Math.sqrt(pos.getSquaredDistance(impactPos)) <= power)

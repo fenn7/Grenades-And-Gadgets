@@ -98,8 +98,7 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
         if (this.smokeBlocks != null) {
             return this.smokeBlocks;
         } else {
-            List<BlockPos> newSmokeBlocks = GrenadesModUtil.getBlocksInSphereAroundPos(this.getBlockPos(), this.power)
-                .stream().filter(pos -> this.shouldSmokeAt(this.world, pos)).toList();
+            List<BlockPos> newSmokeBlocks = this.getAffectedBlocksAtRange(this.power);
             this.smokeBlocks = newSmokeBlocks;
             return newSmokeBlocks;
         }
@@ -116,20 +115,6 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
             this.colours = newColours;
             return newColours;
         }
-    }
-
-    private boolean shouldSmokeAt(World world, BlockPos firePos) {
-        for (double x = Math.min(firePos.getX(), this.getX()); x <= Math.max(firePos.getX(), this.getX()); x++) {
-            for (double y = Math.min(firePos.getY(), this.getY()); y <= Math.max(firePos.getY(), this.getY()); y++) {
-                for (double z = Math.min(firePos.getZ(), this.getZ()); z <= Math.max(firePos.getZ(), this.getZ()); z++) {
-                    BlockState between = world.getBlockState(new BlockPos(x, y, z));
-                    if (between != null && between.getMaterial().isSolid()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     @Override

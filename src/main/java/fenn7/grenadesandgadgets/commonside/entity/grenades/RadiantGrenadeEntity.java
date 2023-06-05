@@ -1,14 +1,11 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.util.List;
-
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import fenn7.grenadesandgadgets.mixin.client.WorldRendererAccessorMixin;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.WorldRenderer;
@@ -25,7 +22,6 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
-import org.lwjgl.system.CallbackI;
 
 public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
     private static final float RADIANCE_RANGE = 4.0F;
@@ -56,16 +52,14 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
                 player.sendMessage(GrenadesModUtil.textOf("§6Illuminated block at " + impactPos.getX() + ", " + impactPos.getY() + ", " + impactPos.getZ()), false);
             }
         }
-        List<BlockPos> affectedBlocks = GrenadesModUtil.getBlocksInSphereAroundPos(this.getBlockPos(), this.power)
-            .stream().filter(pos -> this.shouldSmokeAt(this.world, pos)).toList();
-        affectedBlocks.forEach(pos -> {
+        this.getAffectedBlocksAtRange(this.power).forEach(pos ->
             this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
-                if ((entity instanceof PlayerEntity && this.canPlayerSeeThis()) || entity != null) {
+                if ((entity instanceof PlayerEntity && this.canPlayerSeeThis()) || (!(entity instanceof PlayerEntity) && entity != null)) {
                     Pair<Integer, Integer> parameters = this.getDurationAndAmplifier(this.distanceTo(entity));
                     entity.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.RADIANT_LIGHT,parameters.getLeft(), parameters.getRight()));
                 }
-            });
-        });
+            })
+        );
         this.discard();
     }
 
@@ -79,20 +73,6 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
     private boolean canPlayerSeeThis() {
         WorldRenderer renderer = MinecraftClient.getInstance().worldRenderer;
         return ((WorldRendererAccessorMixin) renderer).getFrustum().isVisible(this.getBoundingBox());
-    }
-
-    private boolean shouldSmokeAt(World world, BlockPos firePos) {
-        for (double x = Math.min(firePos.getX(), this.getX()); x <= Math.max(firePos.getX(), this.getX()); x++) {
-            for (double y = Math.min(firePos.getY(), this.getY()); y <= Math.max(firePos.getY(), this.getY()); y++) {
-                for (double z = Math.min(firePos.getZ(), this.getZ()); z <= Math.max(firePos.getZ(), this.getZ()); z++) {
-                    BlockState between = world.getBlockState(new BlockPos(x, y, z));
-                    if (between != null && between.getMaterial().isSolid()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     @Override

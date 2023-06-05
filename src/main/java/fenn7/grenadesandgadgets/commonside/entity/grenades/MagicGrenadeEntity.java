@@ -1,8 +1,13 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import java.util.List;
+
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
@@ -10,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MagicGrenadeEntity extends AbstractGrenadeEntity {
@@ -31,7 +37,12 @@ public class MagicGrenadeEntity extends AbstractGrenadeEntity {
 
     @Override
     protected void explode(float power) {
-        // imp later
+        List<BlockPos> g = GrenadesModUtil.getBlocksInSphereAroundPos(this.getBlockPos(), this.power);
+        g.forEach(block -> { GrenadesMod.LOGGER.warn(
+            "ARE BLOCKS BETWEEN GRENADE AND " + block.toShortString() + ": " + GrenadesModUtil.areAnyBlocksBetween(this.world, this.getBlockPos(), block)
+        );
+        });
+        this.discard();
     }
 
     @Override
