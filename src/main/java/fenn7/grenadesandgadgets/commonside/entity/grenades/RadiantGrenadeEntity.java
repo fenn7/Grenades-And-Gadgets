@@ -54,7 +54,7 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
         }
         this.getAffectedBlocksAtRange(this.power).forEach(pos ->
             this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
-                if ((entity instanceof PlayerEntity && this.canPlayerSeeThis()) || (!(entity instanceof PlayerEntity) && entity != null)) {
+                if ((entity instanceof PlayerEntity && this.canPlayerSeeThis()) || (!(entity instanceof PlayerEntity))) {
                     Pair<Integer, Integer> parameters = this.getDurationAndAmplifier(this.distanceTo(entity));
                     entity.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.RADIANT_LIGHT,parameters.getLeft(), parameters.getRight()));
                 }
