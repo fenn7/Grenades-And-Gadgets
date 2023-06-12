@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MagicGrenadeItem extends AbstractGrenadeItem {
     public static final String EFFECTS = "Effects";
+    private final HashMap<StatusEffectInstance, Integer> effectOccurenceMap = new HashMap<>();
 
     public MagicGrenadeItem(Settings settings) {
         super(settings);
@@ -33,18 +34,22 @@ public class MagicGrenadeItem extends AbstractGrenadeItem {
         if (stackNbt.contains(EFFECTS) && stackNbt.get(EFFECTS) instanceof NbtList) {
             tooltip.add(GrenadesModUtil.textOf("§l" + "Effects:"));
             NbtList nbtList = stackNbt.getList(EFFECTS, 10);
-            Map<StatusEffectInstance, Integer> stackCountMap = new HashMap<>();
             for (int i = 0; i < nbtList.size(); ++i) {
                 var effectList = PotionUtil.getPotionEffects(ItemStack.fromNbt(nbtList.getCompound(i)));
-                effectList.forEach(effect -> stackCountMap.put(effect, stackCountMap.getOrDefault(effect, 0) + 1));
+                effectList.forEach(effect ->
+                    this.effectOccurenceMap.put(effect, this.effectOccurenceMap.getOrDefault(effect, 0)));
             }
-            stackCountMap.forEach((effect, integer) ->
-                tooltip.add(new TranslatableText(effect.getTranslationKey()).append(" x" + integer)));
+            this.effectOccurenceMap.forEach((effect, integer) ->
+                tooltip.add(new TranslatableText(effect.getTranslationKey()).append(" x" + (1 + integer))));
         }
     }
 
     @Override
     protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new MagicGrenadeEntity(world, player);
+    }
+
+    public HashMap<StatusEffectInstance, Integer> getEffectOccurenceMap() {
+        return this.effectOccurenceMap;
     }
 }

@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.entity.misc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
@@ -28,19 +29,8 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class FragmentEntity extends ThrownItemEntity implements IAnimatable, FlyingItemEntity {
     private final AnimationFactory factory = new AnimationFactory(this);
+    private static final int MAX_AGE = 200;
     private static final Map<Item, Pair<Float, StatusEffectInstance>> FRAGMENT_EFFECTS = new HashMap<>();
-    static {
-        FRAGMENT_EFFECTS.put(Items.GOLD_INGOT, new Pair<>(2.0F, null));
-        FRAGMENT_EFFECTS.put(Items.COPPER_INGOT, new Pair<>(3.0F, null));
-        FRAGMENT_EFFECTS.put(Items.IRON_INGOT, new Pair<>(5.0F, null));
-        FRAGMENT_EFFECTS.put(Items.AMETHYST_SHARD, new Pair<>(6.0F, null));
-        FRAGMENT_EFFECTS.put(Items.PRISMARINE_SHARD, new Pair<>(6.0F, null));
-        FRAGMENT_EFFECTS.put(Items.DIAMOND, new Pair<>(8.0F, null));
-        FRAGMENT_EFFECTS.put(Items.OBSIDIAN, new Pair<>(8.0F, null));
-        FRAGMENT_EFFECTS.put(Items.MAGMA_BLOCK, new Pair<>(7.0F, null));
-        FRAGMENT_EFFECTS.put(Items.NETHERITE_SCRAP, new Pair<>(11.0F, null));
-        FRAGMENT_EFFECTS.put(Items.SHULKER_SHELL, new Pair<>(9.0F, null));
-    }
 
     public FragmentEntity(World world, ItemStack fragmentStack) {
         super(GrenadesModEntities.FRAGMENT_ENTITY, world);
@@ -72,6 +62,14 @@ public class FragmentEntity extends ThrownItemEntity implements IAnimatable, Fly
         return this.getDefaultItem();
     }
 
+    @Override
+    public void tick() {
+        if (this.age >= MAX_AGE) {
+            this.discard();
+        }
+        super.tick();
+    }
+
     protected <E extends IAnimatable> PlayState flyingAnimation(AnimationEvent<E> event) {
         event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.model.spin", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
@@ -85,5 +83,18 @@ public class FragmentEntity extends ThrownItemEntity implements IAnimatable, Fly
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    static {
+        FRAGMENT_EFFECTS.put(Items.GOLD_INGOT, new Pair<>(2.0F, null));
+        FRAGMENT_EFFECTS.put(Items.COPPER_INGOT, new Pair<>(3.0F, null));
+        FRAGMENT_EFFECTS.put(Items.IRON_INGOT, new Pair<>(5.0F, null));
+        FRAGMENT_EFFECTS.put(Items.AMETHYST_SHARD, new Pair<>(6.0F, null));
+        FRAGMENT_EFFECTS.put(Items.PRISMARINE_SHARD, new Pair<>(6.0F, null));
+        FRAGMENT_EFFECTS.put(Items.DIAMOND, new Pair<>(8.0F, null));
+        FRAGMENT_EFFECTS.put(Items.OBSIDIAN, new Pair<>(8.0F, null));
+        FRAGMENT_EFFECTS.put(Items.MAGMA_BLOCK, new Pair<>(7.0F, null));
+        FRAGMENT_EFFECTS.put(Items.NETHERITE_SCRAP, new Pair<>(11.0F, null));
+        FRAGMENT_EFFECTS.put(Items.SHULKER_SHELL, new Pair<>(9.0F, null));
     }
 }
