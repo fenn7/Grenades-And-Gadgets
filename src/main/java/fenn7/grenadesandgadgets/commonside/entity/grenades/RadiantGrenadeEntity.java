@@ -45,22 +45,24 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
 
     @Override
     protected void explode(float power) {
-        BlockPos impactPos = this.getBlockPos();
-        if (this.world.getBlockState(impactPos).isAir()) {
-            this.world.setBlockState(impactPos, Blocks.LIGHT.getDefaultState());
-            if (this.getOwner() instanceof PlayerEntity player) {
-                player.sendMessage(GrenadesModUtil.textOf("§6Illuminated block at " + impactPos.getX() + ", " + impactPos.getY() + ", " + impactPos.getZ()), false);
-            }
-        }
-        this.getAffectedBlocksAtRange(this.power).forEach(pos ->
-            this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
-                if ((entity instanceof PlayerEntity && this.canPlayerSeeThis()) || (!(entity instanceof PlayerEntity))) {
-                    Pair<Integer, Integer> parameters = this.getDurationAndAmplifier(this.distanceTo(entity));
-                    entity.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.RADIANT_LIGHT,parameters.getLeft(), parameters.getRight()));
+        if (!this.world.isClient) {
+            BlockPos impactPos = this.getBlockPos();
+            if (this.world.getBlockState(impactPos).isAir()) {
+                this.world.setBlockState(impactPos, Blocks.LIGHT.getDefaultState());
+                if (this.getOwner() instanceof PlayerEntity player) {
+                    player.sendMessage(GrenadesModUtil.textOf("§6Illuminated block at " + impactPos.getX() + ", " + impactPos.getY() + ", " + impactPos.getZ()), false);
                 }
-            })
-        );
-        this.discard();
+            }
+            this.getAffectedBlocksAtRange(this.power).forEach(pos ->
+                this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
+                    if (!(entity instanceof PlayerEntity) || this.canPlayerSeeThis()) {
+                        Pair<Integer, Integer> parameters = this.getDurationAndAmplifier(this.distanceTo(entity));
+                        entity.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.RADIANT_LIGHT, parameters.getLeft(), parameters.getRight()));
+                    }
+                })
+            );
+            this.discard();
+        }
     }
 
     private Pair<Integer, Integer> getDurationAndAmplifier(float distance) {

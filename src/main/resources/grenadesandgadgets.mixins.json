@@ -4,8 +4,10 @@
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"commonside.GrenadesModEntityDataMixin",
+		"commonside.LivingEntityMixin",
 		"client.InGameHudMixin",
-		"client.WorldRendererAccessorMixin"
+		"client.WorldRendererAccessorMixin",
+		"client.LivingEntityRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

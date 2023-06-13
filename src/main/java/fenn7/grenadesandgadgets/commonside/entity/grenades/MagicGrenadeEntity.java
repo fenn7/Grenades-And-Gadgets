@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import static fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGrenadeItem.EFFECTS;
 
+import java.util.HashMap;
 import java.util.List;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
@@ -48,13 +49,15 @@ public class MagicGrenadeEntity extends AbstractGrenadeEntity {
 
     @Override
     protected void explode(float power) {
+        var effectOccurenceMap = this.getItem().getItem() instanceof MagicGrenadeItem magic
+            ? magic.getEffectOccurenceMap()
+            : new HashMap<StatusEffectInstance, Integer>();
         this.getAffectedBlocksAtRange(this.power).forEach(pos ->
             this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
-                var effectOccurenceMap = ((MagicGrenadeItem) this.getItem().getItem()).getEffectOccurenceMap();
                 effectOccurenceMap.forEach((effectInstance, occurence) -> {
                     var effectType = effectInstance.getEffectType();
                     if (effectType.isInstant()) {
-                        double prox = 1.0 - (entity.distanceTo(this) / MAGIC_RANGE);
+                        double prox = 1.0D - (entity.distanceTo(this) / MAGIC_RANGE);
                         effectType.applyInstantEffect(this, this.getOwner(), entity, occurence, prox);
                     } else {
                         entity.addStatusEffect(new StatusEffectInstance(effectInstance.getEffectType(), effectOccurenceMap.size() * DURATION_PER_EFFECT, occurence));

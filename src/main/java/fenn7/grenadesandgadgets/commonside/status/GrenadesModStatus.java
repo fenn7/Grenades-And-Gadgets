@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.status;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.status.custom.ArmourBreakStatusEffect;
+import fenn7.grenadesandgadgets.commonside.status.custom.FrozenStatusEffect;
 import fenn7.grenadesandgadgets.commonside.status.custom.RadiantLightStatusEffect;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -25,7 +26,15 @@ public class GrenadesModStatus {
             new Identifier(GrenadesMod.MOD_ID, "radiant_light"),
             new RadiantLightStatusEffect(StatusEffectCategory.NEUTRAL, 0xF8FFAD))
         .addAttributeModifier(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, "1a720e3b-c4d7-448f-ba36-3e8b7c60276d",
-            0.0D, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+            -420D, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+
+    public static final StatusEffect FROZEN = Registry.register(Registry.STATUS_EFFECT,
+            new Identifier(GrenadesMod.MOD_ID, "frozen"),
+            new FrozenStatusEffect(StatusEffectCategory.HARMFUL, 0xF8F8F8))
+        .addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, "358e837f-a6cc-459d-aee5-7ee429ab067d",
+            -1.0D, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
+        .addAttributeModifier(EntityAttributes.GENERIC_ATTACK_SPEED, "a50d0ee2-b56f-420e-a701-f2a7e454d01c",
+            -1.0D, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
 
     public static void registerEffects() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Effects...");

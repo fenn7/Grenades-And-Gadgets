@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.item;
 
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.BruhItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FireGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FragmentationGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.GrenadeItem;
@@ -33,6 +34,8 @@ public class GrenadesModItems {
     public static final Item GRENADE_MAGIC = register("grenade_magic",
         new MagicGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
 
+    public static final Item BRUH = register("grenade_ice",
+        new BruhItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");
