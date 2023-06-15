@@ -10,8 +10,8 @@ import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-public class BruhItem extends Item {
-    public BruhItem(Settings settings) {
+public class IceGrenadeItem extends Item {
+    public IceGrenadeItem(Settings settings) {
         super(settings);
     }
 

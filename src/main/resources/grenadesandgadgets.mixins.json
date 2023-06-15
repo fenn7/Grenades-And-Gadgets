@@ -3,7 +3,8 @@
   "package": "fenn7.grenadesandgadgets.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "commonside.GrenadesModEntityDataMixin"
+    "commonside.GrenadesModEntityDataMixin",
+    "commonside.LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -15,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
@@ -25,7 +26,7 @@ import net.minecraft.world.World;
 
 public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
     private static final float RADIANCE_RANGE = 4.0F;
-    private static final ParticleEffect RADIANT_GRENADE_EFFECT = ParticleTypes.END_ROD;
+    private static final ParticleEffect RADIANT_GRENADE_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.END_ROD.getDefaultState());
     private static final GrenadesModSoundProfile RADIANT_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5F, 1.25F);
 
     private static final int MAX_RADIANCE_DURATION = 50;

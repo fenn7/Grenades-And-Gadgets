@@ -6,9 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
@@ -59,5 +62,15 @@ public interface GrenadesModUtil {
     static boolean areAnyBlocksBetween(World world, BlockPos start, BlockPos end) {
         return world.raycast(new BlockStateRaycastContext(Vec3d.ofCenter(start), Vec3d.ofCenter(end),
             state -> state.getMaterial().isSolid())).getType() == HitResult.Type.BLOCK;
+    }
+
+    static void freezeEntity(LivingEntity entity, int durationTicks, int amplifier) {
+        StatusEffectInstance freezeEffect = new StatusEffectInstance(GrenadesModStatus.FROZEN, durationTicks, amplifier);
+        entity.addStatusEffect(freezeEffect);
+        if (!entity.world.isClient) {
+            try {
+                entity.world.sendPacket(new EntityStatusEffectS2CPacket(entity.getId(), freezeEffect));
+            } catch (UnsupportedOperationException ignored) {}
+        }
     }
 }
