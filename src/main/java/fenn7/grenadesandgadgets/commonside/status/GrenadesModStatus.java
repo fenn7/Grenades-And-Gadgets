@@ -30,11 +30,7 @@ public class GrenadesModStatus {
 
     public static final StatusEffect FROZEN = Registry.register(Registry.STATUS_EFFECT,
             new Identifier(GrenadesMod.MOD_ID, "frozen"),
-            new FrozenStatusEffect(StatusEffectCategory.HARMFUL, 0xF8F8F8))
-        .addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, "358e837f-a6cc-459d-aee5-7ee429ab067d",
-            -1.0D, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
-        .addAttributeModifier(EntityAttributes.GENERIC_ATTACK_SPEED, "a50d0ee2-b56f-420e-a701-f2a7e454d01c",
-            -1.0D, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+            new FrozenStatusEffect(StatusEffectCategory.HARMFUL, 0xF8F8F8));
 
     public static void registerEffects() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Effects...");
