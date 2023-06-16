@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.status.custom;
 
+import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
@@ -20,12 +21,14 @@ public class FrozenStatusEffect extends StatusEffect {
         if (entity instanceof MobEntity mob) {
             mob.setAiDisabled(true);
         }
-        entity.setVelocity(0, -1, 0);
         super.applyUpdateEffect(entity, amplifier);
     }
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
+        if (entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
+            return;
+        }
         super.onApplied(entity, attributes, amplifier);
     }
 

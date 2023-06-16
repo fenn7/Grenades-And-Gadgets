@@ -1,14 +1,14 @@
 package fenn7.grenadesandgadgets.client.network;
 
-import fenn7.grenadesandgadgets.client.network.packets.RemoveFrozenS2CPacket;
+import fenn7.grenadesandgadgets.client.network.packets.RemoveStatusS2CPacket;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.util.Identifier;
 
 public class GrenadesModS2CPackets {
-    public static final Identifier FROZEN_NBT_SYNC = new Identifier(GrenadesMod.MOD_ID, "frozen_nbt_sync");
+    public static final Identifier REMOVE_EFFECT_S2C = new Identifier(GrenadesMod.MOD_ID, "remove_effect_s2c");
 
     public static void registerS2CPackets() {
-        ClientPlayNetworking.registerGlobalReceiver(FROZEN_NBT_SYNC, RemoveFrozenS2CPacket::receive);
+        ClientPlayNetworking.registerGlobalReceiver(REMOVE_EFFECT_S2C, RemoveStatusS2CPacket::receive);
     }
 }
