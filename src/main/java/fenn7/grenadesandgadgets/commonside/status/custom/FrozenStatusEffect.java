@@ -20,6 +20,7 @@ public class FrozenStatusEffect extends StatusEffect {
         if (entity instanceof MobEntity mob) {
             mob.setAiDisabled(true);
         }
+        entity.setVelocity(0, -1, 0);
         super.applyUpdateEffect(entity, amplifier);
     }
 
