@@ -32,9 +32,8 @@ public class GrenadesModItems {
     public static final Item GRENADE_RADIANT = register("grenade_radiant",
         new RadiantGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
     public static final Item GRENADE_MAGIC = register("grenade_magic",
-        new MagicGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
-
-    public static final Item BRUH = register("grenade_ice",
+        new MagicGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
+    public static final Item GRENADE_ICE = register("grenade_ice",
         new IceGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
 
     public static void registerItems() {

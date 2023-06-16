@@ -5,6 +5,7 @@ import fenn7.grenadesandgadgets.commonside.entity.grenades.FireGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.FragmentationGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.GrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.HighExplosiveGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.IceGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.MagicGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.RadiantGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
@@ -66,6 +67,11 @@ public class GrenadesModEntities {
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
+    public static final EntityType<IceGrenadeEntity> ICE_GRENADE_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_ice"),
+        FabricEntityTypeBuilder.<IceGrenadeEntity>create(SpawnGroup.MISC, IceGrenadeEntity::new)
+            .dimensions(EntityDimensions.fixed(0.275F, 0.275F))
+            .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
     // misc
     public static final EntityType<FragmentEntity> FRAGMENT_ENTITY = Registry.register(
