@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
     private static final float RADIANCE_RANGE = 4.0F;
-    private static final ParticleEffect RADIANT_GRENADE_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.END_ROD.getDefaultState());
+    private static final ParticleEffect RADIANT_GRENADE_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.GLOWSTONE.getDefaultState());
     private static final GrenadesModSoundProfile RADIANT_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5F, 1.25F);
 
     private static final int MAX_RADIANCE_DURATION = 50;

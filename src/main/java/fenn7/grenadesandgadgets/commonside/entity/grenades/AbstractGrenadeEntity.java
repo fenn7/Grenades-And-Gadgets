@@ -5,6 +5,7 @@ import java.util.List;
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -52,7 +53,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     public void tick() {
-        if (this.age == 1) {
+        if (this.age == 0) {
             world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE,
                 0.7F, 1.5F, true);
         }
@@ -157,6 +158,10 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         } else {
             super.handleStatus(status);
         }
+    }
+
+    protected double scaleValueFrom(double value, Entity entity) {
+        return GrenadesModUtil.scaleValueForDistance(value, this.distanceTo(entity), this.power);
     }
 
     // animations

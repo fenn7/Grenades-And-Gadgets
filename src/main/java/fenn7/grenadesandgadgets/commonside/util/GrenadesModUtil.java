@@ -84,4 +84,8 @@ public interface GrenadesModUtil {
             entity.removeStatusEffect(GrenadesModStatus.FROZEN);
         }
     }
+
+    static double scaleValueForDistance(double value, double distance, double maxDistance) {
+        return value * (1.0D - distance / maxDistance);
+    }
 }
