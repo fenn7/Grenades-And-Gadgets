@@ -1,7 +1,6 @@
 package fenn7.grenadesandgadgets.client.network.packets;
 
 
-import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.Blocks;
@@ -18,12 +17,14 @@ public class RemoveStatusS2CPacket {
     public static void receive(MinecraftClient client, ClientPlayNetworkHandler handler,
                                PacketByteBuf buf, PacketSender responseSender) {
         IntList intList = buf.readIntList();
-        Entity entity = client.player.world.getEntityById(intList.getInt(0));
-        StatusEffect effect = StatusEffect.byRawId(intList.getInt(1));
-        if (entity instanceof LivingEntity alive && effect != null && alive.hasStatusEffect(effect)) {
-            alive.removeStatusEffect(GrenadesModStatus.FROZEN);
-            alive.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.ICE.getDefaultState()),
-                alive.getX(), alive.getBodyY(0.5), alive.getZ(), 0, 0, 0);
+        if (intList.size() == 2) {
+            Entity entity = client.player.world.getEntityById(intList.getInt(0));
+            StatusEffect effect = StatusEffect.byRawId(intList.getInt(1));
+            if (entity instanceof LivingEntity alive && effect != null && alive.hasStatusEffect(effect)) {
+                alive.removeStatusEffect(effect);
+                alive.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.ICE.getDefaultState()),
+                    alive.getX(), alive.getBodyY(0.5), alive.getZ(), 0, 0, 0);
+            }
         }
     }
 }

@@ -13,7 +13,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -65,9 +64,12 @@ public interface GrenadesModUtil {
         entity.addStatusEffect(effect);
         if (!entity.world.isClient) {
             try {
-                entity.world.sendPacket(new EntityStatusEffectS2CPacket(entity.getId(), effect));
-            } catch (UnsupportedOperationException ignored) {
-            }
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                buf.writeIntList(IntList.of(entity.getId(), StatusEffect.getRawId(effect.getEffectType()),
+                    effect.getDuration(), effect.getAmplifier()));
+                ServerPlayerEntity player = (ServerPlayerEntity) entity.world.getPlayers().get(0);
+                ServerPlayNetworking.send(player, GrenadesModS2CPackets.ADD_EFFECT_S2C, buf);
+            } catch (UnsupportedOperationException ignored) {}
         }
     }
 

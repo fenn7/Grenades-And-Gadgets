@@ -10,7 +10,6 @@ import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,7 +25,6 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -87,11 +85,6 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
             affectedBlocks.forEach(pos -> {
                 this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
                     entity.damage(DamageSource.FREEZE, this.handleImpactDamage(entity));
-
-                    PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-                    b.writeInt(entity.getId());
-                    ServerPlayNetworking.send((ServerPlayerEntity) this.world.getPlayers().get(0), GrenadesModS2CPackets.FREEZE_NBT_S2C, b);
-
                     if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
                         int x = (int) Math.max(MIN_FROZEN_DURATION, this.scaleValueFrom(MAX_FROZEN_DURATION, entity));
                         int y = (int) this.scaleValueFrom(MAX_FROZEN_AMPLIFIER, entity);
