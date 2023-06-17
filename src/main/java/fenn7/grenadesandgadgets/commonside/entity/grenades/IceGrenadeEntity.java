@@ -20,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -80,8 +81,10 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
             affectedBlocks.forEach(pos -> {
                 this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
                     entity.damage(DamageSource.FREEZE, this.handleImpactDamage(entity));
-                    if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN) && !this.world.isClient) {
-                        GrenadesMod.LOGGER.warn("Freezing entity: " + entity);
+                    if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
+                        int x = (int) Math.max(MIN_FROZEN_DURATION, this.scaleValueFrom(MAX_FROZEN_DURATION, entity));
+                        int y = (int) this.scaleValueFrom(MAX_FROZEN_AMPLIFIER, entity);
+                        GrenadesMod.LOGGER.warn("DURATION: " + x + " AMPLIFIER: " + y);
                         GrenadesModUtil.addEffectServerAndClient(entity, new StatusEffectInstance(GrenadesModStatus.FROZEN,
                             (int) Math.max(MIN_FROZEN_DURATION, this.scaleValueFrom(MAX_FROZEN_DURATION, entity)),
                             (int) this.scaleValueFrom(MAX_FROZEN_AMPLIFIER, entity))

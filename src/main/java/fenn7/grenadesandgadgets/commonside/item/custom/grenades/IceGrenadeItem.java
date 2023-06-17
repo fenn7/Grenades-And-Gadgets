@@ -21,16 +21,6 @@ public class IceGrenadeItem extends AbstractGrenadeItem {
     }
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        // remove after testing
-        GrenadesModUtil.addEffectServerAndClient(entity, new StatusEffectInstance(GrenadesModStatus.FROZEN,
-            (int) 60,
-            (int) 0)
-        );
-        return super.useOnEntity(stack, user, entity, hand);
-    }
-
-    @Override
     protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new IceGrenadeEntity(world, player);
     }

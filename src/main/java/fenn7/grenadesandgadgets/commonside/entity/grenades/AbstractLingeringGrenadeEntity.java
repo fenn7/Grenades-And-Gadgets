@@ -29,9 +29,11 @@ public abstract class AbstractLingeringGrenadeEntity extends AbstractGrenadeEnti
 
     @Override
     public void tick() {
-        if (this.state == LingeringState.LINGERING && !this.world.isClient) {
+        if (this.state == LingeringState.LINGERING) {
             if (this.lingeringTicks < this.maxLingeringTicks) {
-                ++this.lingeringTicks;
+                if (!this.world.isClient) {
+                    ++this.lingeringTicks;
+                }
             } else {
                 this.state = LingeringState.DISCARDED;
                 this.handleDiscard();
