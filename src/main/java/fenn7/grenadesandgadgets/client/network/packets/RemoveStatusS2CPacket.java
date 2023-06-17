@@ -22,8 +22,6 @@ public class RemoveStatusS2CPacket {
             StatusEffect effect = StatusEffect.byRawId(intList.getInt(1));
             if (entity instanceof LivingEntity alive && effect != null && alive.hasStatusEffect(effect)) {
                 alive.removeStatusEffect(effect);
-                alive.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.ICE.getDefaultState()),
-                    alive.getX(), alive.getBodyY(0.5), alive.getZ(), 0, 0, 0);
             }
         }
     }

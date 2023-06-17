@@ -160,8 +160,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         }
     }
 
-    protected double scaleValueFrom(double value, Entity entity) {
-        return GrenadesModUtil.scaleValueForDistance(value, this.distanceTo(entity), this.power);
+    protected float proportionalDistanceTo(Entity entity) {
+        return this.distanceTo(entity) / this.power;
     }
 
     // animations

@@ -2,11 +2,14 @@ package fenn7.grenadesandgadgets.mixin.commonside;
 
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,8 +37,10 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "applyDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;setAbsorptionAmount(F)V", ordinal = 0))
     private void grenadesandgadgets$injectThawIfAttacked(CallbackInfo ci) {
-        if (this.hasStatusEffect(GrenadesModStatus.FROZEN) && !this.world.isClient) {
+        if (this.hasStatusEffect(GrenadesModStatus.FROZEN)) {
             GrenadesModUtil.removeEffectServerAndClient((LivingEntity) (Object) this, GrenadesModStatus.FROZEN);
+            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.ICE.getDefaultState()),
+                this.getX(), this.getBodyY(0.5), this.getZ(), 0, 0, 0);
         }
     }
 }
