@@ -12,8 +12,8 @@ import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class FragmentModel extends AnimatedGeoModel<FragmentEntity> {
-    private static final String MODEL_LOCATION = "geo/fragment.geo.json";
-    private static final String ANIMATION_LOCATION = "animations/fragment.animation.json";
+    private static final String MODEL_LOCATION = "geo/entity/fragment.geo.json";
+    private static final String ANIMATION_LOCATION = "animations/entity/fragment.animation.json";
     private static final String TEXTURE_LOCATION = "textures/block/";
     private static final Map<Item, String> textureLocations = new HashMap<>();
     static {

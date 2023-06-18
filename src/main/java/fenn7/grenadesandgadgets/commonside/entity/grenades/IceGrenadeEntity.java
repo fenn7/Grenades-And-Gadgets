@@ -1,7 +1,5 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.util.List;
-
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
@@ -20,7 +18,6 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
@@ -72,16 +69,17 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
 
     @Override
     protected void explode(float power) {
-        super.explode(this.power);
+        super.explode(power);
         if (this.state == LingeringState.DISCARDED) {
-            List<BlockPos> affectedBlocks = this.getAffectedBlocksAtRange(this.power);
             BlockState snowState = Blocks.SNOW.getDefaultState();
-            affectedBlocks.forEach(pos -> {
+            this.getAffectedBlocksAtRange(power).forEach(pos -> {
                 this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
-                    entity.damage(DamageSource.FREEZE, this.handleImpactDamage(entity));
-                    if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
-                        GrenadesModUtil.addEffectServerAndClient(entity, new StatusEffectInstance(GrenadesModStatus.FROZEN, FROZEN_DURATION,
-                            Math.min(4, (int) Math.floor(this.power))));
+                    if (entity.canFreeze()) {
+                        entity.damage(DamageSource.FREEZE, this.handleImpactDamage(entity));
+                        if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
+                            GrenadesModUtil.addEffectServerAndClient(entity, new StatusEffectInstance(GrenadesModStatus.FROZEN, FROZEN_DURATION,
+                                Math.min(4, (int) Math.floor(this.power))));
+                        }
                     }
                 });
                 if (snowState.canPlaceAt(this.world, pos)) {

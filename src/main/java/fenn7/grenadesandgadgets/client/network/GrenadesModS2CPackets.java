@@ -11,6 +11,7 @@ public class GrenadesModS2CPackets {
     public static final Identifier ADD_EFFECT_S2C = new Identifier(GrenadesMod.MOD_ID, "add_effect_s2c");
 
     public static void registerS2CPackets() {
+        GrenadesMod.LOGGER.warn("Initialising Grenades And Gadgets S2C Packets...");
         ClientPlayNetworking.registerGlobalReceiver(REMOVE_EFFECT_S2C, RemoveStatusS2CPacket::receive);
         ClientPlayNetworking.registerGlobalReceiver(ADD_EFFECT_S2C, AddStatusS2CPacket::receive);
     }

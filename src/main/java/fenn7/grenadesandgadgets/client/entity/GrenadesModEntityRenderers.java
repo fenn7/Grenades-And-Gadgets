@@ -1,9 +1,14 @@
 package fenn7.grenadesandgadgets.client.entity;
 
+import fenn7.grenadesandgadgets.client.entity.block.renderer.SimpleBlockRenderer;
 import fenn7.grenadesandgadgets.client.entity.grenades.renderer.SimpleGrenadeRenderer;
 import fenn7.grenadesandgadgets.client.entity.misc.renderer.FragmentRenderer;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
+import fenn7.grenadesandgadgets.commonside.block.custom.RadiantLightBlock;
+import fenn7.grenadesandgadgets.commonside.block.entity.RadiantLightBlockEntity;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.entity.Entity;
@@ -33,5 +38,9 @@ public class GrenadesModEntityRenderers {
 
         // misc
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);
+
+        // block entities
+        BlockEntityRendererRegistry.register(GrenadesModBlockEntities.RADIANT_LIGHT_BLOCK_ENTITY,
+            ctx -> new SimpleBlockRenderer<RadiantLightBlockEntity>(ctx, "radiant_light_block"));
     }
 }

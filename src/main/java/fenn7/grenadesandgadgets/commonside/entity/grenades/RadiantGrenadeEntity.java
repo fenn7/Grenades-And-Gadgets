@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlocks;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
@@ -48,9 +49,8 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
         if (!this.world.isClient) {
             BlockPos impactPos = this.getBlockPos();
             if (this.world.getBlockState(impactPos).isAir()) {
-                this.world.setBlockState(impactPos, Blocks.LIGHT.getDefaultState());
+                this.world.setBlockState(impactPos, GrenadesModBlocks.RADIANT_LIGHT_BLOCK.getDefaultState());
                 if (this.getOwner() instanceof PlayerEntity player) {
-                    // TODO: Make new block with better visibility.
                     player.sendMessage(GrenadesModUtil.textOf("§6Illuminated block at " + impactPos.getX() + ", " + impactPos.getY() + ", " + impactPos.getZ()), false);
                 }
             }

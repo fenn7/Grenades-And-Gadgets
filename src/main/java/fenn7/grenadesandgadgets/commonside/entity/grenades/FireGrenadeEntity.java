@@ -1,18 +1,23 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
+import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SoulFireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
@@ -23,11 +28,14 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     private static final float FIRE_RANGE = 2.8F;
-    private static final int MAX_LINGERING_TICKS = 8;
+    private static final float MAX_IMPACT_DAMAGE = 4.0F;
+    private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.3F;
+    private static final int MAX_LINGERING_TICKS = 10;
     private static final ParticleEffect FIRE_GRENADE_EFFECT = ParticleTypes.LAVA;
     private static final GrenadesModSoundProfile FIRE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5F, 0.675F);
 
@@ -73,36 +81,21 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     @Override
     protected void explode(float power) {
         super.explode(power);
-        //TODO: REWORK THIS TO WORK WITH ICE GRENADE, BURN SIDES OF BLOCKS TOO IF POSSIBLE
-        BlockPos impactPos = this.getBlockPos();
-        Box impactBox = new Box(impactPos).expand(power, power / 2F, power);
-
-        Stream<BlockPos> posStream = BlockPos.stream(impactBox);
-        posStream.filter(pos -> Math.sqrt(pos.getSquaredDistance(impactPos)) <= power)
-                .filter(pos -> AbstractFireBlock.canPlaceAt(world, pos, this.getMovementDirection())
-                    && this.shouldSetOnFire(this.world, pos))
-                .forEach(pos -> {
-                    BlockState fireState = AbstractFireBlock.getState(world, pos.offset(this.getMovementDirection()));
-                    this.world.setBlockState(pos, fireState, 11);
-                });
-
-        if (this.state != LingeringState.LINGERING) {
-            List<LivingEntity> list = GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, 1.75F);
-            list.stream().forEach(Entity::setOnFireFromLava);
-        }
+        this.getAffectedBlocksAtRange(power).forEach(pos -> {
+            this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
+                if (!entity.isFireImmune() && this.state != LingeringState.DISCARDED) {
+                    entity.damage(DamageSource.LAVA, this.handleImpactDamage(entity));
+                }
+            });
+            if (AbstractFireBlock.canPlaceAt(this.world, pos, this.getMovementDirection())) {
+                BlockState fireState = AbstractFireBlock.getState(this.world, pos.offset(this.getMovementDirection()));
+                this.world.setBlockState(pos, fireState, 11);
+            }
+        });
     }
 
-    private boolean shouldSetOnFire(World world, BlockPos firePos) {
-        for (double x = Math.min(firePos.getX(), this.getX()); x <= Math.max(firePos.getX(), this.getX()); x++) {
-            for (double y = Math.min(firePos.getY(), this.getY()); y <= Math.max(firePos.getY(), this.getY()); y++) {
-                for (double z = Math.min(firePos.getZ(), this.getZ()); z <= Math.max(firePos.getZ(), this.getZ()); z++) {
-                    BlockState between = world.getBlockState(new BlockPos(x, y, z));
-                    if (between != null && between.getMaterial().isSolid() && !between.getMaterial().isBurnable()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    private float handleImpactDamage(LivingEntity entity) {
+        float damage = this.proportionalDistanceTo(entity) <= MAX_DAMAGE_PROPORTION_RANGE ? MAX_IMPACT_DAMAGE : MAX_IMPACT_DAMAGE / 2;
+        return entity.hasStatusEffect(GrenadesModStatus.FROZEN) ? damage * 2 : damage;
     }
 }

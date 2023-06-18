@@ -1,17 +1,18 @@
-package fenn7.grenadesandgadgets.client.entity.grenades.model;
+package fenn7.grenadesandgadgets.client.entity.block.model;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
-import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.Identifier;
+import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public class SimpleGrenadeModel<T extends AbstractGrenadeEntity> extends AnimatedGeoModel<T> {
-    private static final String MODEL_LOCATION = "geo/entity/";
-    private static final String TEXTURE_LOCATION = "textures/entity/grenade3d/";
-    private static final String ANIMATION_LOCATION = "animations/entity/grenade.animation.json";
+public class SimpleBlockModel<T extends BlockEntity & IAnimatable> extends AnimatedGeoModel<T> {
+    private static final String MODEL_LOCATION = "geo/block/";
+    private static final String TEXTURE_LOCATION = "textures/block/";
+    private static final String ANIMATION_LOCATION = "animations/block/";
     private final String name;
 
-    public SimpleGrenadeModel(String name) {
+    public SimpleBlockModel(String name) {
         this.name = name;
     }
 
@@ -27,6 +28,6 @@ public class SimpleGrenadeModel<T extends AbstractGrenadeEntity> extends Animate
 
     @Override
     public Identifier getAnimationFileLocation(T animatable) {
-        return new Identifier(GrenadesMod.MOD_ID, ANIMATION_LOCATION);
+        return new Identifier(GrenadesMod.MOD_ID, ANIMATION_LOCATION + name + ".animation.json");
     }
 }

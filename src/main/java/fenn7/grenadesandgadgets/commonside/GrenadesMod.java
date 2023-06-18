@@ -1,5 +1,8 @@
 package fenn7.grenadesandgadgets.commonside;
 
+import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
+import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlocks;
+import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
@@ -22,6 +25,9 @@ public class GrenadesMod implements ModInitializer {
         // Proceed with mild caution.
         LOGGER.info("Initializing Grenades And Gadgets...");
         GrenadesModItems.registerItems();
+        GrenadesModEntities.registerEntities();
+        GrenadesModBlocks.registerBlocks();
+        GrenadesModBlockEntities.registerBlockEntities();
         GrenadesModSpecialRecipes.registerRecipes();
         GrenadesModStatus.registerEffects();
     }
