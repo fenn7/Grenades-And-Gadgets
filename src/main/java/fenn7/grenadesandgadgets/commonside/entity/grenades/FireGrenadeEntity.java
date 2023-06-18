@@ -73,6 +73,7 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     @Override
     protected void explode(float power) {
         super.explode(power);
+        //TODO: REWORK THIS TO WORK WITH ICE GRENADE, BURN SIDES OF BLOCKS TOO IF POSSIBLE
         BlockPos impactPos = this.getBlockPos();
         Box impactBox = new Box(impactPos).expand(power, power / 2F, power);
 

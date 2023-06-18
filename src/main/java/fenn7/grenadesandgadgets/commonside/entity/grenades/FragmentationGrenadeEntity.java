@@ -12,6 +12,7 @@ import fenn7.grenadesandgadgets.commonside.entity.misc.FragmentEntity;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
@@ -19,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
@@ -35,7 +37,7 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
     private static final float EXPLOSION_POWER = 0.75F;
     private static final float TRACKING_RANGE = 10.0F;
     private static final int FRAGMENTS_PER_MATERIAL = 3;
-    private static final ParticleEffect FRAGMENTATION_EFFECT = ParticleTypes.LARGE_SMOKE;
+    private static final ParticleEffect FRAGMENTATION_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.STONE.getDefaultState());
     private static final GrenadesModSoundProfile FRAGMENTATION_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_DISPENSER_LAUNCH, 0.5F, 0.4F);
 
     public FragmentationGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {

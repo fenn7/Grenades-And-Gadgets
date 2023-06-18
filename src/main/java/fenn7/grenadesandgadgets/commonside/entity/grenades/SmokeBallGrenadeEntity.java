@@ -73,23 +73,22 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
                             0, 0, 0);
                     }
                 );
-            } else {
-                smokeBlocks.forEach(pos -> {
-                        BlockState blockState = this.world.getBlockState(pos);
-                        if (blockState.getProperties().contains(Properties.LIT)) {
-                            this.world.setBlockState(pos, blockState.with(Properties.LIT, false), 11);
-                        } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
-                            this.world.removeBlock(pos, false);
-                        }
-                        this.world.getNonSpectatingEntities(Entity.class, new Box(pos)).forEach(entity -> {
-                            entity.extinguish();
-                            if (entity instanceof LivingEntity alive) {
-                                alive.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 0));
-                            }
-                        });
-                    }
-                );
             }
+            smokeBlocks.forEach(pos -> {
+                    BlockState blockState = this.world.getBlockState(pos);
+                    if (blockState.getProperties().contains(Properties.LIT)) {
+                        this.world.setBlockState(pos, blockState.with(Properties.LIT, false), 11);
+                    } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
+                        this.world.removeBlock(pos, false);
+                    }
+                    this.world.getNonSpectatingEntities(Entity.class, new Box(pos)).forEach(entity -> {
+                        entity.extinguish();
+                        if (entity instanceof LivingEntity alive) {
+                            alive.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 0));
+                        }
+                    });
+                }
+            );
         }
         super.tick();
     }

@@ -1,26 +1,25 @@
 package fenn7.grenadesandgadgets.commonside.util;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import net.minecraft.block.Block;
+import fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets;
+import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
+import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.particle.AbstractDustParticleEffect;
-import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.World;
 
@@ -59,5 +58,36 @@ public interface GrenadesModUtil {
     static boolean areAnyBlocksBetween(World world, BlockPos start, BlockPos end) {
         return world.raycast(new BlockStateRaycastContext(Vec3d.ofCenter(start), Vec3d.ofCenter(end),
             state -> state.getMaterial().isSolid())).getType() == HitResult.Type.BLOCK;
+    }
+
+    static void addEffectServerAndClient(LivingEntity entity, StatusEffectInstance effect) {
+        entity.addStatusEffect(effect);
+        if (!entity.world.isClient) {
+            try {
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                buf.writeIntList(IntList.of(entity.getId(), StatusEffect.getRawId(effect.getEffectType()),
+                    effect.getDuration(), effect.getAmplifier()));
+                ServerPlayerEntity player = (ServerPlayerEntity) entity.world.getPlayers().get(0);
+                ServerPlayNetworking.send(player, GrenadesModS2CPackets.ADD_EFFECT_S2C, buf);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+    }
+
+    static void removeEffectServerAndClient(LivingEntity entity, StatusEffect effect) {
+        if (entity.hasStatusEffect(effect)) {
+            if (!entity.world.isClient) {
+                try {
+                    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                    buf.writeIntList(IntList.of(entity.getId(), StatusEffect.getRawId(effect)));
+                    ServerPlayerEntity player = (ServerPlayerEntity) entity.world.getPlayers().get(0);
+                    ServerPlayNetworking.send(player, GrenadesModS2CPackets.REMOVE_EFFECT_S2C, buf);
+                } catch (UnsupportedOperationException ignored) {}
+            }
+            entity.removeStatusEffect(GrenadesModStatus.FROZEN);
+        }
+    }
+
+    static double scaleValueForDistance(double value, double distance, double maxDistance) {
+        return value * (1.0D - distance / maxDistance);
     }
 }
