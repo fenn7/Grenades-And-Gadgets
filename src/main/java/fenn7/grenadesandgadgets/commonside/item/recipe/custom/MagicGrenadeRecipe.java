@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe.custom;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
@@ -7,6 +8,8 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FragmentationGre
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
@@ -14,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
@@ -59,16 +63,26 @@ public class MagicGrenadeRecipe extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingInventory inventory) {
         ItemStack output = new ItemStack(GrenadesModItems.GRENADE_MAGIC, 3);
         NbtCompound outputNbt = output.getOrCreateNbt();
-        NbtList potionNbtList = new NbtList();
+        var effectMap = new HashMap<StatusEffect, Integer>();
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack currentStack = inventory.getStack(i);
             if (currentStack.isEmpty())
                 continue;
             if (currentStack.getItem() instanceof PotionItem) {
-                potionNbtList.add(currentStack.writeNbt(new NbtCompound()));
+                var effectList = PotionUtil.getPotionEffects(currentStack);
+                // to distinguish between different effect amplifiers, change 1 to effect.getAmplifier().
+                effectList.forEach(effect ->
+                    effectMap.put(effect.getEffectType(), 1 + effectMap.getOrDefault(effect.getEffectType(), 0)));
             }
         }
-        outputNbt.put(MagicGrenadeItem.EFFECTS, potionNbtList);
+        NbtList allEffectsNbtList = new NbtList();
+        effectMap.forEach((effect, count) -> {
+            var effectNbt = new NbtCompound();
+            effectNbt.putInt(MagicGrenadeItem.EFFECT_TYPE, StatusEffect.getRawId(effect));
+            effectNbt.putInt(MagicGrenadeItem.EFFECT_COUNT, count);
+            allEffectsNbtList.add(effectNbt);
+        });
+        outputNbt.put(MagicGrenadeItem.EFFECTS, allEffectsNbtList);
         return output;
     }
 
