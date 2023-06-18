@@ -6,8 +6,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
@@ -17,10 +19,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
     private static final float FROZEN_BASE_MODIFIER = 1.5F;
+    private static final float MISS_BASE_CHANCE = 0.30F;
 
     @Shadow public abstract boolean hasStatusEffect(StatusEffect effect);
     @Shadow public abstract StatusEffectInstance getStatusEffect(StatusEffect effect);
@@ -41,6 +45,15 @@ public abstract class LivingEntityMixin extends Entity {
             GrenadesModUtil.removeEffectServerAndClient((LivingEntity) (Object) this, GrenadesModStatus.FROZEN);
             this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.ICE.getDefaultState()),
                 this.getX(), this.getBodyY(0.5), this.getZ(), 0, 0, 0);
+        }
+    }
+
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    private void grenadesandgadgets$injectMissAttackChance(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (source.getAttacker() instanceof LivingEntity alive && (alive.hasStatusEffect(GrenadesModStatus.RADIANT_LIGHT)
+            || alive.hasStatusEffect(StatusEffects.BLINDNESS)) && this.random.nextFloat() < MISS_BASE_CHANCE) {
+            cir.setReturnValue(false);
+            cir.cancel();
         }
     }
 }

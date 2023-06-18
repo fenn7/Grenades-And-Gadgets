@@ -16,6 +16,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -26,6 +27,10 @@ import net.minecraft.world.World;
 public interface GrenadesModUtil {
     static Text textOf(String text) {
         return Text.of(text);
+    }
+
+    static TranslatableText translatableTextOf(String key) {
+        return new TranslatableText(key);
     }
 
     static MutableText mutableTextOf(String text) {

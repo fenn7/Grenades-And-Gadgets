@@ -81,7 +81,7 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
                     entity.damage(DamageSource.FREEZE, this.handleImpactDamage(entity));
                     if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
                         GrenadesModUtil.addEffectServerAndClient(entity, new StatusEffectInstance(GrenadesModStatus.FROZEN, FROZEN_DURATION,
-                            Math.min(4, Math.round(this.power))));
+                            Math.min(4, (int) Math.floor(this.power))));
                     }
                 });
                 if (snowState.canPlaceAt(this.world, pos)) {
