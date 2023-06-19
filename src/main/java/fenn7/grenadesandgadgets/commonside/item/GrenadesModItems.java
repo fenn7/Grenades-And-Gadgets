@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.item;
 
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.ConvergenceGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.IceGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FireGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.FragmentationGrenadeItem;
@@ -35,6 +36,8 @@ public class GrenadesModItems {
         new MagicGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
     public static final Item GRENADE_ICE = register("grenade_ice",
         new IceGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
+    public static final Item GRENADE_CONVERGENCE = register("grenade_convergence",
+        new ConvergenceGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");

@@ -35,6 +35,8 @@ public class GrenadesModEntityRenderers {
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_magic"));
         EntityRendererRegistry.register(GrenadesModEntities.ICE_GRENADE_ENTITY,
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_ice"));
+        EntityRendererRegistry.register(GrenadesModEntities.CONVERGENCE_GRENADE_ENTITY,
+            ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_convergence"));
 
         // misc
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);

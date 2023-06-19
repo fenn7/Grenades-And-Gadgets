@@ -1,6 +1,13 @@
 {
   "credit": "Made with Blockbench",
   "parent": "builtin/entity",
+  "textures": {
+    "particle": "minecraft:block/air"
+  },
+  "texture_size": [
+    0,
+    0
+  ],
   "display": {
     "thirdperson_righthand": {
       "scale": [
