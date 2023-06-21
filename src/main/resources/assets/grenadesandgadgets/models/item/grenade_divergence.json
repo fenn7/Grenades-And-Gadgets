@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"1": "grenadesandgadgets:item/grenade3d/grenade_convergence_handle",
-		"2": "grenadesandgadgets:item/grenade3d/grenade_convergence_body",
-		"3": "grenadesandgadgets:item/grenade3d/grenade_convergence_interior",
-		"particle": "grenadesandgadgets:item/grenade3d/grenade_convergence_body"
+		"2": "grenadesandgadgets:item/grenade3d/grenade_divergence_body",
+		"3": "grenadesandgadgets:item/grenade3d/grenade_divergence_interior",
+		"particle": "grenadesandgadgets:item/grenade3d/grenade_divergence_body"
 	},
 	"elements": [
 		{

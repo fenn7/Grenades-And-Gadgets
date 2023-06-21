@@ -30,6 +30,7 @@ import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.EntityPositionSource;
 
 public class ConvergenceGrenadeEntity extends AbstractLingeringGrenadeEntity {
+    // TODO: extraciate this to a superclass shared with Divergence and Upheaval grenades
     private static final float CONVERGENCE_RANGE = 4.0F;
     private static final float CRAM_DAMAGE_PER_ENTITY = 4.0F;
     private static final int MAX_DELAY_TICKS = 10;
