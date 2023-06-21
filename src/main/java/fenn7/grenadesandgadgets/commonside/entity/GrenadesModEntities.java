@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.entity;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.ConvergenceGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.DivergenceGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.FireGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.FragmentationGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.GrenadeEntity;
@@ -77,6 +78,12 @@ public class GrenadesModEntities {
     public static final EntityType<ConvergenceGrenadeEntity> CONVERGENCE_GRENADE_ENTITY = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_convergence"),
         FabricEntityTypeBuilder.<ConvergenceGrenadeEntity>create(SpawnGroup.MISC, ConvergenceGrenadeEntity::new)
+            .dimensions(EntityDimensions.fixed(0.275F, 0.35F))
+            .trackRangeBlocks(48).trackedUpdateRate(10).build());
+
+    public static final EntityType<DivergenceGrenadeEntity> DIVERGENCE_GRENADE_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_divergence"),
+        FabricEntityTypeBuilder.<DivergenceGrenadeEntity>create(SpawnGroup.MISC, DivergenceGrenadeEntity::new)
             .dimensions(EntityDimensions.fixed(0.275F, 0.35F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 

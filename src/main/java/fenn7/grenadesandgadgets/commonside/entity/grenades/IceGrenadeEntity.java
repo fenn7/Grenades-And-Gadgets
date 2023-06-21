@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
     private static final float ICE_RANGE = 2.8F;
     private static final float MAX_IMPACT_DAMAGE = 4.0F;
-    private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.3F;
+    private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.4F;
     private static final int MAX_DELAY_TICKS = 10;
     private static final int FROZEN_DURATION = 80;
     private static final ParticleEffect ICE_GRENADE_EFFECT = ParticleTypes.SNOWFLAKE;
@@ -91,7 +91,7 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
     }
 
     private float handleImpactDamage(LivingEntity entity) {
-        float damage = this.proportionalDistanceTo(entity) <= MAX_DAMAGE_PROPORTION_RANGE ? MAX_IMPACT_DAMAGE : MAX_IMPACT_DAMAGE / 2;
+        float damage = this.blockDistanceTo(entity.getBlockPos()) <= MAX_DAMAGE_PROPORTION_RANGE ? MAX_IMPACT_DAMAGE : MAX_IMPACT_DAMAGE / 2;
         if (entity.isOnFire()) {
             entity.extinguish();
             damage *= 2.0F;

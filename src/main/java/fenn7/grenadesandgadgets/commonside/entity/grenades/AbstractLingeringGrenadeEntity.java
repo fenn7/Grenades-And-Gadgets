@@ -24,7 +24,7 @@ public abstract class AbstractLingeringGrenadeEntity extends AbstractGrenadeEnti
     }
 
     public AbstractLingeringGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world, double x, double y, double z) {
-        super(GrenadesModEntities.FIRE_GRENADE_ENTITY, world, x, y, z);
+        super(entityType, world, x, y, z);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlocks;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
@@ -67,7 +68,7 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     private Pair<Integer, Integer> getDurationAndAmplifier(LivingEntity entity) {
-        return this.proportionalDistanceTo(entity) <= MAX_PROPORTION_RANGE
+        return this.blockDistanceTo(entity.getBlockPos()) <= MAX_PROPORTION_RANGE
             ? new Pair<>(MAX_RADIANCE_DURATION, (int) this.power)
             : new Pair<>(MAX_RADIANCE_DURATION - 20, (int) this.power);
     }

@@ -5,17 +5,11 @@ import java.util.List;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
-import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
@@ -30,31 +24,31 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.EntityPositionSource;
 
-public class ConvergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
-    private static final float CONVERGENCE_RANGE = 4.0F;
-    private static final float CRAM_DAMAGE_PER_ENTITY = 4.0F;
+public class DivergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
+    private static final float DIVERGENCE_RANGE = 4.0F;
+    private static final float DISPLACEMENT_DAMAGE_PER_ENTITY = 6.0F;
     private static final int MAX_DELAY_TICKS = 15;
-    private static final ParticleEffect CONVERGENCE_GRENADE_EFFECT = ParticleTypes.EXPLOSION;
-    private static final GrenadesModSoundProfile CONVERGENCE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_BARREL_CLOSE, 1.75F,  0.33F);
+    private static final ParticleEffect DIVERGENCE_GRENADE_EFFECT = ParticleTypes.EXPLOSION;
+    private static final GrenadesModSoundProfile DIVERGENCE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_BARREL_OPEN, 1.75F,  0.33F);
 
-    public ConvergenceGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+    public DivergenceGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public ConvergenceGrenadeEntity(World world, PlayerEntity user) {
-        super(GrenadesModEntities.CONVERGENCE_GRENADE_ENTITY, world, user);
+    public DivergenceGrenadeEntity(World world, PlayerEntity user) {
+        super(GrenadesModEntities.DIVERGENCE_GRENADE_ENTITY, world, user);
     }
 
-    public ConvergenceGrenadeEntity(World world, double x, double y, double z) {
-        super(GrenadesModEntities.CONVERGENCE_GRENADE_ENTITY, world, x, y, z);
+    public DivergenceGrenadeEntity(World world, double x, double y, double z) {
+        super(GrenadesModEntities.DIVERGENCE_GRENADE_ENTITY, world, x, y, z);
     }
 
     @Override
     protected void initialise() {
         this.maxLingeringTicks = MAX_DELAY_TICKS;
-        this.setPower(CONVERGENCE_RANGE);
-        this.setExplosionEffect(CONVERGENCE_GRENADE_EFFECT);
-        this.setExplosionSoundProfile(CONVERGENCE_GRENADE_SOUND_PROFILE);
+        this.setPower(DIVERGENCE_RANGE);
+        this.setExplosionEffect(DIVERGENCE_GRENADE_EFFECT);
+        this.setExplosionSoundProfile(DIVERGENCE_GRENADE_SOUND_PROFILE);
     }
 
     @Override
@@ -68,18 +62,18 @@ public class ConvergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity 
         double spawnY = shouldNegate ? this.getY() - randomY : this.getY() + randomY;
         double spawnZ = shouldNegate ? this.getZ() - correspondingZ : this.getZ() + correspondingZ;
 
-        ParticleEffect vibration = new VibrationParticleEffect(new Vibration(new BlockPos(Math.round(spawnX), Math.round(spawnY), Math.round(spawnZ)), new EntityPositionSource(this.getId()), this.maxLingeringTicks));
-        this.world.addParticle(vibration, spawnX, spawnY, spawnZ, 0, 0, 0);
+        ParticleEffect vibration = new VibrationParticleEffect(new Vibration(this.getBlockPos(), new BlockPositionSource(new BlockPos(Math.round(spawnX), Math.round(spawnY), Math.round(spawnZ))), this.maxLingeringTicks));
+        this.world.addParticle(vibration, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
     }
 
     @Override
     protected void handleDisplacement(LivingEntity entity, BlockPos pos, List<LivingEntity> entities) {
-        entity.move(MovementType.SELF, this.getPos().subtract(entity.getPos()));
-        entity.damage(DamageSource.CRAMMING, CRAM_DAMAGE_PER_ENTITY + entities.size());
+        entity.move(MovementType.SELF, entity.getPos().subtract(this.getPos()).normalize().multiply(this.power));
+        entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), DISPLACEMENT_DAMAGE_PER_ENTITY);
     }
 
     @Override
     protected Item getDefaultItem() {
-        return GrenadesModItems.GRENADE_CONVERGENCE;
+        return GrenadesModItems.GRENADE_DIVERGENCE;
     }
 }

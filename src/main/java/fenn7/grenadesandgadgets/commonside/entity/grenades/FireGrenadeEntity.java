@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     private static final float FIRE_RANGE = 2.8F;
     private static final float MAX_IMPACT_DAMAGE = 4.0F;
-    private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.3F;
+    private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.4F;
     private static final int MAX_LINGERING_TICKS = 10;
     private static final ParticleEffect FIRE_GRENADE_EFFECT = ParticleTypes.LAVA;
     private static final GrenadesModSoundProfile FIRE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5F, 0.675F);
@@ -95,7 +95,7 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     }
 
     private float handleImpactDamage(LivingEntity entity) {
-        float damage = this.proportionalDistanceTo(entity) <= MAX_DAMAGE_PROPORTION_RANGE ? MAX_IMPACT_DAMAGE : MAX_IMPACT_DAMAGE / 2;
+        float damage = this.blockDistanceTo(entity.getBlockPos()) <= MAX_DAMAGE_PROPORTION_RANGE ? MAX_IMPACT_DAMAGE : MAX_IMPACT_DAMAGE / 2;
         return entity.hasStatusEffect(GrenadesModStatus.FROZEN) ? damage * 2 : damage;
     }
 }

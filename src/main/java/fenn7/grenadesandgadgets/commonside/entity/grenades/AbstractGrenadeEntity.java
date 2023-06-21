@@ -17,6 +17,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -162,6 +163,10 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     protected float proportionalDistanceTo(Entity entity) {
         return this.distanceTo(entity) / this.power;
+    }
+
+    protected double blockDistanceTo(BlockPos position) {
+        return Math.sqrt(this.getBlockPos().getSquaredDistance(position));
     }
 
     // animations
