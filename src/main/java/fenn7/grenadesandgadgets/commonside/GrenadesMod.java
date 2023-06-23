@@ -6,6 +6,7 @@ import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModRegistries;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -30,5 +31,6 @@ public class GrenadesMod implements ModInitializer {
         GrenadesModBlockEntities.registerBlockEntities();
         GrenadesModSpecialRecipes.registerRecipes();
         GrenadesModStatus.registerEffects();
+        GrenadesModRegistries.registerRegistries();
     }
 }

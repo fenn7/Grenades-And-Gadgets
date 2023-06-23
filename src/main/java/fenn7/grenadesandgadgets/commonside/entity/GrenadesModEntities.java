@@ -13,6 +13,7 @@ import fenn7.grenadesandgadgets.commonside.entity.grenades.RadiantGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeFlareGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.UpheavalGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.misc.DecoyEntity;
 import fenn7.grenadesandgadgets.commonside.entity.misc.FragmentEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
@@ -99,6 +100,12 @@ public class GrenadesModEntities {
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "fragment"),
         FabricEntityTypeBuilder.<FragmentEntity>create(SpawnGroup.MISC, FragmentEntity::new)
             .dimensions(EntityDimensions.fixed(0.15F, 0.15F))
+            .trackRangeBlocks(24).trackedUpdateRate(10).build());
+
+    public static final EntityType<DecoyEntity> DECOY_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "decoy"),
+        FabricEntityTypeBuilder.<DecoyEntity>create(SpawnGroup.MISC, DecoyEntity::new)
+            .dimensions(EntityDimensions.fixed(0.6F, 1.8F))
             .trackRangeBlocks(24).trackedUpdateRate(10).build());
 
     public static void registerEntities() {

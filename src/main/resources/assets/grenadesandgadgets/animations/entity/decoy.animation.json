@@ -1,0 +1,23 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.model.inflate": {
+			"animation_length": 1,
+			"bones": {
+				"Head": {
+					"rotation": {
+						"0.0": [-180, 0, 0],
+						"1.0": [0, 0, 0]
+					}
+				},
+				"Decoy": {
+					"scale": {
+						"0.0": [1, 0, 1],
+						"1.0": [1, 1, 1]
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}
