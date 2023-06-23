@@ -53,17 +53,19 @@ public class DivergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
 
     @Override
     protected void handleParticleEffects() {
-        double randomX = this.random.nextDouble(this.power);
-        double randomY = this.random.nextDouble(-0.5, 0.5);
-        double correspondingZ = Math.sqrt(Math.pow(this.power, 2) - Math.pow(randomX, 2));
-        boolean shouldNegate = this.random.nextBoolean();
+        if (this.world.isClient) {
+            double randomX = this.random.nextDouble(this.power);
+            double randomY = this.random.nextDouble(-0.5, 0.5);
+            double correspondingZ = Math.sqrt(Math.pow(this.power, 2) - Math.pow(randomX, 2));
+            boolean shouldNegate = this.random.nextBoolean();
 
-        double spawnX = shouldNegate ? this.getX() - randomX : this.getX() + randomX;
-        double spawnY = shouldNegate ? this.getY() - randomY : this.getY() + randomY;
-        double spawnZ = shouldNegate ? this.getZ() - correspondingZ : this.getZ() + correspondingZ;
+            double spawnX = shouldNegate ? this.getX() - randomX : this.getX() + randomX;
+            double spawnY = shouldNegate ? this.getY() - randomY : this.getY() + randomY;
+            double spawnZ = shouldNegate ? this.getZ() - correspondingZ : this.getZ() + correspondingZ;
 
-        ParticleEffect vibration = new VibrationParticleEffect(new Vibration(this.getBlockPos(), new BlockPositionSource(new BlockPos(Math.round(spawnX), Math.round(spawnY), Math.round(spawnZ))), this.maxLingeringTicks));
-        this.world.addParticle(vibration, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+            ParticleEffect vibration = new VibrationParticleEffect(new Vibration(this.getBlockPos(), new BlockPositionSource(new BlockPos(Math.round(spawnX), Math.round(spawnY), Math.round(spawnZ))), this.maxLingeringTicks));
+            this.world.addParticle(vibration, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+        }
     }
 
     @Override

@@ -156,9 +156,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             if (this.explosionSoundProfile != null) {
                 GrenadesModClientUtil.playExplosionSound(this.world, this.explosionSoundProfile, this.getPos());
             }
-        } else {
-            super.handleStatus(status);
         }
+        super.handleStatus(status);
     }
 
     protected float proportionalDistanceTo(Entity entity) {

@@ -39,7 +39,8 @@ public interface GrenadesModUtil {
 
     static List<LivingEntity> getLivingEntitiesAtRangeFromEntity(World world, Entity entity, double radius) {
         return world.getNonSpectatingEntities(LivingEntity.class, getCubicBoxAroundEntity(entity, radius)).stream()
-            .filter(e -> e.distanceTo(entity) <= radius)
+            .filter(e -> e.squaredDistanceTo(entity.getX(), entity.getBodyY(0), entity.getZ()) <= Math.pow(radius, 2)
+                || e.squaredDistanceTo(entity.getX(), entity.getBodyY(1), entity.getZ()) <= Math.pow(radius, 2))
             .toList();
     }
 

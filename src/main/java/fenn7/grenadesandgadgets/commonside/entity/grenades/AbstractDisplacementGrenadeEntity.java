@@ -3,6 +3,7 @@ package fenn7.grenadesandgadgets.commonside.entity.grenades;
 import java.util.List;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
@@ -25,7 +26,7 @@ public abstract class AbstractDisplacementGrenadeEntity extends AbstractLingerin
 
     @Override
     public void tick() {
-        if (this.state == LingeringState.LINGERING && this.world.isClient) {
+        if (this.state == LingeringState.LINGERING) {
             this.handleParticleEffects();
         }
         super.tick();

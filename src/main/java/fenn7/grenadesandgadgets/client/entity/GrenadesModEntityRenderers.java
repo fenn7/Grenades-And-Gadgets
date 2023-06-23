@@ -39,6 +39,8 @@ public class GrenadesModEntityRenderers {
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_convergence"));
         EntityRendererRegistry.register(GrenadesModEntities.DIVERGENCE_GRENADE_ENTITY,
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_divergence"));
+        EntityRendererRegistry.register(GrenadesModEntities.UPHEAVAL_GRENADE_ENTITY,
+            ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_upheaval"));
 
         // misc
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);

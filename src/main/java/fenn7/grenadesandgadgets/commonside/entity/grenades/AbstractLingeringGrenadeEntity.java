@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,9 +32,7 @@ public abstract class AbstractLingeringGrenadeEntity extends AbstractGrenadeEnti
     public void tick() {
         if (this.state == LingeringState.LINGERING) {
             if (this.lingeringTicks < this.maxLingeringTicks) {
-                if (!this.world.isClient) {
-                    ++this.lingeringTicks;
-                }
+                ++this.lingeringTicks;
             } else {
                 this.state = LingeringState.DISCARDED;
                 this.handleDiscard();

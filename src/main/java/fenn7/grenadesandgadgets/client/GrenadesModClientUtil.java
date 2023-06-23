@@ -12,8 +12,8 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 public interface GrenadesModClientUtil {
-    static ParticleEffect getDustParticleType(int hexColour) {
-        return new DustParticleEffect(new Vec3f(Vec3d.unpackRgb(hexColour)), AbstractDustParticleEffect.MAX_SCALE);
+    static ParticleEffect getDustParticleType(int hexColour, float size) {
+        return new DustParticleEffect(new Vec3f(Vec3d.unpackRgb(hexColour)), size);
     }
 
     static void createExplosionEffects(World world, ParticleEffect effect, Vec3d location, int number, double power) {

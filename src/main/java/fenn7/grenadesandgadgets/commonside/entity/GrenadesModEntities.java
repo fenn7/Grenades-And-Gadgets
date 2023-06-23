@@ -12,6 +12,7 @@ import fenn7.grenadesandgadgets.commonside.entity.grenades.MagicGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.RadiantGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeFlareGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.UpheavalGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.misc.FragmentEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
@@ -85,6 +86,12 @@ public class GrenadesModEntities {
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_divergence"),
         FabricEntityTypeBuilder.<DivergenceGrenadeEntity>create(SpawnGroup.MISC, DivergenceGrenadeEntity::new)
             .dimensions(EntityDimensions.fixed(0.275F, 0.35F))
+            .trackRangeBlocks(48).trackedUpdateRate(10).build());
+
+    public static final EntityType<UpheavalGrenadeEntity> UPHEAVAL_GRENADE_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_upheaval"),
+        FabricEntityTypeBuilder.<UpheavalGrenadeEntity>create(SpawnGroup.MISC, UpheavalGrenadeEntity::new)
+            .dimensions(EntityDimensions.fixed(0.27F, 0.325F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
     // misc

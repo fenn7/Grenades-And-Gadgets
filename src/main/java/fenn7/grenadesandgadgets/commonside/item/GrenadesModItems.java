@@ -13,6 +13,7 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGrenadeItem
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.RadiantGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeFlareGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.UpheavalGrenadeItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -41,6 +42,8 @@ public class GrenadesModItems {
         new ConvergenceGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
     public static final Item GRENADE_DIVERGENCE = register("grenade_divergence",
         new DivergenceGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
+    public static final Item GRENADE_UPHEAVAL = register("grenade_upheaval",
+        new UpheavalGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");

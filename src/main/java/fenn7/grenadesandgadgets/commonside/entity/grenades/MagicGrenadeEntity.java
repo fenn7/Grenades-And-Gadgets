@@ -63,7 +63,7 @@ public class MagicGrenadeEntity extends AbstractGrenadeEntity {
                         if (effectNbt instanceof NbtCompound effectNbtCompound && effectNbtCompound.contains(EFFECT_TYPE) && effectNbtCompound.contains(EFFECT_COUNT)) {
                             var effectType = StatusEffect.byRawId(effectNbtCompound.getInt(EFFECT_TYPE));
                             int effectCount = effectNbtCompound.getInt(EFFECT_COUNT) - 1;
-                            if (effectType.isInstant()) {
+                            if (effectType != null && effectType.isInstant()) {
                                 double proximity = 1.0D - this.proportionalDistanceTo(entity);
                                 effectType.applyInstantEffect(this, this.getOwner(), entity, effectCount, proximity);
                             } else {

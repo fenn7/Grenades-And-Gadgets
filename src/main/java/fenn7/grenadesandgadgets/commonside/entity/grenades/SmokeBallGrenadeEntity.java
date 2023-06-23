@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -64,7 +65,7 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
             if (this.world.isClient) {
                 smokeBlocks.forEach(pos -> {
                         ParticleEffect smokeEffect = GrenadesModClientUtil.getDustParticleType(
-                            this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
+                            this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size())), AbstractDustParticleEffect.MAX_SCALE
                         );
                         double xRand = this.random.nextDouble(0.25D, 0.75D);
                         double yRand = this.random.nextDouble(0.25D, 0.75D);
