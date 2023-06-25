@@ -33,7 +33,7 @@ public class DecoyModel extends AnimatedGeoModel<DecoyEntity> {
         return new Identifier(GrenadesMod.MOD_ID, ANIMATION_LOCATION);
     }
 
-    private static Entity getEntityInDecoyNbt(DecoyEntity object) {
+    public static Entity getEntityInDecoyNbt(DecoyEntity object) {
         NbtCompound data = ((GrenadesModEntityData) object).getPersistentData();
         return object.world.getEntityById(data.getCompound(DecoyEntity.PLAYER_OWNER).getInt(DecoyEntity.NBT_ID));
     }

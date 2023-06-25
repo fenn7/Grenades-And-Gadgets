@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 
 public class DecoyGrenadeEntity extends AbstractGrenadeEntity {
     private static final float DECOY_RANGE = 4.0F;
+    private static final float ABSORPTION_MULTIPLIER = 1.5F;
     private static final ParticleEffect DECOY_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.PLAYER_HEAD.getDefaultState());
     private static final GrenadesModSoundProfile DECOY_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_DISPENSER_DISPENSE, 2.0F, 1.5F);
 
@@ -44,6 +45,7 @@ public class DecoyGrenadeEntity extends AbstractGrenadeEntity {
     protected void explode(float power) {
         if (this.getOwner() instanceof PlayerEntity player) {
             DecoyEntity decoyEntity = new DecoyEntity(this.world, player, power);
+            decoyEntity.setAbsorptionAmount(power * ABSORPTION_MULTIPLIER);
             decoyEntity.setPosition(this.getPos());
             this.world.spawnEntity(decoyEntity);
         }
