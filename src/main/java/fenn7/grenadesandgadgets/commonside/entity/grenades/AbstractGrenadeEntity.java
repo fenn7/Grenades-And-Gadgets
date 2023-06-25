@@ -112,9 +112,10 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.explode(power);
     }
 
-    protected abstract void explode(float power);
 
     protected abstract void initialise();
+
+    protected abstract void explode(float power);
 
     protected List<BlockPos> getAffectedBlocksAtRange(float power) {
         BlockPos thisPos = this.getBlockPos();

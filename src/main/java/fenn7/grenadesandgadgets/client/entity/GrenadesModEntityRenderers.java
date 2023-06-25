@@ -6,15 +6,10 @@ import fenn7.grenadesandgadgets.client.entity.misc.renderer.DecoyRenderer;
 import fenn7.grenadesandgadgets.client.entity.misc.renderer.FragmentRenderer;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
-import fenn7.grenadesandgadgets.commonside.block.custom.RadiantLightBlock;
 import fenn7.grenadesandgadgets.commonside.block.entity.RadiantLightBlockEntity;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
-import fenn7.grenadesandgadgets.commonside.entity.misc.DecoyEntity;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 
 public class GrenadesModEntityRenderers {
     public static void registerEntityRenderers() {
@@ -43,6 +38,8 @@ public class GrenadesModEntityRenderers {
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_divergence"));
         EntityRendererRegistry.register(GrenadesModEntities.UPHEAVAL_GRENADE_ENTITY,
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_upheaval"));
+        EntityRendererRegistry.register(GrenadesModEntities.DECOY_GRENADE_ENTITY,
+            ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_decoy"));
 
         // misc
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);
