@@ -30,7 +30,7 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
     private static final float RADIANCE_RANGE = 4.0F;
     private static final ParticleEffect RADIANT_GRENADE_EFFECT = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.GLOWSTONE.getDefaultState());
     private static final GrenadesModSoundProfile RADIANT_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5F, 1.25F);
-    private static final int MAX_RADIANCE_DURATION = 50;
+    private static final int MAX_RADIANCE_DURATION = 60;
     private static final float MAX_PROPORTION_RANGE = 0.5F;
 
     public RadiantGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {

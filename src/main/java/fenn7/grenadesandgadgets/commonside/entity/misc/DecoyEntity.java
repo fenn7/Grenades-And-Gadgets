@@ -167,6 +167,8 @@ public class DecoyEntity extends LivingEntity implements IAnimatable {
     protected <E extends IAnimatable> PlayState inflateAnimation(AnimationEvent<E> event) {
         if (this.age == 1) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.model.inflate", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+        } else if (this.age >= INFLATION_TICKS) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.model.idle", ILoopType.EDefaultLoopTypes.LOOP));
         }
         return PlayState.CONTINUE;
     }

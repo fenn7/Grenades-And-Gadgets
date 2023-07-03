@@ -23,7 +23,6 @@ import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.renderers.geo.ExtendedGeoEntityRenderer;
 
 public class DecoyRenderer extends ExtendedGeoEntityRenderer<DecoyEntity> {
-    // TODO: EXTEND TO WORK WITH ALL ARMOUR AND ITEM SLOTS. THEN REWORK CLASS VARIABLES AS A MAP
     protected ItemStack mainHandItem;
     protected ItemStack offHandItem;
     protected ItemStack helmetItem;
@@ -46,13 +45,6 @@ public class DecoyRenderer extends ExtendedGeoEntityRenderer<DecoyEntity> {
             this.chestplateItem = cPlayer.getEquippedStack(EquipmentSlot.CHEST);
             this.leggingsItem = cPlayer.getEquippedStack(EquipmentSlot.LEGS);
             this.bootsItem = cPlayer.getEquippedStack(EquipmentSlot.FEET);
-        }
-    }
-
-    public void render(DecoyEntity animatable, float yaw, float partialTick, MatrixStack poseStack, VertexConsumerProvider bufferSource, int packedLight) {
-        super.render(animatable, yaw, partialTick, poseStack, bufferSource, packedLight);
-        Entity nbtEntity = DecoyModel.getEntityInDecoyNbt(animatable);
-        if (nbtEntity instanceof ClientPlayerEntity cPlayer) {
         }
     }
 
@@ -91,9 +83,9 @@ public class DecoyRenderer extends ExtendedGeoEntityRenderer<DecoyEntity> {
 
     protected ItemStack getArmorForBone(String boneName, DecoyEntity currentEntity) {
         return switch(boneName) {
-            case "armorBipedLeftFoot", "armorBipedRightFoot", "armorBipedLeftFoot2", "armorBipedRightFoot2" -> this.bootsItem;
-            case "armorBipedLeftLeg", "armorBipedRightLeg", "armorBipedLeftLeg2", "armorBipedRightLeg2" -> this.leggingsItem;
-            case "armorBipedBody", "armorBipedRightArm", "armorBipedLeftArm" -> this.chestplateItem;
+            case "armorLfoot", "armorRfoot" -> this.bootsItem;
+            case "armorLleg", "armorRleg" -> this.leggingsItem;
+            case "armorBody", "armorRarm", "armorLarm" -> this.chestplateItem;
             case "armorHead" -> this.helmetItem;
             default -> null;
         };
@@ -101,11 +93,11 @@ public class DecoyRenderer extends ExtendedGeoEntityRenderer<DecoyEntity> {
 
     protected EquipmentSlot getEquipmentSlotForArmorBone(String boneName, DecoyEntity currentEntity) {
         return switch(boneName) {
-            case "armorBipedLeftFoot", "armorBipedRightFoot", "armorBipedLeftFoot2", "armorBipedRightFoot2" -> EquipmentSlot.FEET;
-            case "armorBipedLeftLeg", "armorBipedRightLeg", "armorBipedLeftLeg2", "armorBipedRightLeg2" -> EquipmentSlot.LEGS;
-            case "armorBipedRightArm" -> EquipmentSlot.MAINHAND;
-            case "armorBipedLeftArm" -> EquipmentSlot.OFFHAND;
-            case "armorBipedBody" -> EquipmentSlot.CHEST;
+            case "armorLfoot", "armorRfoot" -> EquipmentSlot.FEET;
+            case "armorLleg", "armorRleg" -> EquipmentSlot.LEGS;
+            case "armorRarm" -> EquipmentSlot.MAINHAND;
+            case "armorLarm" -> EquipmentSlot.OFFHAND;
+            case "armorBody" -> EquipmentSlot.CHEST;
             case "armorHead" -> EquipmentSlot.HEAD;
             default -> null;
         };
@@ -113,11 +105,11 @@ public class DecoyRenderer extends ExtendedGeoEntityRenderer<DecoyEntity> {
 
     protected ModelPart getArmorPartForBone(String name, BipedEntityModel<?> armorModel) {
         return switch(name) {
-            case "armorBipedLeftFoot", "armorBipedLeftLeg", "armorBipedLeftFoot2", "armorBipedLeftLeg2" -> armorModel.leftLeg;
-            case "armorBipedRightFoot", "armorBipedRightLeg", "armorBipedRightFoot2", "armorBipedRightLeg2" -> armorModel.rightLeg;
-            case "armorBipedRightArm" -> armorModel.rightArm;
-            case "armorBipedLeftArm" -> armorModel.leftArm;
-            case "armorBipedBody" -> armorModel.body;
+            case "armorLfoot", "armorLleg" -> armorModel.leftLeg;
+            case "armorRfoot", "armorRleg" -> armorModel.rightLeg;
+            case "armorRarm" -> armorModel.rightArm;
+            case "armorLarm" -> armorModel.leftArm;
+            case "armorBody" -> armorModel.body;
             case "armorHead" -> armorModel.head;
             default -> null;
         };
