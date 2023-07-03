@@ -31,7 +31,7 @@ public class UpheavalGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     private static final float UPHEAVAL_RANGE = 3.5F;
     private static final int MAX_DELAY_TICKS = 10;
     private static final int MAX_UPHEAVAL_ROUNDS = 5;
-    private static final int NAUSEA_DURATION = 80;
+    private static final int NAUSEA_DURATION = 120;
     private static final float MIN_DISPLACEMENT_HEIGHT = 5.0F;
     private static final float BASE_DISPLACEMENT_HEIGHT = 16.0F;
     private static final ParticleEffect UPHEAVAL_EFFECT = GrenadesModClientUtil.getDustParticleType(0, 1.5F);

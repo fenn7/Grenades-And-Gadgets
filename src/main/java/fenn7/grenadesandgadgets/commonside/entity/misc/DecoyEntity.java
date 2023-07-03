@@ -41,7 +41,7 @@ public class DecoyEntity extends LivingEntity implements IAnimatable {
     private static final int ADDITIONAL_LIFETIME_PER_RANGE = 40;
     private static final int INFLATION_TICKS = 20;
     private static final float BASE_HEALTH = 20.0F;
-    private static final ParticleEffect TAUNT_EFFECT = ParticleTypes.ELECTRIC_SPARK;
+    private static final ParticleEffect TAUNT_EFFECT = ParticleTypes.ENCHANTED_HIT;
     private static final ParticleEffect ENRAGE_EFFECT = ParticleTypes.ANGRY_VILLAGER;
     private final AnimationFactory factory = new AnimationFactory(this);
     private PlayerEntity owner;
