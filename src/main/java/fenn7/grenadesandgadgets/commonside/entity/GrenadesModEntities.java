@@ -13,6 +13,7 @@ import fenn7.grenadesandgadgets.commonside.entity.grenades.MagicGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.RadiantGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeBallGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.SmokeFlareGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.StormGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.UpheavalGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.misc.DecoyEntity;
 import fenn7.grenadesandgadgets.commonside.entity.misc.FragmentEntity;
@@ -100,6 +101,12 @@ public class GrenadesModEntities {
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_decoy"),
         FabricEntityTypeBuilder.<DecoyGrenadeEntity>create(SpawnGroup.MISC, DecoyGrenadeEntity::new)
             .dimensions(EntityDimensions.fixed(0.27F, 0.27F))
+            .trackRangeBlocks(48).trackedUpdateRate(10).build());
+
+    public static final EntityType<StormGrenadeEntity> STORM_GRENADE_ENTITY = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "grenade_storm"),
+        FabricEntityTypeBuilder.<StormGrenadeEntity>create(SpawnGroup.MISC, StormGrenadeEntity::new)
+            .dimensions(EntityDimensions.fixed(0.25F, 0.275F))
             .trackRangeBlocks(48).trackedUpdateRate(10).build());
 
     // misc

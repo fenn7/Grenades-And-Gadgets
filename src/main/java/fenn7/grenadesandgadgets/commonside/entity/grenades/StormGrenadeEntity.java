@@ -1,19 +1,12 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -27,26 +20,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class UpheavalGrenadeEntity extends AbstractDisplacementGrenadeEntity {
+public class StormGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     private static final float UPHEAVAL_RANGE = 3.5F;
     private static final int MAX_DELAY_TICKS = 10;
     private static final int MAX_UPHEAVAL_ROUNDS = 5;
-    private static final int NAUSEA_DURATION = 80;
+    private static final int NAUSEA_DURATION = 100;
     private static final float MIN_DISPLACEMENT_HEIGHT = 5.0F;
     private static final float BASE_DISPLACEMENT_HEIGHT = 16.0F;
     private static final ParticleEffect UPHEAVAL_EFFECT = GrenadesModClientUtil.getDustParticleType(0, 1.5F);
     private static final GrenadesModSoundProfile UPHEAVAL_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_PISTON_EXTEND, 2.0F, 0.5F);
 
-    public UpheavalGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+    public StormGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public UpheavalGrenadeEntity(World world, PlayerEntity user) {
-        super(GrenadesModEntities.UPHEAVAL_GRENADE_ENTITY, world, user);
+    public StormGrenadeEntity(World world, PlayerEntity user) {
+        super(GrenadesModEntities.STORM_GRENADE_ENTITY, world, user);
     }
 
-    public UpheavalGrenadeEntity(World world, double x, double y, double z) {
-        super(GrenadesModEntities.UPHEAVAL_GRENADE_ENTITY, world, x, y, z);
+    public StormGrenadeEntity(World world, double x, double y, double z) {
+        super(GrenadesModEntities.STORM_GRENADE_ENTITY, world, x, y, z);
     }
 
     @Override
@@ -79,6 +72,6 @@ public class UpheavalGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     }
 
     protected Item getDefaultItem() {
-        return GrenadesModItems.GRENADE_UPHEAVAL;
+        return GrenadesModItems.GRENADE_STORM;
     }
 }

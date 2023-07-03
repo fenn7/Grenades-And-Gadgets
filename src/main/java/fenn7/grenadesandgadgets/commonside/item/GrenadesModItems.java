@@ -14,6 +14,7 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGrenadeItem
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.RadiantGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeFlareGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.StormGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.UpheavalGrenadeItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
@@ -47,6 +48,8 @@ public class GrenadesModItems {
         new UpheavalGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
     public static final Item GRENADE_DECOY = register("grenade_decoy",
         new DecoyGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
+    public static final Item GRENADE_STORM = register("grenade_storm",
+        new StormGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");

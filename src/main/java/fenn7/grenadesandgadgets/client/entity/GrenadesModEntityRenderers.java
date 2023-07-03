@@ -40,6 +40,8 @@ public class GrenadesModEntityRenderers {
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_upheaval"));
         EntityRendererRegistry.register(GrenadesModEntities.DECOY_GRENADE_ENTITY,
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_decoy"));
+        EntityRendererRegistry.register(GrenadesModEntities.STORM_GRENADE_ENTITY,
+            ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_storm"));
 
         // misc
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);

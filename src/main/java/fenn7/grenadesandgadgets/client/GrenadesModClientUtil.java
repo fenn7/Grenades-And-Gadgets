@@ -16,6 +16,10 @@ public interface GrenadesModClientUtil {
         return new DustParticleEffect(new Vec3f(Vec3d.unpackRgb(hexColour)), size);
     }
 
+    static ParticleEffect getMaxSizeDustParticleType(int hexColour) {
+        return new DustParticleEffect(new Vec3f(Vec3d.unpackRgb(hexColour)), AbstractDustParticleEffect.MAX_SCALE);
+    }
+
     static void createExplosionEffects(World world, ParticleEffect effect, Vec3d location, int number, double power) {
         if (world.isClient) {
             for (int i = 0; i < number; ++i) {

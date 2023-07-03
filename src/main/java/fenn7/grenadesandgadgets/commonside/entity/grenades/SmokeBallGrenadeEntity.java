@@ -60,16 +60,16 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
 
     @Override
     public void tick() {
-        if (this.state == LingeringState.LINGERING && this.lingeringTicks % 20 == 0) {
+        if (this.state == LingeringState.LINGERING && this.lingeringTicks % 15 == 0) {
             var smokeBlocks = this.getOrCreateSmokeBlocks();
             if (this.world.isClient) {
                 smokeBlocks.forEach(pos -> {
-                        ParticleEffect smokeEffect = GrenadesModClientUtil.getDustParticleType(
-                            this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size())), AbstractDustParticleEffect.MAX_SCALE
+                        ParticleEffect smokeEffect = GrenadesModClientUtil.getMaxSizeDustParticleType(
+                            this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
                         );
-                        double xRand = this.random.nextDouble(0.25D, 0.75D);
-                        double yRand = this.random.nextDouble(0.25D, 0.75D);
-                        double zRand = this.random.nextDouble(0.25D, 0.75D);
+                        double xRand = this.random.nextDouble(0.2D, 0.8D);
+                        double yRand = this.random.nextDouble(0.2D, 0.8D);
+                        double zRand = this.random.nextDouble(0.2D, 0.8D);
                         this.world.addParticle(smokeEffect, pos.getX() + xRand, pos.getY() + yRand, pos.getZ() + zRand,
                             0, 0, 0);
                     }
