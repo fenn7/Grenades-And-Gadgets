@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside;
 
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlocks;
+import fenn7.grenadesandgadgets.commonside.damage.GrenadesModDamageSources;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;

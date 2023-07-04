@@ -1,11 +1,14 @@
 package fenn7.grenadesandgadgets.commonside.status.custom;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.damage.GrenadesModDamageSources;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.util.registry.Registry;
 
 public class BleedStatusEffect extends StatusEffect {
     private static final float BLEED_DAMAGE_PER_AMP = 2F;
@@ -20,7 +23,7 @@ public class BleedStatusEffect extends StatusEffect {
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         int startAge = ((GrenadesModEntityData) entity).getPersistentData().getInt(BLEED_START_AGE);
         if ((entity.age - startAge) % 20 == 0) {
-            entity.damage(DamageSource.GENERIC, Math.min(MAX_BLEED_DAMAGE_TICK, BLEED_DAMAGE_PER_AMP * (1 + amplifier)));
+            entity.damage(GrenadesModDamageSources.BLEED, Math.min(MAX_BLEED_DAMAGE_TICK, BLEED_DAMAGE_PER_AMP * (1 + amplifier)));
         }
     }
 
