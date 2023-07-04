@@ -10,7 +10,7 @@ import net.minecraft.entity.mob.MobEntity;
 public class FrozenStatusEffect extends StatusEffect {
     /**
      * Effect handling for players can be found in ClientPlayerEntityMixin.
-     * If not applied using GrenadesModUtil#freezeEntity, visual effects may not work.
+     * If not applied using GrenadesModUtil, visual effects may not work.
      **/
     public FrozenStatusEffect(StatusEffectCategory category, int color) {
         super(category, color);

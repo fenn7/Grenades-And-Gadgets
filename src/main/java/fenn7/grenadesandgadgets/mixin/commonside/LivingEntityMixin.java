@@ -25,9 +25,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class LivingEntityMixin extends Entity {
     private static final float FROZEN_BASE_MODIFIER = 1.5F;
     private static final float MISS_BASE_CHANCE = 0.30F;
+    private static final float MISS_BONUS_CHANCE = 0.04F;
+    private static final float CAUSTIC_HEAL_REDUCTION = 0.15F;
+    private static final float MAX_CAUSTIC_HEAL_REDUCTION = 1.5F;
 
     @Shadow public abstract boolean hasStatusEffect(StatusEffect effect);
     @Shadow public abstract StatusEffectInstance getStatusEffect(StatusEffect effect);
+
+    @Shadow public abstract boolean removeStatusEffect(StatusEffect type);
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -48,12 +53,27 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void grenadesandgadgets$injectMissAttackChance(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (source.getAttacker() instanceof LivingEntity alive && (alive.hasStatusEffect(GrenadesModStatus.RADIANT_LIGHT)
-            || alive.hasStatusEffect(StatusEffects.BLINDNESS)) && this.random.nextFloat() < MISS_BASE_CHANCE) {
-            cir.setReturnValue(false);
-            cir.cancel();
+        if (source.getAttacker() instanceof LivingEntity alive) {
+            boolean hasRadiantLight = alive.hasStatusEffect(GrenadesModStatus.RADIANT_LIGHT);
+            boolean hasBlindness = alive.hasStatusEffect(StatusEffects.BLINDNESS);
+            if (hasRadiantLight || hasBlindness) {
+                int radiantLightLevel = hasRadiantLight ? alive.getStatusEffect(GrenadesModStatus.RADIANT_LIGHT).getAmplifier() : 0;
+                int blindLevel = hasBlindness ? alive.getStatusEffect(StatusEffects.BLINDNESS).getAmplifier() : 0;
+                if (this.random.nextFloat() <= MISS_BASE_CHANCE + (Math.max(radiantLightLevel, blindLevel) * MISS_BONUS_CHANCE)) {
+                    cir.setReturnValue(false);
+                    cir.cancel();
+                }
+            }
         }
+    }
+
+    @ModifyVariable(method = "heal", at = @At("HEAD"), argsOnly = true)
+    private float grenadesandgadgets$modifyHealOnCaustic(float amount) {
+        return this.hasStatusEffect(GrenadesModStatus.CAUSTIC)
+            ? amount - (Math.min(MAX_CAUSTIC_HEAL_REDUCTION, this.getStatusEffect(GrenadesModStatus.CAUSTIC).getAmplifier() * CAUSTIC_HEAL_REDUCTION) * amount)
+            : amount;
     }
 }

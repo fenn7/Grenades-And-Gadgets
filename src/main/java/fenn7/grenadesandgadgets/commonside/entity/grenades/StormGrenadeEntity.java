@@ -66,6 +66,9 @@ public class StormGrenadeEntity extends AbstractDisplacementGrenadeEntity {
 
     @Override
     protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
+        if (entity instanceof PlayerEntity player && player.isFallFlying()) {
+            player.stopFallFlying();
+        }
         entity.move(MovementType.SELF, new Vec3d(0, entity.world.getBottomY(), 0));
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, FATIGUE_DURATION, this.blockDistanceTo(entity.getBlockPos()) <= STRONG_FATIGUE_RANGE ? 1 : 0));
         if (!this.world.isClient) {

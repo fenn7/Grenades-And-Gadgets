@@ -7,6 +7,8 @@ import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
@@ -42,10 +44,13 @@ public class DecoyGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     protected void explode(float power) {
         if (this.getOwner() instanceof PlayerEntity player) {
             DecoyEntity decoyEntity = new DecoyEntity(this.world, player, power);
-            decoyEntity.setAbsorptionAmount(power * ABSORPTION_MULTIPLIER);
+            decoyEntity.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).addPersistentModifier(
+                new EntityAttributeModifier("bonus_health", power * ABSORPTION_MULTIPLIER, EntityAttributeModifier.Operation.ADDITION));
+            decoyEntity.setHealth(decoyEntity.getMaxHealth());
             decoyEntity.setPosition(this.getPos());
             this.world.spawnEntity(decoyEntity);
         }

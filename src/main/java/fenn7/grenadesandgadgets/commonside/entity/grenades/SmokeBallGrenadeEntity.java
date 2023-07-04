@@ -58,32 +58,31 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
 
     @Override
     public void tick() {
-        if (this.state == LingeringState.LINGERING && this.lingeringTicks % 20 == 0) {
+        if (this.state == LingeringState.LINGERING && this.lingeringTicks % 10 == 0) {
             Set<BlockPos> smokeBlocks = this.getOrCreateSmokeBlocks();
             if (this.world.isClient) {
                 smokeBlocks.forEach(pos -> {
-                        ParticleEffect smokeEffect = GrenadesModClientUtil.getMaxSizeDustParticleType(
-                            this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
-                        );
-                        double xRand = this.random.nextDouble(0.3D, 0.7D);
-                        double yRand = this.random.nextDouble(0.3D, 0.7D);
-                        double zRand = this.random.nextDouble(0.3D, 0.7D);
-                        this.world.addParticle(smokeEffect, pos.getX() + xRand, pos.getY() + yRand, pos.getZ() + zRand,
-                            0, 0, 0);
+                    ParticleEffect smokeEffect = GrenadesModClientUtil.getMaxSizeDustParticleType(
+                        this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
+                    );
+                    double xRand = this.random.nextDouble(0.3D, 0.7D);
+                    double yRand = this.random.nextDouble(0.3D, 0.7D);
+                    double zRand = this.random.nextDouble(0.3D, 0.7D);
+                    this.world.addParticle(smokeEffect, pos.getX() + xRand, pos.getY() + yRand, pos.getZ() + zRand,
+                        0, 0, 0);
                     this.world.addParticle(smokeEffect, pos.getX() - xRand, pos.getY() - yRand, pos.getZ() - zRand,
                         0, 0, 0);
                     }
                 );
             }
             smokeBlocks.forEach(pos -> {
-                    BlockState blockState = this.world.getBlockState(pos);
-                    if (blockState.getProperties().contains(Properties.LIT)) {
-                        this.world.setBlockState(pos, blockState.with(Properties.LIT, false), 11);
-                    } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
-                        this.world.removeBlock(pos, false);
-                    }
+                BlockState blockState = this.world.getBlockState(pos);
+                if (blockState.getProperties().contains(Properties.LIT)) {
+                    this.world.setBlockState(pos, blockState.with(Properties.LIT, false), 11);
+                } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
+                    this.world.removeBlock(pos, false);
                 }
-            );
+            });
             this.getLivingEntitiesFromBlocks(smokeBlocks).forEach(entity -> {
                 entity.extinguish();
                 entity.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 0));

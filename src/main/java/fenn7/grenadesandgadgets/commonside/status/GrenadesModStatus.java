@@ -2,6 +2,8 @@ package fenn7.grenadesandgadgets.commonside.status;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.status.custom.ArmourBreakStatusEffect;
+import fenn7.grenadesandgadgets.commonside.status.custom.BleedStatusEffect;
+import fenn7.grenadesandgadgets.commonside.status.custom.CausticStatusEffect;
 import fenn7.grenadesandgadgets.commonside.status.custom.FrozenStatusEffect;
 import fenn7.grenadesandgadgets.commonside.status.custom.RadiantLightStatusEffect;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -31,6 +33,14 @@ public class GrenadesModStatus {
     public static final StatusEffect FROZEN = Registry.register(Registry.STATUS_EFFECT,
             new Identifier(GrenadesMod.MOD_ID, "frozen"),
             new FrozenStatusEffect(StatusEffectCategory.HARMFUL, 0xF8F8F8));
+
+    public static final StatusEffect CAUSTIC = Registry.register(Registry.STATUS_EFFECT,
+            new Identifier(GrenadesMod.MOD_ID, "caustic"),
+            new CausticStatusEffect(StatusEffectCategory.HARMFUL, 0x00FF00));
+
+    public static final StatusEffect BLEED = Registry.register(Registry.STATUS_EFFECT,
+            new Identifier(GrenadesMod.MOD_ID, "bleed"),
+            new BleedStatusEffect(StatusEffectCategory.HARMFUL, 0x990000));
 
     public static void registerEffects() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Effects...");

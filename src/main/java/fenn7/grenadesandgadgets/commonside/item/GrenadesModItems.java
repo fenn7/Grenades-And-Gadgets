@@ -15,6 +15,7 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.RadiantGrenadeIt
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeFlareGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.StormGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.UpheavalGrenadeItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
@@ -50,6 +51,8 @@ public class GrenadesModItems {
         new DecoyGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
     public static final Item GRENADE_STORM = register("grenade_storm",
         new StormGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
+    public static final Item GRENADE_TEMPORAL_FISSURE = register("grenade_temporal_fissure",
+        new TemporalFissureGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(4)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");
