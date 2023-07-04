@@ -1,14 +1,12 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.util.List;
+import java.util.Set;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public abstract class AbstractDisplacementGrenadeEntity extends AbstractLingeringGrenadeEntity {
@@ -45,12 +43,10 @@ public abstract class AbstractDisplacementGrenadeEntity extends AbstractLingerin
     protected void explode(float power) {
         super.explode(power);
         if (this.state == LingeringState.DISCARDED) {
-            this.getAffectedBlocksAtRange(power).forEach(pos -> {
-                List<LivingEntity> affectedEntities = this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos));
-                affectedEntities.forEach(entity -> this.handleDisplacement(entity, pos, affectedEntities));
-            });
+            var entities = this.getLivingEntitiesFromBlocks(this.getAffectedBlocksAtRange(power));
+            entities.forEach(entity -> this.handleDisplacement(entity, this.getBlockPos(), entities));
         }
     }
 
-    protected abstract void handleDisplacement(LivingEntity entity, BlockPos pos, List<LivingEntity> entities);
+    protected abstract void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities);
 }

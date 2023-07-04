@@ -3,14 +3,13 @@ package fenn7.grenadesandgadgets.commonside.entity.grenades;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -21,7 +20,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -37,7 +35,7 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
     private static final int DEFAULT_COLOR = 0x696969;
     private static final GrenadesModSoundProfile SMOKEBALL_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ENTITY_GENERIC_BURN, 1.35F, 0.8F);
     private List<Integer> colours;
-    private List<BlockPos> smokeBlocks;
+    private Set<BlockPos> smokeBlocks;
 
     public SmokeBallGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -60,18 +58,20 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
 
     @Override
     public void tick() {
-        if (this.state == LingeringState.LINGERING && this.lingeringTicks % 15 == 0) {
-            var smokeBlocks = this.getOrCreateSmokeBlocks();
+        if (this.state == LingeringState.LINGERING && this.lingeringTicks % 20 == 0) {
+            Set<BlockPos> smokeBlocks = this.getOrCreateSmokeBlocks();
             if (this.world.isClient) {
                 smokeBlocks.forEach(pos -> {
                         ParticleEffect smokeEffect = GrenadesModClientUtil.getMaxSizeDustParticleType(
                             this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
                         );
-                        double xRand = this.random.nextDouble(0.2D, 0.8D);
-                        double yRand = this.random.nextDouble(0.2D, 0.8D);
-                        double zRand = this.random.nextDouble(0.2D, 0.8D);
+                        double xRand = this.random.nextDouble(0.3D, 0.7D);
+                        double yRand = this.random.nextDouble(0.3D, 0.7D);
+                        double zRand = this.random.nextDouble(0.3D, 0.7D);
                         this.world.addParticle(smokeEffect, pos.getX() + xRand, pos.getY() + yRand, pos.getZ() + zRand,
                             0, 0, 0);
+                    this.world.addParticle(smokeEffect, pos.getX() - xRand, pos.getY() - yRand, pos.getZ() - zRand,
+                        0, 0, 0);
                     }
                 );
             }
@@ -82,23 +82,21 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
                     } else if (this.world.getBlockState(pos).isIn(BlockTags.FIRE)) {
                         this.world.removeBlock(pos, false);
                     }
-                    this.world.getNonSpectatingEntities(Entity.class, new Box(pos)).forEach(entity -> {
-                        entity.extinguish();
-                        if (entity instanceof LivingEntity alive) {
-                            alive.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 0));
-                        }
-                    });
                 }
             );
+            this.getLivingEntitiesFromBlocks(smokeBlocks).forEach(entity -> {
+                entity.extinguish();
+                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 0));
+            });
         }
         super.tick();
     }
 
-    private List<BlockPos> getOrCreateSmokeBlocks() {
+    private Set<BlockPos> getOrCreateSmokeBlocks() {
         if (this.smokeBlocks != null) {
             return this.smokeBlocks;
         } else {
-            List<BlockPos> newSmokeBlocks = this.getAffectedBlocksAtRange(this.power);
+            Set<BlockPos> newSmokeBlocks = this.getAffectedBlocksAtRange(this.power);
             this.smokeBlocks = newSmokeBlocks;
             return newSmokeBlocks;
         }

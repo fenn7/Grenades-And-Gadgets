@@ -1,7 +1,8 @@
 package fenn7.grenadesandgadgets.commonside.util;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
@@ -37,11 +38,11 @@ public interface GrenadesModUtil {
         return Text.of(text).copy();
     }
 
-    static List<LivingEntity> getLivingEntitiesAtRangeFromEntity(World world, Entity entity, double radius) {
+    static Set<LivingEntity> getLivingEntitiesAtRangeFromEntity(World world, Entity entity, double radius) {
         return world.getNonSpectatingEntities(LivingEntity.class, getCubicBoxAroundEntity(entity, radius)).stream()
             .filter(e -> e.squaredDistanceTo(entity.getX(), entity.getBodyY(0), entity.getZ()) <= Math.pow(radius, 2)
                 || e.squaredDistanceTo(entity.getX(), entity.getBodyY(1), entity.getZ()) <= Math.pow(radius, 2))
-            .toList();
+            .collect(Collectors.toSet());
     }
 
     static Box getCubicBoxAroundEntity(Entity entity, double radius) {
@@ -53,8 +54,8 @@ public interface GrenadesModUtil {
         return new Box(pos).expand(radius, radius, radius);
     }
 
-    static List<BlockPos> getBlocksInSphereAroundPos(BlockPos centre, double radius) {
-        List<BlockPos> blocks = new LinkedList<>();
+    static Set<BlockPos> getBlocksInSphereAroundPos(BlockPos centre, double radius) {
+        Set<BlockPos> blocks = new HashSet<>();
         BlockPos.stream(getCubicBoxAroundPos(centre, radius))
             .filter(pos -> pos.isWithinDistance(centre, radius))
             .forEach(pos -> blocks.add(pos.toImmutable()));

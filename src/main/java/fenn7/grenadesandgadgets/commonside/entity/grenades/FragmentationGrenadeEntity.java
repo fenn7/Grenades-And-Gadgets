@@ -88,7 +88,7 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
                     FragmentEntity fragment = fragmentList.get(k);
                     fragment.setVelocity(k < nearbyEntities.size()
                         ? nearbyEntities.get(k).getPos().subtract(fragment.getPos()).normalize()
-                        : this.getRandomFragmentVelocity(fragment.getPos()));
+                        : this.getRandomFragmentVelocity(fragment.getPos(), k % 2 == 0));
                     GrenadesMod.LOGGER.warn("SPAWNING FRAGMENT " + fragment + " WITH " + fragment.getFragmentItem()
                     + " TARGETING " + (k < nearbyEntities.size() ? nearbyEntities.get(k) : "RANDOM"));
                     this.world.spawnEntity(fragment);
@@ -98,8 +98,8 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
         this.discard();
     }
 
-    private Vec3d getRandomFragmentVelocity(Vec3d fragmentPos) {
-        return fragmentPos.add(1, 0, 0).rotateY(this.random.nextFloat((float) (2F * Math.PI)))
+    private Vec3d getRandomFragmentVelocity(Vec3d fragmentPos, boolean above2Pi) {
+        return fragmentPos.add(1, 0, 0).rotateY((float) (above2Pi ? this.random.nextDouble(Math.PI, Math.PI * 2) : this.random.nextDouble(Math.PI)))
             .subtract(fragmentPos).normalize();
     }
 

@@ -1,19 +1,12 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
+import java.util.Set;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -71,7 +64,7 @@ public class UpheavalGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     }
 
     @Override
-    protected void handleDisplacement(LivingEntity entity, BlockPos pos, List<LivingEntity> entities) {
+    protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
         double distanceFrom = this.blockDistanceTo(entity.getBlockPos());
         double displacement = Math.max(MIN_DISPLACEMENT_HEIGHT, 1 / distanceFrom * BASE_DISPLACEMENT_HEIGHT + entities.size());
         entity.move(MovementType.SELF, new Vec3d(0, displacement, 0));

@@ -1,21 +1,14 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.util.List;
+import java.util.Set;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
-import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
@@ -24,10 +17,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
-import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.EntityPositionSource;
 
 public class ConvergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
@@ -75,7 +66,7 @@ public class ConvergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity 
     }
 
     @Override
-    protected void handleDisplacement(LivingEntity entity, BlockPos pos, List<LivingEntity> entities) {
+    protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
         entity.move(MovementType.SELF, this.getPos().subtract(entity.getPos()));
         entity.damage(DamageSource.CRAMMING, CRAM_DAMAGE_PER_ENTITY + entities.size());
     }

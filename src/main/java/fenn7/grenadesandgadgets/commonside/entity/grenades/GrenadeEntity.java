@@ -1,6 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.util.List;
+import java.util.Set;
 
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
@@ -49,7 +49,7 @@ public class GrenadeEntity extends AbstractGrenadeEntity {
     @Override
     protected void explode(float power) {
         if (!this.world.isClient()) {
-            List<LivingEntity> list =
+            Set<LivingEntity> list =
                 GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, power);
             list.stream().forEach(e -> e.damage(DamageSource.thrownProjectile(this, this.getOwner()), PROXIMITY_DAMAGE));
             this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), power, Explosion.DestructionType.NONE);

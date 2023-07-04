@@ -1,6 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.util.List;
+import java.util.Set;
 
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
@@ -55,7 +55,7 @@ public class StormGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     @Override
     protected void handleParticleEffects() {
         if (this.lingeringTicks > 0 && this.lingeringTicks % TICKS_BETWEEN_EFFECTS == 0) {
-            float angle = (float) ANGLE_BETWEEN_EFFECTS * (this.lingeringTicks / TICKS_BETWEEN_EFFECTS - 1);
+            float angle = (float) ANGLE_BETWEEN_EFFECTS * (this.lingeringTicks / TICKS_BETWEEN_EFFECTS - 2);
             Vec3d pos = new Vec3d(this.power, 0, 0).rotateZ(angle);
             for (int i = 0; i < 8; ++i) {
                 Vec3d spawnPos = this.getPos().add(pos.rotateY((float) (Math.PI * i / 4.0D)));
@@ -65,7 +65,7 @@ public class StormGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     }
 
     @Override
-    protected void handleDisplacement(LivingEntity entity, BlockPos pos, List<LivingEntity> entities) {
+    protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
         entity.move(MovementType.SELF, new Vec3d(0, entity.world.getBottomY(), 0));
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, FATIGUE_DURATION, this.blockDistanceTo(entity.getBlockPos()) <= STRONG_FATIGUE_RANGE ? 1 : 0));
         if (!this.world.isClient) {

@@ -1,8 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import java.util.List;
+import java.util.Set;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
@@ -18,11 +17,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
-import net.minecraft.world.event.EntityPositionSource;
 
 public class DivergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     private static final float DIVERGENCE_RANGE = 4.0F;
@@ -69,7 +66,7 @@ public class DivergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     }
 
     @Override
-    protected void handleDisplacement(LivingEntity entity, BlockPos pos, List<LivingEntity> entities) {
+    protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
         entity.move(MovementType.SELF, entity.getPos().subtract(this.getPos()).normalize().multiply(this.power));
         entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), DISPLACEMENT_DAMAGE_PER_ENTITY);
     }

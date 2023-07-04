@@ -4,13 +4,9 @@ import static fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGren
 import static fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGrenadeItem.EFFECT_COUNT;
 import static fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGrenadeItem.EFFECT_TYPE;
 
-import java.util.HashMap;
-
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
-import fenn7.grenadesandgadgets.commonside.item.custom.grenades.MagicGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +20,6 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class MagicGrenadeEntity extends AbstractGrenadeEntity {
@@ -56,23 +51,21 @@ public class MagicGrenadeEntity extends AbstractGrenadeEntity {
     protected void explode(float power) {
         NbtCompound stackNbt = this.getItem().getOrCreateNbt();
         if (stackNbt.contains(EFFECTS) && stackNbt.get(EFFECTS) instanceof NbtList) {
-            this.getAffectedBlocksAtRange(this.power).forEach(pos ->
-                this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
-                    NbtList effectNbtList = stackNbt.getList(EFFECTS, 10);
-                    effectNbtList.forEach(effectNbt -> {
-                        if (effectNbt instanceof NbtCompound effectNbtCompound && effectNbtCompound.contains(EFFECT_TYPE) && effectNbtCompound.contains(EFFECT_COUNT)) {
-                            var effectType = StatusEffect.byRawId(effectNbtCompound.getInt(EFFECT_TYPE));
-                            int effectCount = effectNbtCompound.getInt(EFFECT_COUNT) - 1;
-                            if (effectType != null && effectType.isInstant()) {
-                                double proximity = 1.0D - this.proportionalDistanceTo(entity);
-                                effectType.applyInstantEffect(this, this.getOwner(), entity, effectCount, proximity);
-                            } else {
-                                entity.addStatusEffect(new StatusEffectInstance(effectType, effectCount * DURATION_PER_EFFECT, effectCount));
-                            }
+            this.getLivingEntitiesFromBlocks(this.getAffectedBlocksAtRange(power)).forEach(entity -> {
+                NbtList effectNbtList = stackNbt.getList(EFFECTS, 10);
+                effectNbtList.forEach(effectNbt -> {
+                    if (effectNbt instanceof NbtCompound effectNbtCompound && effectNbtCompound.contains(EFFECT_TYPE) && effectNbtCompound.contains(EFFECT_COUNT)) {
+                        var effectType = StatusEffect.byRawId(effectNbtCompound.getInt(EFFECT_TYPE));
+                        int effectCount = effectNbtCompound.getInt(EFFECT_COUNT) - 1;
+                        if (effectType != null && effectType.isInstant()) {
+                            double proximity = 1.0D - this.proportionalDistanceTo(entity);
+                            effectType.applyInstantEffect(this, this.getOwner(), entity, effectCount, proximity);
+                        } else {
+                            entity.addStatusEffect(new StatusEffectInstance(effectType, effectCount * DURATION_PER_EFFECT, effectCount));
                         }
-                    });
-                })
-            );
+                    }
+                });
+            });
         }
         this.discard();
     }

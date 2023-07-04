@@ -5,8 +5,8 @@ import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 
 public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
     private static final float ICE_RANGE = 2.8F;
+    private static final float PACKED_THRESHOLD = 4.0F;
     private static final float MAX_IMPACT_DAMAGE = 4.0F;
     private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.4F;
     private static final int MAX_DELAY_TICKS = 10;
@@ -71,20 +72,22 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
     protected void explode(float power) {
         super.explode(power);
         if (this.state == LingeringState.DISCARDED) {
-            BlockState snowState = Blocks.SNOW.getDefaultState();
             this.getAffectedBlocksAtRange(power).forEach(pos -> {
                 this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
                     if (entity.canFreeze()) {
                         entity.damage(DamageSource.FREEZE, this.handleImpactDamage(entity));
                         if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
                             GrenadesModUtil.addEffectServerAndClient(entity, new StatusEffectInstance(GrenadesModStatus.FROZEN, FROZEN_DURATION,
-                                Math.min(4, (int) Math.floor(this.power))));
+                                Math.min(4, (int) Math.floor(power))));
                         }
                     }
                 });
-                if (snowState.canPlaceAt(this.world, pos)) {
-                    this.world.setBlockState(pos, Blocks.SNOW.getStateManager().getDefaultState().with(SnowBlock.LAYERS,
-                        this.random.nextInt(1, Math.round(this.power) + 1)));
+                if (this.world.getBlockState(pos).isOf(Blocks.WATER)) {
+                    this.world.setBlockState(pos, power <= PACKED_THRESHOLD ? Blocks.ICE.getDefaultState() : Blocks.PACKED_ICE.getDefaultState());
+                } else if (this.world.getBlockState(pos).isOf(Blocks.WATER_CAULDRON)) {
+                    this.world.setBlockState(pos, Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Math.round(power) + 1));
+                } else if (Blocks.SNOW.getDefaultState().canPlaceAt(this.world, pos)) {
+                    this.world.setBlockState(pos, Blocks.SNOW.getStateManager().getDefaultState().with(SnowBlock.LAYERS, this.random.nextInt(1, Math.round(power) + 1)));
                 }
             });
         }
