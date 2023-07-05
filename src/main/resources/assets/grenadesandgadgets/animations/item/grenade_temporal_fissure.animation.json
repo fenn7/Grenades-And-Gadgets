@@ -1,0 +1,14 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.grenade_temporal_fissure.idle": {
+			"loop": true,
+			"bones": {
+				"Crystal": {
+					"rotation": ["query.anim_time * 180", "query.anim_time * 180", "query.anim_time * 180"],
+					"position": [0, "0.1 * math.sin(query.anim_time * 180)", 0]
+				}
+			}
+		}
+	}
+}
