@@ -5,6 +5,7 @@ import java.util.Set;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -65,17 +66,19 @@ public class StormGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     }
 
     @Override
-    protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
+    protected void handleDisplacement(Entity entity, BlockPos pos, Set<Entity> entities) {
         if (entity instanceof PlayerEntity player && player.isFallFlying()) {
             player.stopFallFlying();
         }
         entity.move(MovementType.SELF, new Vec3d(0, entity.world.getBottomY(), 0));
-        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, FATIGUE_DURATION, this.blockDistanceTo(entity.getBlockPos()) <= STRONG_FATIGUE_RANGE ? 1 : 0));
-        if (!this.world.isClient) {
-            LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, entity.world);
-            lightning.setChanneler(this.getOwner() instanceof ServerPlayerEntity sPlayer ? sPlayer : null);
-            lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
-            entity.world.spawnEntity(lightning);
+        if (entity instanceof LivingEntity alive) {
+            alive.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, FATIGUE_DURATION, this.blockDistanceTo(entity.getBlockPos()) <= STRONG_FATIGUE_RANGE ? 1 : 0));
+            if (!this.world.isClient) {
+                LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, entity.world);
+                lightning.setChanneler(this.getOwner() instanceof ServerPlayerEntity sPlayer ? sPlayer : null);
+                lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
+                entity.world.spawnEntity(lightning);
+            }
         }
     }
 

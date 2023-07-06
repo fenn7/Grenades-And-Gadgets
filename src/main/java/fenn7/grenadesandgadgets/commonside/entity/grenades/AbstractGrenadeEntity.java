@@ -133,6 +133,12 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         return entities;
     }
 
+    protected Set<Entity> getEntitiesFromBlocks(Set<BlockPos> blocks) {
+        Set<Entity> entities = new HashSet<>();
+        blocks.stream().forEach(pos -> entities.addAll(this.world.getNonSpectatingEntities(Entity.class, new Box(pos))));
+        return entities;
+    }
+
     public void setMaxAgeTicks(int maxAgeTicks) {
         this.maxAgeTicks = maxAgeTicks;
     }

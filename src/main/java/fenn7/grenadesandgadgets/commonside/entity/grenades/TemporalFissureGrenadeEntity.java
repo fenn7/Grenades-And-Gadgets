@@ -24,23 +24,23 @@ import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
 
-public class DivergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
+public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     private static final float DIVERGENCE_RANGE = 4.0F;
     private static final float DISPLACEMENT_DAMAGE_PER_ENTITY = 6.0F;
     private static final int MAX_DELAY_TICKS = 15;
     private static final ParticleEffect DIVERGENCE_GRENADE_EFFECT = ParticleTypes.EXPLOSION;
     private static final GrenadesModSoundProfile DIVERGENCE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_BARREL_OPEN, 1.75F,  0.33F);
 
-    public DivergenceGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+    public TemporalFissureGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public DivergenceGrenadeEntity(World world, PlayerEntity user) {
-        super(GrenadesModEntities.DIVERGENCE_GRENADE_ENTITY, world, user);
+    public TemporalFissureGrenadeEntity(World world, PlayerEntity user) {
+        super(GrenadesModEntities.TEMPORAL_FISSURE_GRENADE_ENTITY, world, user);
     }
 
-    public DivergenceGrenadeEntity(World world, double x, double y, double z) {
-        super(GrenadesModEntities.DIVERGENCE_GRENADE_ENTITY, world, x, y, z);
+    public TemporalFissureGrenadeEntity(World world, double x, double y, double z) {
+        super(GrenadesModEntities.TEMPORAL_FISSURE_GRENADE_ENTITY, world, x, y, z);
     }
 
     @Override

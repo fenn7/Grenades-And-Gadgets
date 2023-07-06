@@ -1,11 +1,13 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -64,11 +66,14 @@ public class UpheavalGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     }
 
     @Override
-    protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
+    protected void handleDisplacement(Entity entity, BlockPos pos, Set<Entity> entities) {
+        var livingEntities = entities.stream().filter(e -> e instanceof LivingEntity).collect(Collectors.toSet());
         double distanceFrom = this.blockDistanceTo(entity.getBlockPos());
-        double displacement = Math.max(MIN_DISPLACEMENT_HEIGHT, 1 / distanceFrom * BASE_DISPLACEMENT_HEIGHT + entities.size());
+        double displacement = Math.max(MIN_DISPLACEMENT_HEIGHT, 1 / distanceFrom * BASE_DISPLACEMENT_HEIGHT + livingEntities.size());
         entity.move(MovementType.SELF, new Vec3d(0, displacement, 0));
-        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, NAUSEA_DURATION));
+        if (entity instanceof LivingEntity alive) {
+            alive.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, NAUSEA_DURATION));
+        }
     }
 
     protected Item getDefaultItem() {

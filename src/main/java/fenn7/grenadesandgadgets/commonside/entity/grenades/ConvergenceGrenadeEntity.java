@@ -1,14 +1,18 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
@@ -66,9 +70,13 @@ public class ConvergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity 
     }
 
     @Override
-    protected void handleDisplacement(LivingEntity entity, BlockPos pos, Set<LivingEntity> entities) {
+    protected void handleDisplacement(Entity entity, BlockPos pos, Set<Entity> entities) {
         entity.move(MovementType.SELF, this.getPos().subtract(entity.getPos()));
-        entity.damage(DamageSource.CRAMMING, CRAM_DAMAGE_PER_ENTITY + entities.size());
+        var livingEntities = entities.stream().filter(e -> e instanceof LivingEntity).collect(Collectors.toSet());
+        if (entity instanceof LivingEntity alive) {
+            alive.damage(DamageSource.CRAMMING, CRAM_DAMAGE_PER_ENTITY + livingEntities.size());
+            alive.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40));
+        }
     }
 
     @Override

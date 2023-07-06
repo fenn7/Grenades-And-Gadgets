@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public class TemporalFissureGrenadeModel extends AnimatedGeoModel<TemporalFissureGrenadeItem> {
+public class TemporalFissureGrenadeItemModel extends AnimatedGeoModel<TemporalFissureGrenadeItem> {
     private static final String MODEL_LOCATION = "geo/item/grenade_temporal_fissure_3d.geo.json";
     private static final String ANIMATION_LOCATION = "animations/item/grenade_temporal_fissure.animation.json";
     private static final String TEXTURE_LOCATION = "textures/item/grenade3d/grenade_temporal_";

@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.client.entity;
 
 import fenn7.grenadesandgadgets.client.entity.block.renderer.SimpleBlockRenderer;
 import fenn7.grenadesandgadgets.client.entity.grenades.renderer.SimpleGrenadeRenderer;
+import fenn7.grenadesandgadgets.client.entity.grenades.renderer.TemporalFissureGrenadeEntityRenderer;
 import fenn7.grenadesandgadgets.client.entity.misc.renderer.DecoyRenderer;
 import fenn7.grenadesandgadgets.client.entity.misc.renderer.FragmentRenderer;
 import fenn7.grenadesandgadgets.client.entity.misc.renderer.TemporalFissureRenderer;
@@ -43,6 +44,7 @@ public class GrenadesModEntityRenderers {
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_decoy"));
         EntityRendererRegistry.register(GrenadesModEntities.STORM_GRENADE_ENTITY,
             ctx -> new SimpleGrenadeRenderer<>(ctx,"grenade_storm"));
+        EntityRendererRegistry.register(GrenadesModEntities.TEMPORAL_FISSURE_GRENADE_ENTITY, TemporalFissureGrenadeEntityRenderer::new);
 
         // misc
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);
