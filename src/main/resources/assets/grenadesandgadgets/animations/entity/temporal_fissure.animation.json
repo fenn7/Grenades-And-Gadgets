@@ -1,0 +1,28 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.model.idle": {
+			"loop": true,
+			"bones": {
+				"portal1": {
+					"rotation": [0, "-45 + query.anim_time * 360", 0]
+				},
+				"portal2": {
+					"rotation": [0, "-45 + query.anim_time * 360", 0]
+				},
+				"portal3": {
+					"rotation": [0, "-45 + query.anim_time * 360", 0]
+				},
+				"portal4": {
+					"rotation": [0, "45 + query.anim_time * 360", 0]
+				},
+				"portal5": {
+					"rotation": [0, 0, "45 + query.anim_time * 360"]
+				},
+				"portal6": {
+					"rotation": [0, 0, "-45 + query.anim_time * 360"]
+				}
+			}
+		}
+	}
+}

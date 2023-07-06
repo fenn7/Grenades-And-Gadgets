@@ -51,7 +51,7 @@ public class GrenadesModItems {
         new DecoyGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
     public static final Item GRENADE_STORM = register("grenade_storm",
         new StormGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
-    public static final Item GRENADE_TEMPORAL_FISSURE = register("grenade_temporal_fissure_overworld_3d",
+    public static final Item GRENADE_TEMPORAL_FISSURE = register("grenade_temporal_fissure_3d",
         new TemporalFissureGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(4)));
 
     public static void registerItems() {

@@ -24,6 +24,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.World;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public interface GrenadesModUtil {
     static Text textOf(String text) {
@@ -36,6 +38,10 @@ public interface GrenadesModUtil {
 
     static MutableText mutableTextOf(String text) {
         return Text.of(text).copy();
+    }
+
+    static AnimationFactory getAnimationFactoryFor(IAnimatable animatable) {
+        return new AnimationFactory(animatable);
     }
 
     static Set<LivingEntity> getLivingEntitiesAtRangeFromEntity(World world, Entity entity, double radius) {

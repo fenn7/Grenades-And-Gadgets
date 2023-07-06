@@ -25,6 +25,8 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -160,8 +162,11 @@ public class DecoyEntity extends LivingEntity implements IAnimatable {
         return Arm.LEFT;
     }
 
-    public PlayerEntity getPlayerOwner() {
-        return this.owner;
+    @Override
+    protected void onKilledBy(@Nullable LivingEntity adversary) {
+        this.world.createExplosion(this, this.owner != null ? DamageSource.explosion(this.owner) : null, null,
+            this.getX(), this.getBodyY(0.5D), this.getZ(), this.range / 3F, false, Explosion.DestructionType.NONE);
+        super.onKilledBy(adversary);
     }
 
     protected <E extends IAnimatable> PlayState inflateAnimation(AnimationEvent<E> event) {

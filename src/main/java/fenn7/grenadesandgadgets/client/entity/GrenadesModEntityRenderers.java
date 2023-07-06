@@ -4,6 +4,7 @@ import fenn7.grenadesandgadgets.client.entity.block.renderer.SimpleBlockRenderer
 import fenn7.grenadesandgadgets.client.entity.grenades.renderer.SimpleGrenadeRenderer;
 import fenn7.grenadesandgadgets.client.entity.misc.renderer.DecoyRenderer;
 import fenn7.grenadesandgadgets.client.entity.misc.renderer.FragmentRenderer;
+import fenn7.grenadesandgadgets.client.entity.misc.renderer.TemporalFissureRenderer;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.RadiantLightBlockEntity;
@@ -46,6 +47,7 @@ public class GrenadesModEntityRenderers {
         // misc
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);
         EntityRendererRegistry.register(GrenadesModEntities.DECOY_ENTITY, DecoyRenderer::new);
+        EntityRendererRegistry.register(GrenadesModEntities.TEMPORAL_FISSURE, TemporalFissureRenderer::new);
 
         // block entities
         BlockEntityRendererRegistry.register(GrenadesModBlockEntities.RADIANT_LIGHT_BLOCK_ENTITY,

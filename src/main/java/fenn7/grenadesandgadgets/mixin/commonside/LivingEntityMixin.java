@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -33,6 +34,10 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow public abstract StatusEffectInstance getStatusEffect(StatusEffect effect);
 
     @Shadow public abstract boolean removeStatusEffect(StatusEffect type);
+
+    @Shadow public abstract float getHealth();
+
+    @Shadow public abstract void kill();
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -75,5 +80,12 @@ public abstract class LivingEntityMixin extends Entity {
         return this.hasStatusEffect(GrenadesModStatus.CAUSTIC)
             ? amount - (Math.min(MAX_CAUSTIC_HEAL_REDUCTION, this.getStatusEffect(GrenadesModStatus.CAUSTIC).getAmplifier() * CAUSTIC_HEAL_REDUCTION) * amount)
             : amount;
+    }
+
+    @Inject(method = "heal", at = @At("TAIL"))
+    private void grenadesandgadgets$killOnHealthUnderflow(float amount, CallbackInfo ci) {
+        if (this.getHealth() <= 0.0F) {
+            this.remove(RemovalReason.KILLED);
+        }
     }
 }

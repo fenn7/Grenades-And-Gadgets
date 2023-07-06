@@ -17,6 +17,7 @@ import fenn7.grenadesandgadgets.commonside.entity.grenades.StormGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.UpheavalGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.misc.DecoyEntity;
 import fenn7.grenadesandgadgets.commonside.entity.misc.FragmentEntity;
+import fenn7.grenadesandgadgets.commonside.entity.misc.TemporalFissureEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -121,6 +122,12 @@ public class GrenadesModEntities {
         FabricEntityTypeBuilder.<DecoyEntity>create(SpawnGroup.MISC, DecoyEntity::new)
             .dimensions(EntityDimensions.fixed(0.6F, 1.8F))
             .trackRangeBlocks(24).trackedUpdateRate(10).build());
+
+    public static final EntityType<TemporalFissureEntity> TEMPORAL_FISSURE = Registry.register(
+        Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "temporal_fissure"),
+        FabricEntityTypeBuilder.<TemporalFissureEntity>create(SpawnGroup.MISC, TemporalFissureEntity::new)
+            .dimensions(EntityDimensions.fixed(2.0F, 2.0F))
+            .trackRangeBlocks(128).trackedUpdateRate(20).build());
 
     public static void registerEntities() {
         GrenadesMod.LOGGER.warn("Initialising Grenades And Gadgets Entities...");
