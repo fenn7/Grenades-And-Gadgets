@@ -71,7 +71,7 @@ public class FragmentationGrenadeRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean fits(int width, int height) {
-        return width * height >= 2;
+        return width * height >= 3;
     }
 
     @Override

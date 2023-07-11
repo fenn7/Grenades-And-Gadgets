@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundCategory;
@@ -34,7 +35,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements IAnimatable {
     protected final static byte STATUS_BYTE = (byte) 3;
-    protected final AnimationFactory factory = new AnimationFactory(this);
+    protected final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     protected int maxAgeTicks = 100;
     protected boolean shouldBounce = true;
     protected float power;
@@ -182,6 +183,10 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     protected double blockDistanceTo(BlockPos position) {
         return Math.sqrt(this.getBlockPos().getSquaredDistance(position));
+    }
+
+    public ItemStack getGrenadeItemStack() {
+        return this.getItem();
     }
 
     // animations

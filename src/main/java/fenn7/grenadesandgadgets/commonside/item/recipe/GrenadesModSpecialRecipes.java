@@ -4,6 +4,7 @@ import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.FragmentationGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.MagicGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.SmokeBallGrenadeRecipe;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.TemporalFissureGrenadeRecipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
@@ -22,7 +23,11 @@ public class GrenadesModSpecialRecipes {
         Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(GrenadesMod.MOD_ID, "crafting_special_magic"),
             new SpecialRecipeSerializer<>(MagicGrenadeRecipe::new));
 
+    public static final SpecialRecipeSerializer<TemporalFissureGrenadeRecipe> TEMPORAL_FISSURE_GRENADE =
+        Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(GrenadesMod.MOD_ID, "crafting_special_temporal"),
+            new SpecialRecipeSerializer<>(TemporalFissureGrenadeRecipe::new));
+
     public static void registerRecipes() {
-        GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Recipes...");
+        GrenadesMod.LOGGER.warn("Initialising Grenades And Gadgets Recipes...");
     }
 }

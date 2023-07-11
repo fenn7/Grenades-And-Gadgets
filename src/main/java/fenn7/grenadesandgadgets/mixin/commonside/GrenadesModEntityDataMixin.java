@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public class GrenadesModEntityDataMixin implements GrenadesModEntityData {
+public abstract class GrenadesModEntityDataMixin implements GrenadesModEntityData {
     private static final Pair<String, Integer> MOD_DATA = new Pair<>("grenadesandgadgets.entity_data", 10);
     private NbtCompound persistentData;
 

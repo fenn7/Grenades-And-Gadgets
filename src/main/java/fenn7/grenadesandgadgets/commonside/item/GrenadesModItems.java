@@ -20,6 +20,7 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.UpheavalGrenadeI
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 public class GrenadesModItems {
@@ -52,7 +53,7 @@ public class GrenadesModItems {
     public static final Item GRENADE_STORM = register("grenade_storm",
         new StormGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
     public static final Item GRENADE_TEMPORAL_FISSURE = register("grenade_temporal_fissure_3d",
-        new TemporalFissureGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(4)));
+        new TemporalFissureGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(4).rarity(Rarity.EPIC)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");

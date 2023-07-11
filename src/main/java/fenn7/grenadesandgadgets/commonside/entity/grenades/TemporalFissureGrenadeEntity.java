@@ -1,35 +1,33 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
+import fenn7.grenadesandgadgets.commonside.entity.misc.TemporalFissureEntity;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Vibration;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.event.BlockPositionSource;
 
 public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEntity {
-    private static final float DIVERGENCE_RANGE = 4.0F;
-    private static final float DISPLACEMENT_DAMAGE_PER_ENTITY = 6.0F;
-    private static final int MAX_DELAY_TICKS = 15;
-    private static final ParticleEffect DIVERGENCE_GRENADE_EFFECT = ParticleTypes.EXPLOSION;
-    private static final GrenadesModSoundProfile DIVERGENCE_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.BLOCK_BARREL_OPEN, 1.75F,  0.33F);
+    private static final float BASE_PORTAL_RANGE = 6.0F;
+    private static final int MAX_DELAY_TICKS = 30;
+    private static final int INTERVAL_BETWEEN_EFFECTS = 6;
+    private static final ParticleEffect TEMPORAL_GRENADE_EFFECT = ParticleTypes.END_ROD;
+    private static final GrenadesModSoundProfile TEMPORAL_GRENADE_SOUND_PROFILE = new GrenadesModSoundProfile(SoundEvents.ITEM_TRIDENT_THUNDER, 1.25F,  0.4F);
 
     public TemporalFissureGrenadeEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
@@ -46,39 +44,43 @@ public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEnt
     @Override
     protected void initialise() {
         this.maxLingeringTicks = MAX_DELAY_TICKS;
-        this.setPower(DIVERGENCE_RANGE);
-        this.setExplosionEffect(DIVERGENCE_GRENADE_EFFECT);
-        this.setExplosionSoundProfile(DIVERGENCE_GRENADE_SOUND_PROFILE);
+        this.setPower(BASE_PORTAL_RANGE);
+        this.setExplosionEffect(TEMPORAL_GRENADE_EFFECT);
+        this.setExplosionSoundProfile(TEMPORAL_GRENADE_SOUND_PROFILE);
     }
 
     @Override
     protected void handleParticleEffects() {
-        if (this.world.isClient) {
-            double randomX = this.random.nextDouble(this.power);
-            double randomY = this.random.nextDouble(-0.5, 0.5);
-            double correspondingZ = Math.sqrt(Math.pow(this.power, 2) - Math.pow(randomX, 2));
-            boolean shouldNegate = this.random.nextBoolean();
-
-            double spawnX = shouldNegate ? this.getX() - randomX : this.getX() + randomX;
-            double spawnY = shouldNegate ? this.getY() - randomY : this.getY() + randomY;
-            double spawnZ = shouldNegate ? this.getZ() - correspondingZ : this.getZ() + correspondingZ;
-
-            ParticleEffect vibration = new VibrationParticleEffect(new Vibration(this.getBlockPos(), new BlockPositionSource(new BlockPos(Math.round(spawnX), Math.round(spawnY), Math.round(spawnZ))), this.maxLingeringTicks));
-            this.world.addParticle(vibration, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+        if (this.world.isClient && this.lingeringTicks % INTERVAL_BETWEEN_EFFECTS == 1) {
+            Vec3d startPosHorizontal = new Vec3d(this.power - (float) (this.lingeringTicks / INTERVAL_BETWEEN_EFFECTS), 0, 0);
+            Vec3d startPosVertical = startPosHorizontal.rotateY((float) Math.PI / 2F);
+            Set<Vec3d> positions = new HashSet<>(Set.of(startPosVertical, startPosHorizontal));
+            for (int i = 1; i < 9; ++i) {
+                positions.add(startPosHorizontal.rotateY((float) Math.PI / 4F * i));
+                positions.add(startPosHorizontal.rotateZ((float) Math.PI / 4F * i));
+                positions.add(startPosVertical.rotateZ((float) Math.PI / 4F * i));
+            }
+            positions.forEach(pos -> {
+                Vec3d spawnPos = this.getPos().add(pos);
+                this.world.addParticle(TEMPORAL_GRENADE_EFFECT, spawnPos.x, spawnPos.y, spawnPos.z, 0.0D, 0.0D, 0.0D);
+            });
         }
     }
 
     @Override
-    protected void handleDisplacement(Entity entity, BlockPos pos, Set<Entity> entities) {
-        entity.move(MovementType.SELF, entity.getPos().subtract(this.getPos()).normalize().multiply(this.power));
-        if (entity instanceof LivingEntity alive) {
-            alive.damage(DamageSource.thrownProjectile(this, this.getOwner()), DISPLACEMENT_DAMAGE_PER_ENTITY);
-            alive.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40));
+    protected void explode(float power) {
+        super.explode(power);
+        if (this.state == LingeringState.DISCARDED) {
+            String dimension = this.getItem().getOrCreateNbt().getString(TemporalFissureGrenadeItem.NBT_DIMENSION_KEY);
+            this.world.spawnEntity(new TemporalFissureEntity(this.world, power, this.getOwner()));
         }
     }
+
+    @Override
+    protected void handleDisplacement(Entity entity, BlockPos pos, Set<Entity> entities) {}
 
     @Override
     protected Item getDefaultItem() {
-        return GrenadesModItems.GRENADE_DIVERGENCE;
+        return GrenadesModItems.GRENADE_TEMPORAL_FISSURE;
     }
 }

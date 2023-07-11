@@ -133,7 +133,7 @@ public class GrenadesModEntities {
     public static final EntityType<TemporalFissureEntity> TEMPORAL_FISSURE = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(GrenadesMod.MOD_ID, "temporal_fissure"),
         FabricEntityTypeBuilder.<TemporalFissureEntity>create(SpawnGroup.MISC, TemporalFissureEntity::new)
-            .dimensions(EntityDimensions.fixed(2.0F, 2.0F))
+            .fireImmune().spawnableFarFromPlayer().dimensions(EntityDimensions.fixed(2.0F, 2.0F))
             .trackRangeBlocks(128).trackedUpdateRate(20).build());
 
     public static void registerEntities() {

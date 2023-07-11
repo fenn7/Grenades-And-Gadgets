@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -87,5 +86,10 @@ public abstract class LivingEntityMixin extends Entity {
         if (this.getHealth() <= 0.0F) {
             this.remove(RemovalReason.KILLED);
         }
+    }
+
+    @ModifyVariable(method = "jump", at = @At(value = "STORE"))
+    private double grenadesandgadgets$modifyDecelerateJumpModifier(double d) {
+        return this.hasStatusEffect(GrenadesModStatus.DECELERATE) ? d * Math.max(0, 1 - (0.1F * (1 + this.getStatusEffect(GrenadesModStatus.DECELERATE).getAmplifier()))) : d;
     }
 }

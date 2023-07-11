@@ -21,7 +21,7 @@ public class RadiantLightStatusEffect extends StatusEffect {
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        super.onApplied(entity, attributes, Math.min(amplifier, 9));
+        super.onApplied(entity, attributes, Math.min(amplifier, 20));
     }
 
     @Override

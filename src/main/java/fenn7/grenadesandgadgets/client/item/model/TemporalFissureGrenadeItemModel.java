@@ -1,9 +1,15 @@
 package fenn7.grenadesandgadgets.client.item.model;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.gen.placementmodifier.NoiseBasedCountPlacementModifier;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class TemporalFissureGrenadeItemModel extends AnimatedGeoModel<TemporalFissureGrenadeItem> {
@@ -18,17 +24,7 @@ public class TemporalFissureGrenadeItemModel extends AnimatedGeoModel<TemporalFi
 
     @Override
     public Identifier getTextureLocation(TemporalFissureGrenadeItem object) {
-        switch ((int) MinecraftClient.getInstance().player.age / 60) {
-            case 0 -> {
-                return new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "overworld.png");
-            }
-            case 1 -> {
-                return new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "nether.png");
-            }
-            default -> {
-                return new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "end.png");
-            }
-        }
+        return new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "overworld.png");
     }
 
     @Override

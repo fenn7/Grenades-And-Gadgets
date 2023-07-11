@@ -1,17 +1,19 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
+import java.util.List;
+
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.TemporalFissureGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.misc.TemporalFissureEntity;
-import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -22,7 +24,9 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class TemporalFissureGrenadeItem extends AbstractGrenadeItem implements IAnimatable {
-    private final AnimationFactory factory = new AnimationFactory(this);
+    public static final String NBT_DIMENSION_KEY = "dimension_key";
+    public static final String ENTITY_SLOTS = "tfg_slots";
+    private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
 
     public TemporalFissureGrenadeItem(Settings settings) {
         super(settings);
@@ -31,6 +35,24 @@ public class TemporalFissureGrenadeItem extends AbstractGrenadeItem implements I
     @Override
     protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new TemporalFissureGrenadeEntity(world, player);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        NbtCompound stackNbt = stack.getOrCreateNbt();
+        if (stackNbt.contains(NBT_DIMENSION_KEY)) {
+            String dimensionName;
+            int dimKey = stackNbt.getInt(NBT_DIMENSION_KEY);
+            switch (dimKey) {
+                case -1 -> dimensionName = "§4Nether Fissure";
+                case 0 -> dimensionName = "§2Overworld Fissure";
+                case 1 -> dimensionName = "§5End Fissure";
+                default -> dimensionName = "";
+            }
+            if (!dimensionName.isBlank()) {
+                tooltip.add(GrenadesModUtil.textOf(dimensionName));
+            }
+        }
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
