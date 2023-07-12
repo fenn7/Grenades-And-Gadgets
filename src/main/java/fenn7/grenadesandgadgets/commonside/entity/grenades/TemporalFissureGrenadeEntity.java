@@ -7,23 +7,29 @@ import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.entity.misc.TemporalFissureEntity;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEntity {
-    private static final float BASE_PORTAL_RANGE = 6.0F;
+    private static final float BASE_PORTAL_RANGE = 7.0F;
     private static final int MAX_DELAY_TICKS = 30;
     private static final int INTERVAL_BETWEEN_EFFECTS = 6;
     private static final ParticleEffect TEMPORAL_GRENADE_EFFECT = ParticleTypes.END_ROD;
@@ -70,9 +76,13 @@ public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEnt
     @Override
     protected void explode(float power) {
         super.explode(power);
-        if (this.state == LingeringState.DISCARDED) {
-            String dimension = this.getItem().getOrCreateNbt().getString(TemporalFissureGrenadeItem.NBT_DIMENSION_KEY);
-            this.world.spawnEntity(new TemporalFissureEntity(this.world, power, this.getOwner()));
+        if (this.state == LingeringState.DISCARDED && !this.world.isClient) {
+            int dimKey = this.getItem().getOrCreateNbt().getInt(TemporalFissureGrenadeItem.NBT_DIMENSION_KEY);
+            TemporalFissureEntity entity = new TemporalFissureEntity(this.world, this.power, this.getOwner() instanceof PlayerEntity player ? player : null, dimKey);
+            Vec3d newPos = this.getPos().subtract(0, 1, 0);
+            entity.setPosition(newPos);
+            entity.refreshPositionAndAngles(newPos.x, newPos.y, newPos.z, entity.getYaw(), entity.getPitch());
+            this.world.spawnEntity(entity);
         }
     }
 

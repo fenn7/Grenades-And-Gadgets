@@ -17,16 +17,11 @@ public class TemporalFissureModel extends AnimatedGeoModel<TemporalFissureEntity
 
     @Override
     public Identifier getTextureLocation(TemporalFissureEntity object) {
-        int temp = object.age % 60;
-        Identifier id;
-        if (temp < 20) {
-            id = new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "overworld.png");
-        } else if (temp < 40) {
-            id = new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "nether.png");
-        } else {
-            id = new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "end.png");
-        }
-        return id;
+        return switch (object.getDataTracker().get(TemporalFissureEntity.DIMENSION_KEY)) {
+            case -1 -> new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "nether.png");
+            case 1 -> new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "end.png");
+            default -> new Identifier(GrenadesMod.MOD_ID, TEXTURE_LOCATION + "overworld.png");
+        };
     }
 
     @Override

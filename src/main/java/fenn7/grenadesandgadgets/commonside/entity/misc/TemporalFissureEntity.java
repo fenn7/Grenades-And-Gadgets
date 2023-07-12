@@ -7,13 +7,21 @@ import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -25,6 +33,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class TemporalFissureEntity extends Entity implements IAnimatable {
+    public static final TrackedData<Integer> DIMENSION_KEY = DataTracker.registerData(TemporalFissureEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final float DISPLACEMENT_DAMAGE = 10.0F;
     private static final float MAX_DISPLACEMENT_THRESHOLD = 100.0F;
     private static final float MAX_CATASTROPHIC_DAMAGE = 70.0F;
@@ -40,17 +49,23 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
         super(entityType, world);
     }
 
-    public TemporalFissureEntity(World world, float range, Entity summoner) {
+    public TemporalFissureEntity(World world, float range, Entity summoner, int dimKey) {
         super(GrenadesModEntities.TEMPORAL_FISSURE, world);
         this.range = range;
         this.summoner = summoner;
+        this.getDataTracker().set(DIMENSION_KEY, dimKey);
+    }
+
+    @Override
+    protected void initDataTracker() {
+        this.dataTracker.startTracking(DIMENSION_KEY, 0);
     }
 
     @Override
     public void tick() {
         super.tick();
         if (this.age > MAX_LIFE_BASE + (this.range * EXTRA_LIFE_PER_RANGE)) {
-            this.remove(RemovalReason.CHANGED_DIMENSION);
+            this.remove(RemovalReason.DISCARDED);
         }
         var affectedBlocks = this.getOrCreateAffectedBlocks();
         affectedBlocks.forEach(
@@ -82,11 +97,6 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
     }
 
     @Override
-    protected void initDataTracker() {
-
-    }
-
-    @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
 
     }
@@ -99,6 +109,18 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
     @Override
     public Packet<?> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
+    }
+
+    private ServerWorld getDestinationWorld() {
+        if (this.world.isClient()) {
+            return null;
+        }
+        MinecraftServer server = ((ServerWorld) this.world).getServer();
+        return switch (this.getDataTracker().get(DIMENSION_KEY)) {
+            case -1 -> server.getWorld(World.NETHER);
+            case 1 -> server.getWorld(World.END);
+            default -> server.getOverworld();
+        };
     }
 
     private Set<BlockPos> getOrCreateAffectedBlocks() {

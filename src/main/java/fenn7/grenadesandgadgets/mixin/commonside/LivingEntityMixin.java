@@ -32,8 +32,6 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow public abstract boolean hasStatusEffect(StatusEffect effect);
     @Shadow public abstract StatusEffectInstance getStatusEffect(StatusEffect effect);
 
-    @Shadow public abstract boolean removeStatusEffect(StatusEffect type);
-
     @Shadow public abstract float getHealth();
 
     @Shadow public abstract void kill();

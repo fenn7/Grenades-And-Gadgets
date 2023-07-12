@@ -102,6 +102,7 @@ public abstract class AbstractLingeringGrenadeEntity extends AbstractGrenadeEnti
     protected void setInactive() {
         this.setVelocity(Vec3d.ZERO);
         this.setNoGravity(true);
+        this.noClip = true;
         this.setInvisible(true);
         this.setInvulnerable(true);
     }
