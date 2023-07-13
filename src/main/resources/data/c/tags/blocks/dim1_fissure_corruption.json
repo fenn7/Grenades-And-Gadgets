@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:end_stone",
+    "minecraft:end_stone_bricks",
+    "minecraft:obsidian",
+    "minecraft:purpur_block",
+    "minecraft:purpur_pillar",
+    "minecraft:purple_stained_glass"
+  ]
+}
