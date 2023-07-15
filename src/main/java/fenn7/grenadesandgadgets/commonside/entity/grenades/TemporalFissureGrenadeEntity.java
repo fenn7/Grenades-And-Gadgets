@@ -78,7 +78,7 @@ public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEnt
         super.explode(power);
         if (this.state == LingeringState.DISCARDED && !this.world.isClient) {
             int dimKey = this.getItem().getOrCreateNbt().getInt(TemporalFissureGrenadeItem.NBT_DIMENSION_KEY);
-            TemporalFissureEntity entity = new TemporalFissureEntity(this.world, this.power, this.getOwner() instanceof PlayerEntity player ? player : null, dimKey);
+            TemporalFissureEntity entity = new TemporalFissureEntity(this.world, this.power, dimKey);
             Vec3d newPos = this.getPos().subtract(0, 1, 0);
             entity.setPosition(newPos);
             entity.refreshPositionAndAngles(newPos.x, newPos.y, newPos.z, entity.getYaw(), entity.getPitch());

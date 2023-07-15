@@ -5,6 +5,7 @@
   "mixins": [
     "commonside.GrenadesModEntityDataMixin",
     "commonside.LivingEntityMixin",
+    "commonside.ServerPlayerEntityMixin",
     "commonside.DamageSourceAccessorMixin"
   ],
   "injectors": {
