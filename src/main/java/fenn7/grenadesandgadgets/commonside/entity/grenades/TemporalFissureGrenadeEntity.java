@@ -29,7 +29,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEntity {
-    private static final float BASE_PORTAL_RANGE = 7.0F;
+    private static final float BASE_PORTAL_RANGE = 6.0F;
     private static final int MAX_DELAY_TICKS = 30;
     private static final int INTERVAL_BETWEEN_EFFECTS = 6;
     private static final ParticleEffect TEMPORAL_GRENADE_EFFECT = ParticleTypes.END_ROD;

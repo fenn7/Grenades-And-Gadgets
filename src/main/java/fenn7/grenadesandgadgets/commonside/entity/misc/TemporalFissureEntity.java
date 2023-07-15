@@ -3,11 +3,15 @@ package fenn7.grenadesandgadgets.commonside.entity.misc;
 import java.util.HashSet;
 import java.util.Set;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.damage.GrenadesModDamageSources;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
+import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.fabricmc.fabric.impl.tag.convention.TagRegistration;
+import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,11 +26,13 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -41,6 +47,9 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class TemporalFissureEntity extends Entity implements IAnimatable {
     public static final TrackedData<Integer> DIMENSION_KEY = DataTracker.registerData(TemporalFissureEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final Set<Block> OW_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.OVERWORLD_FISSURE_CORRUPTION);
+    private static final Set<Block> NETHER_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.NETHER_FISSURE_CORRUPTION);
+    private static final Set<Block> END_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.END_FISSURE_CORRUPTION);
     public static final String NO_PORTAL_KEY = "no_portal_spawn";
     private static final String AGE_KEY = "age_key";
     private static final String DIM_KEY = "dim_key";
@@ -78,13 +87,16 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
         if (this.age > MAX_LIFE_BASE + (this.range * EXTRA_LIFE_PER_RANGE)) {
             this.discard();
         }
+        if (!this.world.isClient); // move into this superblock
         if (this.age % TICKS_BETWEEN_SPREAD == 0) {
             var affectedBlocks = this.getOrCreateAffectedBlocks();
             float corrputingRange = this.range / TICKS_BETWEEN_SPREAD;
             if (corrputingRange <= this.range) {
                 affectedBlocks.stream().filter(pos -> (int) Math.sqrt(pos.getSquaredDistance(this.getBlockPos())) == (int) corrputingRange).forEach(pos -> {
                     if (this.random.nextFloat() < BASE_CORRUPTION_CHANCE + (this.range / 100F)) {
-
+                        // load appropriate tagkey blocks
+                        // overwrite block at pos (this needs to be done on serverworld)
+                        // see if this all works on server only (it does; rewrite last section)
                     }
                 });
             }

@@ -5,16 +5,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets;
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
+import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -22,6 +26,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -100,7 +105,11 @@ public interface GrenadesModUtil {
         }
     }
 
-    static double scaleValueForDistance(double value, double distance, double maxDistance) {
-        return value * (1.0D - distance / maxDistance);
+    static Set<Block> loadBlocksFromTag(TagKey<Block> blockTag) {
+        var blocks = new HashSet<Block>();
+        Registry.BLOCK.iterateEntries(GrenadesModTags.Blocks.END_FISSURE_CORRUPTION).forEach(
+            blockRegistryEntry -> blocks.add(blockRegistryEntry.value())
+        );
+        return blocks;
     }
 }
