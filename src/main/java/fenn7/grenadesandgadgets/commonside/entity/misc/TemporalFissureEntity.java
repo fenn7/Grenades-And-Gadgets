@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
@@ -86,11 +87,22 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
         if (!this.world.isClient) {
             if (this.age > MAX_LIFE_BASE + (this.range * EXTRA_LIFE_PER_RANGE) || (this.world.equals(this.getServer().getWorld(World.END)) && this.squaredDistanceTo(Vec3d.ofCenter(ServerWorld.END_SPAWN_POS)) <= 16)) {
                 this.discard();
+                return;
             }
             ServerWorld destination = this.getDestinationWorld();
             boolean worldsMatch = this.world.getDimension().equals(destination.getDimension());
+            this.handleEntityCollisions(destination, worldsMatch);
+
             if (this.age % TICKS_BETWEEN_SPREAD == 0) {
                 var affectedBlocks = this.getOrCreateAffectedBlocks();
+                this.getAffectedEntities(affectedBlocks).forEach(entity -> {
+                    if (entity instanceof LivingEntity alive) {
+                        alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 100, alive.hasStatusEffect(GrenadesModStatus.DECELERATE) ? alive.getStatusEffect(GrenadesModStatus.DECELERATE).getAmplifier() + 1 : 0));
+                    }
+                    Vec3d displacement = this.getPos().subtract(entity.getPos()).normalize().multiply(DRAG_PER_RANGE * this.range);
+                    entity.addVelocity(displacement.x, displacement.y, displacement.z);
+                });
+
                 int corruptingRange = this.age / TICKS_BETWEEN_SPREAD;
                 if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && corruptingRange <= this.range && !worldsMatch) {
                     var blockList = switch (this.dataTracker.get(DIMENSION_KEY)) {
@@ -100,20 +112,12 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
                     };
                     affectedBlocks.stream().filter(pos -> this.canOverwrite(pos) && (int) Math.sqrt(pos.getSquaredDistance(this.getBlockPos())) == corruptingRange).forEach(pos -> {
                         if (this.random.nextFloat() < BASE_CORRUPTION_CHANCE + (this.range / 100F)) {
+                            this.world.breakBlock(pos, false, this);
                             this.world.setBlockState(pos, blockList.get(this.random.nextInt(blockList.size())).getDefaultState());
                         }
                     });
                 }
-                this.getAffectedEntities(affectedBlocks).forEach(entity -> {
-                    if (entity instanceof LivingEntity alive) {
-                        alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 120,
-                            alive.hasStatusEffect(GrenadesModStatus.DECELERATE) ? alive.getStatusEffect(GrenadesModStatus.DECELERATE).getAmplifier() + 1 : 0));
-                    }
-                    Vec3d displacement = this.getPos().subtract(entity.getPos()).normalize().multiply(DRAG_PER_RANGE * this.range);
-                    entity.addVelocity(displacement.x, displacement.y, displacement.z);
-                });
             }
-            this.handleEntityCollisions(destination, worldsMatch);
         }
     }
 
@@ -124,6 +128,7 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
         BlockPos.stream(collisionBox).forEach(pos -> {
             if (this.world.getBlockState(pos).getMaterial().equals(Material.PORTAL)) {
                 this.discard();
+                return;
             }
             positions.add(pos.toImmutable());
         });
@@ -132,11 +137,13 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
         }
         this.world.getNonSpectatingEntities(Entity.class, collisionBox).stream()
             .filter(entity -> !(entity instanceof TemporalFissureEntity)).forEach(entity -> {
+                this.spawnHitParticles(entity);
                 if (entity instanceof LivingEntity alive) {
                     var displacementStats = this.calculateDisplacementDamage(alive, worldsMatch);
                     alive.damage(GrenadesModDamageSources.DIMENSIONAL_DISPLACEMENT, displacementStats.getLeft());
                     if (displacementStats.getRight()) {
                         this.discard();
+                        return;
                     }
                 }
                 if (!worldsMatch) {
@@ -203,6 +210,16 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
     private boolean canOverwrite(BlockPos pos) {
         BlockState state = this.world.getBlockState(pos);
         return state.getMaterial().isSolid() && !state.isIn(GrenadesModTags.Blocks.TEMPORAL_FISSURE_IMMUNE);
+    }
+
+    private void spawnHitParticles(Entity entity) {
+        for (int i = 0; i < 3; ++i) {
+            float randX = this.random.nextFloat(-0.5F, 0.5F);
+            float randY = this.random.nextFloat(-0.5F, 0.5F);
+            float randZ = this.random.nextFloat(-0.5F, 0.5F);
+            ((ServerWorld) this.world).spawnParticles(ParticleTypes.ENCHANT, entity.getX(), entity.getBodyY(0.5), entity.getZ(), 3, randX, randY, randZ, 0.15);
+        }
+        ((ServerWorld) this.world).spawnParticles(ParticleTypes.POOF, entity.getX(), entity.getBodyY(0.5), entity.getZ(), 1, 0, 0, 0, 0);
     }
 
     @Override

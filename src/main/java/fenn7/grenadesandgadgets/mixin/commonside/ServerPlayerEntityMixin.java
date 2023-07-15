@@ -6,26 +6,57 @@ import com.mojang.authlib.GameProfile;
 import fenn7.grenadesandgadgets.commonside.entity.misc.TemporalFissureEntity;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.PortalForcer;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+    @Shadow private @Nullable Vec3d enteredNetherPos;
+    @Shadow public abstract ServerWorld getWorld();
+    @Shadow protected abstract void createEndSpawnPlatform(ServerWorld world, BlockPos centerPos);
+    @Shadow @Nullable protected abstract TeleportTarget getTeleportTarget(ServerWorld destination);
+
+    @Shadow protected abstract void worldChanged(ServerWorld origin);
+
+    @Shadow public abstract void playerTick();
+
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Inject(method = "moveToWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", ordinal = 0, shift = At.Shift.AFTER))
+    private void grenadesandgadgets$setupEndToNetherDisplacement(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
+        RegistryKey<World> registryKey = this.getWorld().getRegistryKey();
+        if (registryKey == World.END && destination.getRegistryKey() == World.NETHER) {
+            Vec3d position = this.getTeleportTarget(destination).position;
+            BlockPos.stream(this.getDimensions(this.getPose()).getBoxAt(position).expand(1.0)).forEach(pos -> {
+                BlockState state = destination.getBlockState(pos);
+                if (!state.getBlock().canMobSpawnInside() && state.getBlock().getHardness() > 0) {
+                    destination.breakBlock(pos, true);
+                }
+            });
+        }
     }
 
     @Redirect(method = "getPortalRect", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/PortalForcer;createPortal(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction$Axis;)Ljava/util/Optional;"))
