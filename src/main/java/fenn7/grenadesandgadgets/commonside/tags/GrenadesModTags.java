@@ -12,6 +12,7 @@ public class GrenadesModTags {
         public static final TagKey<Block> NETHER_FISSURE_CORRUPTION = createCommonTag("dim-1_fissure_corruption");
         public static final TagKey<Block> OVERWORLD_FISSURE_CORRUPTION = createCommonTag("dim0_fissure_corruption");
         public static final TagKey<Block> END_FISSURE_CORRUPTION = createCommonTag("dim1_fissure_corruption");
+        public static final TagKey<Block> TEMPORAL_FISSURE_IMMUNE = createCommonTag("temporal_fissure_immune");
 
         private static TagKey<Block> createTag(String name) {
             return TagKey.of(Registry.BLOCK_KEY, new Identifier(GrenadesMod.MOD_ID, name));

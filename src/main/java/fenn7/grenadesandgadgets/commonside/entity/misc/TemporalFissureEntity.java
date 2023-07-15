@@ -1,17 +1,17 @@
 package fenn7.grenadesandgadgets.commonside.entity.misc;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.damage.GrenadesModDamageSources;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.fabricmc.fabric.impl.tag.convention.TagRegistration;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -26,13 +26,11 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -47,9 +45,9 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class TemporalFissureEntity extends Entity implements IAnimatable {
     public static final TrackedData<Integer> DIMENSION_KEY = DataTracker.registerData(TemporalFissureEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final Set<Block> OW_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.OVERWORLD_FISSURE_CORRUPTION);
-    private static final Set<Block> NETHER_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.NETHER_FISSURE_CORRUPTION);
-    private static final Set<Block> END_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.END_FISSURE_CORRUPTION);
+    private static final List<Block> OW_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.OVERWORLD_FISSURE_CORRUPTION).stream().toList();
+    private static final List<Block> NETHER_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.NETHER_FISSURE_CORRUPTION).stream().toList();
+    private static final List<Block> END_BLOCKS = GrenadesModUtil.loadBlocksFromTag(GrenadesModTags.Blocks.END_FISSURE_CORRUPTION).stream().toList();
     public static final String NO_PORTAL_KEY = "no_portal_spawn";
     private static final String AGE_KEY = "age_key";
     private static final String DIM_KEY = "dim_key";
@@ -82,45 +80,45 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     public void tick() {
         super.tick();
-        if (this.age > MAX_LIFE_BASE + (this.range * EXTRA_LIFE_PER_RANGE)) {
-            this.discard();
-        }
-        if (!this.world.isClient); // move into this superblock
-        if (this.age % TICKS_BETWEEN_SPREAD == 0) {
-            var affectedBlocks = this.getOrCreateAffectedBlocks();
-            float corrputingRange = this.range / TICKS_BETWEEN_SPREAD;
-            if (corrputingRange <= this.range) {
-                affectedBlocks.stream().filter(pos -> (int) Math.sqrt(pos.getSquaredDistance(this.getBlockPos())) == (int) corrputingRange).forEach(pos -> {
-                    if (this.random.nextFloat() < BASE_CORRUPTION_CHANCE + (this.range / 100F)) {
-                        // load appropriate tagkey blocks
-                        // overwrite block at pos (this needs to be done on serverworld)
-                        // see if this all works on server only (it does; rewrite last section)
-                    }
-                });
-            }
-            this.getAffectedEntities(affectedBlocks).forEach(entity -> {
-                if (entity instanceof LivingEntity alive) {
-                    alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 120,
-                        alive.hasStatusEffect(GrenadesModStatus.DECELERATE) ? alive.getStatusEffect(GrenadesModStatus.DECELERATE).getAmplifier() + 1 : 0));
-                }
-                Vec3d displacement = this.getPos().subtract(entity.getPos()).normalize().multiply(DRAG_PER_RANGE * this.range);
-                entity.addVelocity(displacement.x, displacement.y, displacement.z);
-            });
-        }
-        // particle effect
-        // overwrite blocks
-        // expand to 3x3 size
         if (!this.world.isClient) {
-            if (this.world.equals(this.getServer().getWorld(World.END)) && this.squaredDistanceTo(Vec3d.ofCenter(ServerWorld.END_SPAWN_POS)) <= 16) {
+            if (this.age > MAX_LIFE_BASE + (this.range * EXTRA_LIFE_PER_RANGE) || (this.world.equals(this.getServer().getWorld(World.END)) && this.squaredDistanceTo(Vec3d.ofCenter(ServerWorld.END_SPAWN_POS)) <= 16)) {
                 this.discard();
             }
-            this.handleEntityCollisions();
+            ServerWorld destination = this.getDestinationWorld();
+            boolean worldsMatch = this.world.getDimension().equals(destination.getDimension());
+            if (this.age % TICKS_BETWEEN_SPREAD == 0) {
+                var affectedBlocks = this.getOrCreateAffectedBlocks();
+                int corruptingRange = this.age / TICKS_BETWEEN_SPREAD;
+                if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && corruptingRange <= this.range && !worldsMatch) {
+                    var blockList = switch (this.dataTracker.get(DIMENSION_KEY)) {
+                        case -1 -> NETHER_BLOCKS;
+                        case 1 -> END_BLOCKS;
+                        default -> OW_BLOCKS;
+                    };
+                    affectedBlocks.stream().filter(pos -> this.canOverwrite(pos) && (int) Math.sqrt(pos.getSquaredDistance(this.getBlockPos())) == corruptingRange).forEach(pos -> {
+                        if (this.random.nextFloat() < BASE_CORRUPTION_CHANCE + (this.range / 100F)) {
+                            this.world.setBlockState(pos, blockList.get(this.random.nextInt(blockList.size())).getDefaultState());
+                        }
+                    });
+                }
+                this.getAffectedEntities(affectedBlocks).forEach(entity -> {
+                    if (entity instanceof LivingEntity alive) {
+                        alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 120,
+                            alive.hasStatusEffect(GrenadesModStatus.DECELERATE) ? alive.getStatusEffect(GrenadesModStatus.DECELERATE).getAmplifier() + 1 : 0));
+                    }
+                    Vec3d displacement = this.getPos().subtract(entity.getPos()).normalize().multiply(DRAG_PER_RANGE * this.range);
+                    entity.addVelocity(displacement.x, displacement.y, displacement.z);
+                });
+            }
+            this.handleEntityCollisions(destination, worldsMatch);
         }
     }
 
-    private void handleEntityCollisions() {
+    @SuppressWarnings("ConstantConditions")
+    private void handleEntityCollisions(ServerWorld destination, boolean worldsMatch) {
         Box collisionBox = this.getDimensions(this.getPose()).getBoxAt(this.getPos());
         var positions = new HashSet<BlockPos>();
         BlockPos.stream(collisionBox).forEach(pos -> {
@@ -130,13 +128,10 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
             positions.add(pos.toImmutable());
         });
         if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-            positions.stream().filter(pos -> this.world.getBlockState(pos).getBlock().getBlastResistance() <= this.range)
-                .forEach(pos -> this.world.breakBlock(pos, true, this));
+            positions.stream().filter(this::canOverwrite).forEach(pos -> this.world.breakBlock(pos, true, this));
         }
         this.world.getNonSpectatingEntities(Entity.class, collisionBox).stream()
             .filter(entity -> !(entity instanceof TemporalFissureEntity)).forEach(entity -> {
-                ServerWorld destination = this.getDestinationWorld();
-                boolean worldsMatch = this.world.getDimension().equals(destination.getDimension());
                 if (entity instanceof LivingEntity alive) {
                     var displacementStats = this.calculateDisplacementDamage(alive, worldsMatch);
                     alive.damage(GrenadesModDamageSources.DIMENSIONAL_DISPLACEMENT, displacementStats.getLeft());
@@ -152,44 +147,10 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
                     }
                     entity.moveToWorld(destination);
                 } else {
-                    Vec3d knockback = entity.getPos().subtract(this.getPos()).normalize().multiply(this.range);
-                    entity.addVelocity(knockback.x / 2F, knockback.y / this.range, knockback.z / 2F);
+                    Vec3d repulsion = entity.getPos().subtract(this.getPos()).normalize().multiply(this.range);
+                    entity.addVelocity(repulsion.x / 2F, repulsion.y / this.range, repulsion.z / 2F);
                 }
             });
-    }
-
-    @Override
-    public void onPlayerCollision(PlayerEntity player) {
-        ((GrenadesModEntityData) player).getPersistentData().putBoolean(NO_PORTAL_KEY, true);
-    }
-
-    @Override
-    public boolean isImmuneToExplosion() {
-        return true;
-    }
-
-    @Override
-    public boolean canUsePortals() {
-        return false;
-    }
-
-    @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.age = nbt.getInt(AGE_KEY);
-        this.range = nbt.getFloat(RANGE_KEY);
-        this.dataTracker.set(DIMENSION_KEY, nbt.getInt(DIM_KEY));
-    }
-
-    @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putInt(AGE_KEY, this.age);
-        nbt.putFloat(RANGE_KEY, this.range);
-        nbt.putInt(DIM_KEY, this.dataTracker.get(DIMENSION_KEY));
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
     }
 
     private Pair<Float, Boolean> calculateDisplacementDamage(LivingEntity entity, boolean shouldHalve) {
@@ -239,6 +200,46 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
         return false;
     }
 
+    private boolean canOverwrite(BlockPos pos) {
+        BlockState state = this.world.getBlockState(pos);
+        return state.getMaterial().isSolid() && !state.isIn(GrenadesModTags.Blocks.TEMPORAL_FISSURE_IMMUNE);
+    }
+
+    @Override
+    public void onPlayerCollision(PlayerEntity player) {
+        ((GrenadesModEntityData) player).getPersistentData().putBoolean(NO_PORTAL_KEY, true);
+    }
+
+    @Override
+    public boolean isImmuneToExplosion() {
+        return true;
+    }
+
+    @Override
+    public boolean canUsePortals() {
+        return false;
+    }
+
+    @Override
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        this.age = nbt.getInt(AGE_KEY);
+        this.range = nbt.getFloat(RANGE_KEY);
+        this.dataTracker.set(DIMENSION_KEY, nbt.getInt(DIM_KEY));
+    }
+
+    @Override
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putInt(AGE_KEY, this.age);
+        nbt.putFloat(RANGE_KEY, this.range);
+        nbt.putInt(DIM_KEY, this.dataTracker.get(DIMENSION_KEY));
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return new EntitySpawnS2CPacket(this);
+    }
+
+    // animation
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.model.idle", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;

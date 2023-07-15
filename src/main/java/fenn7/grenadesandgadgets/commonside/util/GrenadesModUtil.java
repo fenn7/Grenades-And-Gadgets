@@ -5,9 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
-import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -107,9 +105,7 @@ public interface GrenadesModUtil {
 
     static Set<Block> loadBlocksFromTag(TagKey<Block> blockTag) {
         var blocks = new HashSet<Block>();
-        Registry.BLOCK.iterateEntries(GrenadesModTags.Blocks.END_FISSURE_CORRUPTION).forEach(
-            blockRegistryEntry -> blocks.add(blockRegistryEntry.value())
-        );
+        Registry.BLOCK.iterateEntries(blockTag).forEach(blockRegistryEntry -> blocks.add(blockRegistryEntry.value()));
         return blocks;
     }
 }
