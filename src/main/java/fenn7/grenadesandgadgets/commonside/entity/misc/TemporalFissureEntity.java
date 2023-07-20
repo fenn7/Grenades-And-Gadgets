@@ -147,6 +147,9 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
                     }
                 }
                 if (!worldsMatch) {
+                    // TODO: DEDICATED WORLD MOVEMENT HANDLER
+                    // FOR: NETHER -> OVERWORLD, OVERWORLD -> NETHER;
+                    // END -> NETHER WILL DO END -> OVERWORLD -> NETHER.
                     ServerWorld nether = this.getServer().getWorld(World.NETHER);
                     if (destination.equals(nether) || this.world.equals(nether)) {
                         entity.setInNetherPortal(entity.getBlockPos());
@@ -224,7 +227,7 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
 
     @Override
     public void onPlayerCollision(PlayerEntity player) {
-        ((GrenadesModEntityData) player).getPersistentData().putBoolean(NO_PORTAL_KEY, true);
+        //((GrenadesModEntityData) player).getPersistentData().putBoolean(NO_PORTAL_KEY, true);
     }
 
     @Override

@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 
 public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
     private static final float ICE_RANGE = 2.8F;
-    private static final float PACKED_THRESHOLD = 4.0F;
+    private static final float PERMAFROST_THRESHOLD = 4.0F;
     private static final float MAX_IMPACT_DAMAGE = 4.0F;
     private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.4F;
     private static final int MAX_DELAY_TICKS = 10;
@@ -83,7 +83,7 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
                     }
                 });
                 if (this.world.getBlockState(pos).isOf(Blocks.WATER)) {
-                    this.world.setBlockState(pos, power <= PACKED_THRESHOLD ? Blocks.ICE.getDefaultState() : Blocks.PACKED_ICE.getDefaultState());
+                    this.world.setBlockState(pos, power <= PERMAFROST_THRESHOLD ? Blocks.FROSTED_ICE.getDefaultState() : Blocks.ICE.getDefaultState());
                 } else if (this.world.getBlockState(pos).isOf(Blocks.WATER_CAULDRON)) {
                     this.world.setBlockState(pos, Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Math.round(power) + 1));
                 } else if (Blocks.SNOW.getDefaultState().canPlaceAt(this.world, pos)) {

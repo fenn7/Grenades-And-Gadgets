@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:honeycomb",
+    "minecraft:slime_ball",
+    "minecraft:redstone",
+    "minecraft:gunpowder",
+    "minecraft:kelp",
+    "minecraft:magma_cream",
+    "minecraft:feather",
+    "minecraft:obsidian",
+    "minecraft:creeper_head",
+    "minecraft:dragon_breath"
+  ]
+}

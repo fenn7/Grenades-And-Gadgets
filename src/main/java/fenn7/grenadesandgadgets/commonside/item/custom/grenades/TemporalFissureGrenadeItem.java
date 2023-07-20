@@ -39,6 +39,7 @@ public class TemporalFissureGrenadeItem extends AbstractGrenadeItem implements I
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        super.appendTooltip(stack, world, tooltip, context);
         NbtCompound stackNbt = stack.getOrCreateNbt();
         if (stackNbt.contains(NBT_DIMENSION_KEY)) {
             String dimensionName;

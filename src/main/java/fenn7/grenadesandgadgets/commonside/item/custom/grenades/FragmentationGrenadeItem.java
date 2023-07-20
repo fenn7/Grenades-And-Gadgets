@@ -25,6 +25,7 @@ public class FragmentationGrenadeItem extends AbstractGrenadeItem {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        super.appendTooltip(stack, world, tooltip, context);
         NbtCompound stackNbt = stack.getOrCreateNbt();
         if (stackNbt.contains(FRAGMENTS) && stackNbt.get(FRAGMENTS) instanceof NbtList) {
             tooltip.add(GrenadesModUtil.textOf("§l" + "Fragments:"));

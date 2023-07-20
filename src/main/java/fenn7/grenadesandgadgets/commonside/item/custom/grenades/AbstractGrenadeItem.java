@@ -1,12 +1,21 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
+import java.util.List;
+
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractGrenadeItem extends Item {
     protected float defaultRoll = 0.1F;
@@ -34,6 +43,14 @@ public abstract class AbstractGrenadeItem extends Item {
         }
 
         return TypedActionResult.success(itemStack, world.isClient());
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        String modifier = stack.getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY);
+        if (!modifier.isBlank()) {
+            tooltip.add(GrenadesModUtil.textOf("§n§6" + modifier));
+        }
     }
 
     protected void setPitchYawVelocity(PlayerEntity user, AbstractGrenadeEntity grenade, float roll, float speed, float divergence) {

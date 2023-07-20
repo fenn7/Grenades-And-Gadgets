@@ -26,6 +26,7 @@ public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        super.appendTooltip(stack, world, tooltip, context);
         NbtCompound nbt = stack.getSubNbt(SMOKE_BALL_COLOUR);
         if (nbt != null) {
             tooltip.add(GrenadesModUtil.textOf("§o" + "Possible Colours:"));
@@ -35,7 +36,6 @@ public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
                 tooltip.add(new TranslatableText("item.minecraft.firework_star." + colour.getName()));
             }
         }
-        super.appendTooltip(stack, world, tooltip, context);
     }
 
     @Override

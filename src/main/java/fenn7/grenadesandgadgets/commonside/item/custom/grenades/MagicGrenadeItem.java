@@ -34,6 +34,7 @@ public class MagicGrenadeItem extends AbstractGrenadeItem {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        super.appendTooltip(stack, world, tooltip, context);
         NbtCompound stackNbt = stack.getOrCreateNbt();
         if (stackNbt.contains(EFFECTS) && stackNbt.get(EFFECTS) instanceof NbtList) {
             tooltip.add(GrenadesModUtil.textOf("§l" + "Effects:"));
