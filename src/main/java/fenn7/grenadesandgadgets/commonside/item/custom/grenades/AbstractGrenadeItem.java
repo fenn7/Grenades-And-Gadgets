@@ -1,10 +1,11 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
-import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.MODIFIER_MAP;
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.GRAVITY;
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.LEVITY;
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.POTENT;
 
 import java.util.List;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
@@ -12,8 +13,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -38,9 +37,9 @@ public abstract class AbstractGrenadeItem extends Item {
             grenade.setItem(stack);
             float speed = this.defaultSpeed;
             switch (stack.getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY)) {
-                case "Potent" -> grenade.setPower(grenade.getPower() * 1.2F);
-                case "Levity" -> speed *= 1.15F;
-                case "Gravity" -> speed *= 0.85F;
+                case POTENT -> grenade.setPower(grenade.getPower() * 1.2F);
+                case LEVITY -> speed *= 1.15F;
+                case GRAVITY -> speed *= 0.85F;
             }
             this.setPitchYawVelocity(user, grenade, this.defaultRoll, speed, this.defaultDiv);
             world.spawnEntity(grenade);

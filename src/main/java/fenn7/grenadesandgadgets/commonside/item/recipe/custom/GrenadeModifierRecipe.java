@@ -1,20 +1,15 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe.custom;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.AbstractGrenadeItem;
-import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
 import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
@@ -23,17 +18,27 @@ import net.minecraft.world.World;
 
 public class GrenadeModifierRecipe extends SpecialCraftingRecipe {
     public static final String MODIFIER_KEY = "grenade.modifier";
+    public static final String STICKY = "Sticky";
+    public static final String ELASTIC = "Elastic";
+    public static final String REACTIVE = "Reactive";
+    public static final String POTENT = "Potent";
+    public static final String AQUATIC = "Aquatic";
+    public static final String MOLTEN = "Molten";
+    public static final String LEVITY = "Levity";
+    public static final String GRAVITY = "Gravity";
+    public static final String ECHOING = "Echoing";
+    public static final String CATACLYSMIC = "Cataclysmic";
     public static final Map<Item, String> MODIFIER_MAP = Map.of(
-        Items.HONEYCOMB,"Sticky",
-        Items.SLIME_BALL, "Elastic",
-        Items.REDSTONE, "Reactive",
-        Items.GUNPOWDER, "Potent",
-        Items.KELP, "Aquatic",
-        Items.MAGMA_CREAM, "Molten",
-        Items.FEATHER, "Levity",
-        Items.OBSIDIAN, "Gravity",
-        Items.CREEPER_HEAD, "Echoing",
-        Items.DRAGON_BREATH, "Cataclysmic"
+        Items.HONEYCOMB, STICKY,
+        Items.SLIME_BALL, ELASTIC,
+        Items.REDSTONE, REACTIVE,
+        Items.GUNPOWDER, POTENT,
+        Items.KELP, AQUATIC,
+        Items.MAGMA_CREAM, MOLTEN,
+        Items.FEATHER, LEVITY,
+        Items.OBSIDIAN, GRAVITY,
+        Items.CREEPER_HEAD, ECHOING,
+        Items.DRAGON_BREATH, CATACLYSMIC
     );
     private static final Ingredient MODIFIERS = Ingredient.fromTag(GrenadesModTags.Items.GRENADE_MODIFIERS);
     private static final Predicate<ItemStack> IS_GRENADE = stack -> stack.getItem() instanceof AbstractGrenadeItem;

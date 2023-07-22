@@ -1,5 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.STICKY;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +9,7 @@ import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.Entity;
@@ -65,7 +68,6 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         }
         if (this.age >= this.maxAgeTicks && !(this instanceof AbstractLingeringGrenadeEntity lingering
             && lingering.state != AbstractLingeringGrenadeEntity.LingeringState.UNEXPLODED)) {
-            // TODO: Make nades not rely on entity status?
             explodeWithEffects(this.power);
         }
         super.tick();
@@ -91,7 +93,11 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 2.0F);
-        this.explodeWithEffects(this.power);
+        if (!this.getModifierName().equals(STICKY)) {
+            this.explodeWithEffects(this.power);
+        } else {
+
+        }
         super.onEntityHit(entityHitResult);
     }
 
@@ -116,7 +122,6 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.world.sendEntityStatus(this, STATUS_BYTE);
         this.explode(power);
     }
-
 
     protected abstract void initialise();
 
