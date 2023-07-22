@@ -24,10 +24,10 @@ import net.minecraft.world.World;
 public class GrenadeModifierRecipe extends SpecialCraftingRecipe {
     public static final String MODIFIER_KEY = "grenade.modifier";
     public static final Map<Item, String> MODIFIER_MAP = Map.of(
-        Items.HONEYCOMB, "Sticky",
+        Items.HONEYCOMB,"Sticky",
         Items.SLIME_BALL, "Elastic",
         Items.REDSTONE, "Reactive",
-        Items.GUNPOWDER, "Powerful",
+        Items.GUNPOWDER, "Potent",
         Items.KELP, "Aquatic",
         Items.MAGMA_CREAM, "Molten",
         Items.FEATHER, "Levity",
@@ -75,8 +75,8 @@ public class GrenadeModifierRecipe extends SpecialCraftingRecipe {
             if (grenadeSlot >= 0 && modifierSlot >= 0)
                 break;
         }
-        ItemStack output = grenadeSlot >= 0 ? inventory.getStack(grenadeSlot) : ItemStack.EMPTY;
-        if (modifierSlot > 0) {
+        ItemStack output = grenadeSlot >= 0 ? inventory.getStack(grenadeSlot).copy().split(1) : ItemStack.EMPTY;
+        if (modifierSlot >= 0) {
             output.getOrCreateNbt().putString(MODIFIER_KEY, MODIFIER_MAP.getOrDefault(inventory.getStack(modifierSlot).getItem(), ""));
         }
         return output;

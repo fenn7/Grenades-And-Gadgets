@@ -1,5 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.MODIFIER_MAP;
+
 import java.util.List;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
@@ -10,6 +12,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -28,21 +31,24 @@ public abstract class AbstractGrenadeItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
+        ItemStack stack = user.getStackInHand(hand);
         user.getItemCooldownManager().set(this, 20);
-
         if (!world.isClient) {
-            AbstractGrenadeEntity grenade = createGrenadeAt(world, user, user.getStackInHand(hand));
-            grenade.setItem(itemStack);
-            setPitchYawVelocity(user, grenade, this.defaultRoll, this.defaultSpeed, this.defaultDiv);
+            AbstractGrenadeEntity grenade = this.createGrenadeAt(world, user, user.getStackInHand(hand));
+            grenade.setItem(stack);
+            float speed = this.defaultSpeed;
+            switch (stack.getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY)) {
+                case "Potent" -> grenade.setPower(grenade.getPower() * 1.2F);
+                case "Levity" -> speed *= 1.15F;
+                case "Gravity" -> speed *= 0.85F;
+            }
+            this.setPitchYawVelocity(user, grenade, this.defaultRoll, speed, this.defaultDiv);
             world.spawnEntity(grenade);
         }
-
         if (!user.isCreative()) {
-            itemStack.decrement(1);
+            stack.decrement(1);
         }
-
-        return TypedActionResult.success(itemStack, world.isClient());
+        return TypedActionResult.success(stack, world.isClient());
     }
 
     @Override

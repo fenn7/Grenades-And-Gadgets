@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.Entity;
@@ -138,6 +139,10 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         Set<Entity> entities = new HashSet<>();
         blocks.stream().forEach(pos -> entities.addAll(this.world.getNonSpectatingEntities(Entity.class, new Box(pos))));
         return entities;
+    }
+
+    protected String getModifierName() {
+        return this.getItem().getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY);
     }
 
     public void setMaxAgeTicks(int maxAgeTicks) {
