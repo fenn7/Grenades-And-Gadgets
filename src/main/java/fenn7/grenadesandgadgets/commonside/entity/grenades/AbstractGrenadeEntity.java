@@ -1,9 +1,10 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.REACTIVE;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.STICKY;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,10 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -38,10 +43,12 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements IAnimatable {
-    protected final static byte STATUS_BYTE = (byte) 3;
+    private static final String STICK_TARGET = "sticky.target";
+    protected static final byte STATUS_BYTE = (byte) 3;
     protected final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     protected int maxAgeTicks = 100;
     protected boolean shouldBounce = true;
+    protected float bounceMultiplier = 2.0F / 3;
     protected float power;
     protected ParticleEffect explosionEffect;
     protected GrenadesModSoundProfile explosionSoundProfile;
@@ -70,33 +77,70 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             && lingering.state != AbstractLingeringGrenadeEntity.LingeringState.UNEXPLODED)) {
             explodeWithEffects(this.power);
         }
+        if (this.getModifierName().equals(STICKY)) {
+            this.updateStickyPosition();
+        }
         super.tick();
+    }
+
+    private void updateStickyPosition() {
+        NbtCompound thisNbt = ((GrenadesModEntityData) this).getPersistentData();
+        if (thisNbt.contains(STICK_TARGET)) {
+            this.setVelocity(Vec3d.ZERO);
+            this.setNoGravity(true);
+            this.noClip = true;
+            this.setInvulnerable(true);
+            NbtElement positionNbt = thisNbt.get(STICK_TARGET);
+            if (positionNbt instanceof NbtList positionXYZ && positionXYZ.size() == 3) {
+                this.setPos(positionXYZ.getDouble(0), positionXYZ.getDouble(1), positionXYZ.getDouble(2));
+            } else if (positionNbt instanceof NbtInt entityID) {
+                Entity entity = this.world.getEntityById(entityID.intValue());
+                if (entity != null && entity.isAlive()) {
+                    this.setPos(entity.getX(), entity.getBodyY(0.5D), entity.getZ());
+                } else {
+                    this.explodeWithEffects(this.power);
+                }
+            }
+        }
     }
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
         if (this.shouldBounce) {
             String hitSide = blockHitResult.getSide().asString();
-            Vec3d velocity = this.getVelocity().multiply(0.65F);
+            Vec3d velocity = this.getVelocity().multiply(this.bounceMultiplier);
             switch (hitSide) {
                 case "up", "down" -> this.setVelocity(velocity.getX(), -velocity.getY(), velocity.getZ());
                 case "east", "west" -> this.setVelocity(-velocity.getX(), velocity.getY(), velocity.getZ());
                 case "north", "south" -> this.setVelocity(velocity.getX(), velocity.getY(), -velocity.getZ());
             }
         } else {
-            this.world.sendEntityStatus(this, STATUS_BYTE);
-            explode(this.power);
+            switch (this.getModifierName()) {
+                case REACTIVE -> this.explodeWithEffects(this.power);
+                case STICKY -> {
+                    NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
+                    if (!nbt.contains(STICK_TARGET)) {
+                        NbtList positionXYZ = new NbtList();
+                        positionXYZ.addAll(List.of(NbtDouble.of(this.getX()), NbtDouble.of(this.getY()), NbtDouble.of(this.getZ())));
+                        nbt.put(STICK_TARGET, positionXYZ);
+                    }
+                }
+            }
         }
         super.onBlockHit(blockHitResult);
     }
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 2.0F);
+        Entity target = entityHitResult.getEntity();
+        target.damage(DamageSource.thrownProjectile(this, this.getOwner()), 2.0F);
         if (!this.getModifierName().equals(STICKY)) {
             this.explodeWithEffects(this.power);
-        } else {
-
+        } else if (target != this.getOwner()) {
+            NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
+            if (!nbt.contains(STICK_TARGET)) {
+                nbt.putInt(STICK_TARGET, target.getId());
+            }
         }
         super.onEntityHit(entityHitResult);
     }
@@ -105,16 +149,20 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     public NbtCompound writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("current_age", this.age);
-        nbt.putFloat("explosion_power", this.power);
+        nbt.putInt("max_age", this.maxAgeTicks);
         nbt.putBoolean("should_bounce", this.shouldBounce);
+        nbt.putFloat("explosion_power", this.power);
+        nbt.putFloat("bounce_multiplier", this.bounceMultiplier);
         return nbt;
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         this.age = nbt.getInt("current_age");
-        this.power = nbt.getFloat("explosion_power");
+        this.maxAgeTicks = nbt.getInt("max_age");
         this.shouldBounce = nbt.getBoolean("should_bounce");
+        this.power = nbt.getFloat("explosion_power");
+        this.bounceMultiplier = nbt.getFloat("bounce_multiplier");
         super.readNbt(nbt);
     }
 
@@ -136,13 +184,13 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     protected Set<LivingEntity> getLivingEntitiesFromBlocks(Set<BlockPos> blocks) {
         Set<LivingEntity> entities = new HashSet<>();
-        blocks.stream().forEach(pos -> entities.addAll(this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos))));
+        blocks.forEach(pos -> entities.addAll(this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos))));
         return entities;
     }
 
     protected Set<Entity> getEntitiesFromBlocks(Set<BlockPos> blocks) {
         Set<Entity> entities = new HashSet<>();
-        blocks.stream().forEach(pos -> entities.addAll(this.world.getNonSpectatingEntities(Entity.class, new Box(pos))));
+        blocks.forEach(pos -> entities.addAll(this.world.getNonSpectatingEntities(Entity.class, new Box(pos))));
         return entities;
     }
 
@@ -158,12 +206,28 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.shouldBounce = shouldBounce;
     }
 
+    public void setBounceMultiplier(float bounceMultiplier) {
+        this.bounceMultiplier = bounceMultiplier;
+    }
+
     public void setPower(float power) {
         this.power = power;
     }
 
     public float getPower() {
         return this.power;
+    }
+
+    public float getBounceMultiplier() {
+        return this.bounceMultiplier;
+    }
+
+    public int getMaxAgeTicks() {
+        return this.maxAgeTicks;
+    }
+
+    public boolean getShouldBounce() {
+        return this.shouldBounce;
     }
 
     public void setExplosionEffect(ParticleEffect effect) {
