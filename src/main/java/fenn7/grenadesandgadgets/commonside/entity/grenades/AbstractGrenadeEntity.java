@@ -1,5 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.GRAVITY;
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.MOLTEN;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.REACTIVE;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.STICKY;
 
@@ -10,6 +12,7 @@ import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
+import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
@@ -17,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -77,10 +81,20 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             && lingering.state != AbstractLingeringGrenadeEntity.LingeringState.UNEXPLODED)) {
             explodeWithEffects(this.power);
         }
-        if (this.getModifierName().equals(STICKY)) {
-            this.updateStickyPosition();
+        switch (this.getModifierName()) {
+            case STICKY -> this.updateStickyPosition();
+            case MOLTEN -> this.tickMolten();
         }
         super.tick();
+    }
+
+    private void tickMolten() {
+        if (!this.isInvisible()) {
+            this.setOnFireFor(1);
+        }
+        if (this.isSubmergedInWater()) {
+            this.explodeWithEffects(this.power);
+        }
     }
 
     private void updateStickyPosition() {
@@ -134,13 +148,20 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity target = entityHitResult.getEntity();
         target.damage(DamageSource.thrownProjectile(this, this.getOwner()), 2.0F);
-        if (!this.getModifierName().equals(STICKY)) {
-            this.explodeWithEffects(this.power);
-        } else if (target != this.getOwner()) {
-            NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
-            if (!nbt.contains(STICK_TARGET)) {
-                nbt.putInt(STICK_TARGET, target.getId());
+        switch (this.getModifierName()) {
+            case STICKY -> {
+                NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
+                if (!nbt.contains(STICK_TARGET)) {
+                    nbt.putInt(STICK_TARGET, target.getId());
+                }
             }
+            case MOLTEN -> target.setOnFireFor(5);
+            case GRAVITY -> {
+                if (target instanceof LivingEntity alive) {
+                    alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 20, 4));
+                }
+            }
+            default -> this.explodeWithEffects(this.power);
         }
         super.onEntityHit(entityHitResult);
     }
@@ -194,7 +215,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         return entities;
     }
 
-    protected String getModifierName() {
+    public String getModifierName() {
         return this.getItem().getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY);
     }
 

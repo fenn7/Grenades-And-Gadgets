@@ -6,7 +6,8 @@
     "commonside.GrenadesModEntityDataMixin",
     "commonside.LivingEntityMixin",
     "commonside.ServerPlayerEntityMixin",
-    "commonside.DamageSourceAccessorMixin"
+    "commonside.DamageSourceAccessorMixin",
+    "commonside.ProjectileUtilMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -24,8 +24,8 @@ public class GrenadeModifierRecipe extends SpecialCraftingRecipe {
     public static final String POTENT = "Potent";
     public static final String AQUATIC = "Aquatic";
     public static final String MOLTEN = "Molten";
-    public static final String LEVITY = "Levity";
-    public static final String GRAVITY = "Gravity";
+    public static final String LEVITY = "Levitous";
+    public static final String GRAVITY = "Gravitous";
     public static final String ECHOING = "Echoing";
     public static final String CATACLYSMIC = "Cataclysmic";
     public static final Map<Item, String> MODIFIER_MAP = Map.of(
