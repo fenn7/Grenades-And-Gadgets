@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.AQUATIC;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.CATACLYSMIC;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.ECHOING;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.GRAVITY;
@@ -56,6 +57,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     private static final Double MINIMUM_CATACLYSMIC_THRESHOLD = 0.2D;
     private static final float CATACLYSMIC_MULTIPLIER = 0.75F;
     private static final float ECHOING_MULTIPLIER = 1.5F;
+    private static final float AQUATIC_MULTIPLIER = 1.25F;
     protected static final String STICK_TARGET = "sticky.target";
     protected static final byte STATUS_BYTE = (byte) 3;
     protected static TrackedData<Boolean> BOUNCE_FLAG = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -93,17 +95,19 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     public void tick() {
         if (this.age == 0) {
             world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE,
-                0.7F, 1.5F, true);
+                0.5F, 1.5F, true);
         }
         if (this.age >= this.getMaxAgeTicks() && !(this instanceof AbstractLingeringGrenadeEntity lingering
             && lingering.state != AbstractLingeringGrenadeEntity.LingeringState.UNEXPLODED)) {
             this.explodeWithEffects(this.power);
         }
+        Vec3d velocity = this.getVelocity();
+        super.tick();
         switch (this.getModifierName()) {
             case STICKY -> this.updateStickyPosition();
             case MOLTEN -> this.tickMolten();
+            case AQUATIC -> this.updateAquaticVelocity(velocity);
         }
-        super.tick();
     }
 
     private void tickMolten() {
@@ -112,6 +116,12 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         }
         if (this.isSubmergedInWater()) {
             this.explodeWithEffects(this.power);
+        }
+    }
+
+    private void updateAquaticVelocity(Vec3d velocity) {
+        if (this.isSubmergedInWater()) {
+            this.setVelocity(velocity);
         }
     }
 
@@ -151,11 +161,21 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                 case "east", "west" -> this.setVelocity(-velocity.getX(), velocity.getY(), velocity.getZ());
                 case "north", "south" -> this.setVelocity(velocity.getX(), velocity.getY(), -velocity.getZ());
             }
-            if (this.getModifierName().equals(CATACLYSMIC) && velocity.length() >= MINIMUM_CATACLYSMIC_THRESHOLD) {
-                var copy = this.spawnCopyAtLocation();
-                if (copy != null) {
-                    copy.setPower(this.power * CATACLYSMIC_MULTIPLIER);
-                    copy.setMaxAgeTicks(0);
+            switch (this.getModifierName()) {
+                case CATACLYSMIC -> {
+                    if (velocity.length() >= MINIMUM_CATACLYSMIC_THRESHOLD) {
+                        var copy = this.spawnCopyAtLocation();
+                        if (copy != null) {
+                            copy.setPower(this.power * CATACLYSMIC_MULTIPLIER);
+                            copy.setMaxAgeTicks(0);
+                        }
+                    }
+                }
+                case AQUATIC -> {
+                    if (this.isSubmergedInWater()) {
+                        this.setPower(this.power * AQUATIC_MULTIPLIER);
+                        this.explodeWithEffects(this.power);
+                    }
                 }
             }
         } else {
@@ -188,6 +208,12 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                 NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
                 if (!nbt.contains(STICK_TARGET)) {
                     nbt.putInt(STICK_TARGET, target.getId());
+                }
+            }
+            case AQUATIC -> {
+                if (this.isSubmergedInWater()) {
+                    this.setPower(this.power * AQUATIC_MULTIPLIER);
+                    this.explodeWithEffects(this.power);
                 }
             }
             case MOLTEN -> target.setOnFireFor(5);

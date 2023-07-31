@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
@@ -89,6 +90,23 @@ public abstract class AbstractLingeringGrenadeEntity extends AbstractGrenadeEnti
             return;
         }
         super.onEntityHit(entityHitResult);
+    }
+
+    @Override
+    public boolean isPushedByFluids() {
+        return this.state == LingeringState.UNEXPLODED;
+    }
+
+    @Override
+    public boolean isPushable() {
+        return this.state == LingeringState.UNEXPLODED;
+    }
+
+    @Override
+    public void pushAwayFrom(Entity entity) {
+        if (this.state == LingeringState.UNEXPLODED) {
+            super.pushAwayFrom(entity);
+        }
     }
 
     @Override
