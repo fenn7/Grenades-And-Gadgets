@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -107,5 +109,18 @@ public interface GrenadesModUtil {
         var blocks = new HashSet<Block>();
         Registry.BLOCK.iterateEntries(blockTag).forEach(blockRegistryEntry -> blocks.add(blockRegistryEntry.value()));
         return blocks;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T extends AbstractGrenadeEntity> T copyGrenadeFrom(T entity, boolean keepModifier) {
+        T newEntity = (T) entity.getType().create(entity.world);
+        if (newEntity != null) {
+            if (keepModifier) {
+                var oldModifier = entity.getGrenadeItemStack().getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY);
+                newEntity.getGrenadeItemStack().getOrCreateNbt().putString(GrenadeModifierRecipe.MODIFIER_KEY, oldModifier);
+            }
+            return newEntity;
+        }
+        return null;
     }
 }

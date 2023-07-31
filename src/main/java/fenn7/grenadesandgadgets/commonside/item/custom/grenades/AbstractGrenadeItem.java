@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
 import static fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets.SYNC_GRENADE_S2C;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.CATACLYSMIC;
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.ECHOING;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.ELASTIC;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.GRAVITY;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.LEVITY;
@@ -37,7 +38,8 @@ public abstract class AbstractGrenadeItem extends Item {
     private static final float REACTIVE_AGE_MULTIPLIER = 0.8F;
     private static final float MOLTEN_BOUNCE_MULTIPLIER = 1.2F;
     private static final float POTENCY_MULTIPLIER = 1.2F;
-    private static final float CATACLYSMIC_BOUNCE_MULTIPLIER = 0.9F;
+    private static final float CATACLYSMIC_BOUNCE_MULTIPLIER = 1.1F;
+    private static final float CATACLYSMIC_AGE_MULTIPLIER = 0.7F;
     protected float defaultRoll = 0.1F;
     protected float defaultSpeed = 0.75F;
     protected float defaultDiv = 0.2F;
@@ -54,7 +56,7 @@ public abstract class AbstractGrenadeItem extends Item {
         grenade.setItem(stack);
         float speed = this.defaultSpeed;
         switch (stack.getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY)) {
-            case STICKY -> grenade.setShouldBounce(false);
+            case STICKY, ECHOING -> grenade.setShouldBounce(false);
             case ELASTIC -> grenade.setBounceMultiplier(ELASTIC_BOUNCE_FACTOR);
             case POTENT -> grenade.setPower(grenade.getPower() * POTENCY_MULTIPLIER);
             case REACTIVE -> {
@@ -72,7 +74,10 @@ public abstract class AbstractGrenadeItem extends Item {
                 grenade.setBounceMultiplier(grenade.getBounceMultiplier() / MASS_BOUNCE_MULTIPLIER);
                 grenade.setPower(grenade.getPower() * MASS_POWER_MULTIPLIER);
             }
-            case CATACLYSMIC -> grenade.setBounceMultiplier(grenade.getBounceMultiplier() * CATACLYSMIC_BOUNCE_MULTIPLIER);
+            case CATACLYSMIC -> {
+                grenade.setMaxAgeTicks(Math.round(grenade.getMaxAgeTicks() * CATACLYSMIC_AGE_MULTIPLIER));
+                grenade.setBounceMultiplier(grenade.getBounceMultiplier() * CATACLYSMIC_BOUNCE_MULTIPLIER);
+            }
         }
         this.setPitchYawVelocity(user, grenade, this.defaultRoll, speed, this.defaultDiv);
         if (!world.isClient()) {

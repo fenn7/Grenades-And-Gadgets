@@ -1,5 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.CATACLYSMIC;
+import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.ECHOING;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.GRAVITY;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.MOLTEN;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.REACTIVE;
@@ -47,7 +49,11 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements IAnimatable {
+    private static final Set<String> EXPLOSION_IMMUNE_MODIFIERS = Set.of(CATACLYSMIC, STICKY);
     private static final String STICK_TARGET = "sticky.target";
+    private static final Double MINIMUM_CATACLYSMIC_THRESHOLD = 0.2D;
+    private static final float CATACLYSMIC_MULTIPLIER = 0.75F;
+    private static final float ECHOING_MULTIPLIER = 1.5F;
     protected static final byte STATUS_BYTE = (byte) 3;
     protected final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     protected int maxAgeTicks = 100;
@@ -100,10 +106,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     private void updateStickyPosition() {
         NbtCompound thisNbt = ((GrenadesModEntityData) this).getPersistentData();
         if (thisNbt.contains(STICK_TARGET)) {
-            this.setVelocity(Vec3d.ZERO);
-            this.setNoGravity(true);
             this.noClip = true;
-            this.setInvulnerable(true);
+            this.setImmobile();
             NbtElement positionNbt = thisNbt.get(STICK_TARGET);
             if (positionNbt instanceof NbtList positionXYZ && positionXYZ.size() == 3) {
                 this.setPos(positionXYZ.getDouble(0), positionXYZ.getDouble(1), positionXYZ.getDouble(2));
@@ -118,6 +122,13 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         }
     }
 
+    protected void setImmobile() {
+        this.setVelocity(Vec3d.ZERO);
+        this.setNoGravity(true);
+        this.setInvulnerable(true);
+        this.setShouldBounce(false);
+    }
+
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
         if (this.shouldBounce) {
@@ -128,9 +139,16 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                 case "east", "west" -> this.setVelocity(-velocity.getX(), velocity.getY(), velocity.getZ());
                 case "north", "south" -> this.setVelocity(velocity.getX(), velocity.getY(), -velocity.getZ());
             }
+            if (this.getModifierName().equals(CATACLYSMIC) && velocity.length() >= MINIMUM_CATACLYSMIC_THRESHOLD) {
+                var copy = this.spawnCopyAtLocation();
+                if (copy != null) {
+                    copy.setPower(this.power * CATACLYSMIC_MULTIPLIER);
+                    copy.setMaxAgeTicks(0);
+                }
+            }
         } else {
             switch (this.getModifierName()) {
-                case REACTIVE -> this.explodeWithEffects(this.power);
+                case REACTIVE, ECHOING -> this.explodeWithEffects(this.power);
                 case STICKY -> {
                     NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
                     if (!nbt.contains(STICK_TARGET)) {
@@ -142,6 +160,11 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             }
         }
         super.onBlockHit(blockHitResult);
+    }
+
+    @Override
+    public boolean isImmuneToExplosion() {
+        return EXPLOSION_IMMUNE_MODIFIERS.contains(this.getModifierName());
     }
 
     @Override
@@ -159,6 +182,15 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             case GRAVITY -> {
                 if (target instanceof LivingEntity alive) {
                     alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 20, 4));
+                }
+            }
+            case CATACLYSMIC -> {
+                if (this.getVelocity().length() >= MINIMUM_CATACLYSMIC_THRESHOLD) {
+                    var copy = this.spawnCopyAtLocation();
+                    if (copy != null) {
+                        copy.setPower(this.power * CATACLYSMIC_MULTIPLIER);
+                        copy.setMaxAgeTicks(0);
+                    };
                 }
             }
             default -> this.explodeWithEffects(this.power);
@@ -187,6 +219,18 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         super.readNbt(nbt);
     }
 
+    @Override
+    public void remove(RemovalReason reason) {
+        if (this.getModifierName().equals(ECHOING)) {
+            var clone = this.spawnCopyAtLocation();
+            if (clone != null) {
+                clone.setPower(this.power * ECHOING_MULTIPLIER);
+                clone.setMaxAgeTicks(20);
+            }
+        }
+        super.remove(reason);
+    }
+
     protected void explodeWithEffects(float power) {
         this.world.sendEntityStatus(this, STATUS_BYTE);
         this.explode(power);
@@ -195,6 +239,17 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     protected abstract void initialise();
 
     protected abstract void explode(float power);
+
+    protected AbstractGrenadeEntity spawnCopyAtLocation() {
+        var clone = GrenadesModUtil.copyGrenadeFrom(this, false);
+        if (clone != null) {
+            clone.setImmobile();
+            clone.setInvisible(true);
+            clone.setPosition(this.getPos());
+            this.world.spawnEntity(clone);
+        }
+        return clone;
+    }
 
     protected Set<BlockPos> getAffectedBlocksAtRange(float power) {
         BlockPos thisPos = this.getBlockPos();
@@ -296,6 +351,6 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     @Override
     public AnimationFactory getFactory() {
-        return factory;
+        return this.factory;
     }
 }
