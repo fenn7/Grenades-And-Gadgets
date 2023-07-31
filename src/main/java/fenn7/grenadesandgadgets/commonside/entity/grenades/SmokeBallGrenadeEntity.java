@@ -9,6 +9,8 @@ import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -20,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtInt;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -92,13 +95,17 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
     }
 
     private Set<BlockPos> getOrCreateSmokeBlocks() {
-        if (this.smokeBlocks != null) {
+        if (this.smokeBlocks != null && !this.isStuckToEntity()) {
             return this.smokeBlocks;
         } else {
             Set<BlockPos> newSmokeBlocks = this.getAffectedBlocksAtRange(this.power);
             this.smokeBlocks = newSmokeBlocks;
             return newSmokeBlocks;
         }
+    }
+
+    private boolean isStuckToEntity() {
+        return this.getModifierName().equals(GrenadeModifierRecipe.STICKY) && ((GrenadesModEntityData) this).getPersistentData().get(STICK_TARGET) instanceof NbtInt;
     }
 
     private List<Integer> getOrCreateColours() {

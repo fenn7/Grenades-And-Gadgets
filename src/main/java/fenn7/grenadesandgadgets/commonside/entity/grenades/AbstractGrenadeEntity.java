@@ -22,6 +22,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.ItemStack;
@@ -50,15 +53,15 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements IAnimatable {
     private static final Set<String> EXPLOSION_IMMUNE_MODIFIERS = Set.of(CATACLYSMIC, STICKY);
-    private static final String STICK_TARGET = "sticky.target";
     private static final Double MINIMUM_CATACLYSMIC_THRESHOLD = 0.2D;
     private static final float CATACLYSMIC_MULTIPLIER = 0.75F;
     private static final float ECHOING_MULTIPLIER = 1.5F;
+    protected static final String STICK_TARGET = "sticky.target";
     protected static final byte STATUS_BYTE = (byte) 3;
+    protected static TrackedData<Boolean> BOUNCE_FLAG = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    protected static TrackedData<Float> BOUNCE_MULTIPLIER = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    protected static TrackedData<Integer> MAX_AGE = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.INTEGER);
     protected final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
-    protected int maxAgeTicks = 100;
-    protected boolean shouldBounce = true;
-    protected float bounceMultiplier = 2.0F / 3;
     protected float power;
     protected ParticleEffect explosionEffect;
     protected GrenadesModSoundProfile explosionSoundProfile;
@@ -78,14 +81,23 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.initialise();
     }
 
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(BOUNCE_FLAG, true);
+        this.dataTracker.startTracking(BOUNCE_MULTIPLIER, 2F / 3F);
+        this.dataTracker.startTracking(MAX_AGE, 100);
+    }
+
+    @Override
     public void tick() {
         if (this.age == 0) {
             world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.HOSTILE,
                 0.7F, 1.5F, true);
         }
-        if (this.age >= this.maxAgeTicks && !(this instanceof AbstractLingeringGrenadeEntity lingering
+        if (this.age >= this.getMaxAgeTicks() && !(this instanceof AbstractLingeringGrenadeEntity lingering
             && lingering.state != AbstractLingeringGrenadeEntity.LingeringState.UNEXPLODED)) {
-            explodeWithEffects(this.power);
+            this.explodeWithEffects(this.power);
         }
         switch (this.getModifierName()) {
             case STICKY -> this.updateStickyPosition();
@@ -131,9 +143,9 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
-        if (this.shouldBounce) {
+        if (this.getShouldBounce()) {
             String hitSide = blockHitResult.getSide().asString();
-            Vec3d velocity = this.getVelocity().multiply(this.bounceMultiplier);
+            Vec3d velocity = this.getVelocity().multiply(this.getBounceMultiplier());
             switch (hitSide) {
                 case "up", "down" -> this.setVelocity(velocity.getX(), -velocity.getY(), velocity.getZ());
                 case "east", "west" -> this.setVelocity(-velocity.getX(), velocity.getY(), velocity.getZ());
@@ -190,7 +202,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                     if (copy != null) {
                         copy.setPower(this.power * CATACLYSMIC_MULTIPLIER);
                         copy.setMaxAgeTicks(0);
-                    };
+                    }
                 }
             }
             default -> this.explodeWithEffects(this.power);
@@ -202,20 +214,20 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     public NbtCompound writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("current_age", this.age);
-        nbt.putInt("max_age", this.maxAgeTicks);
-        nbt.putBoolean("should_bounce", this.shouldBounce);
         nbt.putFloat("explosion_power", this.power);
-        nbt.putFloat("bounce_multiplier", this.bounceMultiplier);
+        nbt.putInt("max_age", this.getMaxAgeTicks());
+        nbt.putBoolean("should_bounce", this.getShouldBounce());
+        nbt.putFloat("bounce_multiplier", this.getBounceMultiplier());
         return nbt;
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         this.age = nbt.getInt("current_age");
-        this.maxAgeTicks = nbt.getInt("max_age");
-        this.shouldBounce = nbt.getBoolean("should_bounce");
         this.power = nbt.getFloat("explosion_power");
-        this.bounceMultiplier = nbt.getFloat("bounce_multiplier");
+        this.dataTracker.set(MAX_AGE, nbt.getInt("max_age"));
+        this.dataTracker.set(BOUNCE_FLAG, nbt.getBoolean("should_bounce"));
+        this.dataTracker.set(BOUNCE_MULTIPLIER, nbt.getFloat("bounce_multiplier"));
         super.readNbt(nbt);
     }
 
@@ -236,9 +248,9 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.explode(power);
     }
 
-    protected abstract void initialise();
-
     protected abstract void explode(float power);
+
+    protected abstract void initialise();
 
     protected AbstractGrenadeEntity spawnCopyAtLocation() {
         var clone = GrenadesModUtil.copyGrenadeFrom(this, false);
@@ -275,15 +287,15 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     public void setMaxAgeTicks(int maxAgeTicks) {
-        this.maxAgeTicks = maxAgeTicks;
+        this.dataTracker.set(MAX_AGE, maxAgeTicks);
     }
 
     public void setShouldBounce(boolean shouldBounce) {
-        this.shouldBounce = shouldBounce;
+        this.dataTracker.set(BOUNCE_FLAG, shouldBounce);
     }
 
     public void setBounceMultiplier(float bounceMultiplier) {
-        this.bounceMultiplier = bounceMultiplier;
+        this.dataTracker.set(BOUNCE_MULTIPLIER, bounceMultiplier);
     }
 
     public void setPower(float power) {
@@ -295,15 +307,15 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     public float getBounceMultiplier() {
-        return this.bounceMultiplier;
+        return this.dataTracker.get(BOUNCE_MULTIPLIER);
     }
 
     public int getMaxAgeTicks() {
-        return this.maxAgeTicks;
+        return this.dataTracker.get(MAX_AGE);
     }
 
     public boolean getShouldBounce() {
-        return this.shouldBounce;
+        return this.dataTracker.get(BOUNCE_FLAG);
     }
 
     public void setExplosionEffect(ParticleEffect effect) {
