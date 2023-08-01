@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "grenadesandgadgets:geo/block/radiant_light_block" }
+    "": {
+      "model": "grenadesandgadgets:block/radiant_light_block"
+    }
   }
 }

@@ -1,6 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.block.entity;
 
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
+import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +15,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class RadiantLightBlockEntity extends BlockEntity implements IAnimatable {
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
 
     public RadiantLightBlockEntity(BlockPos pos, BlockState state) {
         super(GrenadesModBlockEntities.RADIANT_LIGHT_BLOCK_ENTITY, pos, state);

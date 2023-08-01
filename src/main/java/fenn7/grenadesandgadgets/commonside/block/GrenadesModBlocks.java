@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GrenadesModBlocks {
     public static final Block RADIANT_LIGHT_BLOCK = registerBlockWithoutBlockItem("radiant_light_block",
-        new RadiantLightBlock(FabricBlockSettings.of(Material.AIR).luminance(20).dropsNothing().breakInstantly().noCollision()), GrenadesModItemGroup.GRENADESMOD_MISC);
+        new RadiantLightBlock(FabricBlockSettings.of(Material.AIR).luminance(20).nonOpaque().dropsNothing().breakInstantly().noCollision().blockVision((state, world, pos) -> false)));
 
     private static Block registerBlock(String name, Block block, ItemGroup group, String tooltipKey) {
         registerBlockItem(name, block, group, tooltipKey);
@@ -40,7 +40,7 @@ public class GrenadesModBlocks {
             });
     }
 
-    private static Block registerBlockWithoutBlockItem(String name, Block block, ItemGroup group) {
+    private static Block registerBlockWithoutBlockItem(String name, Block block) {
         return Registry.register(Registry.BLOCK, new Identifier(GrenadesMod.MOD_ID, name), block);
     }
 
@@ -52,10 +52,6 @@ public class GrenadesModBlocks {
     private static Item registerBlockItem(String name, Block block, ItemGroup group) {
         return Registry.register(Registry.ITEM, new Identifier(GrenadesMod.MOD_ID, name),
             new BlockItem(block, new FabricItemSettings().group(group)));
-    }
-
-    public static void registerModBlocks() {
-        GrenadesMod.LOGGER.info("Registering ModBlocks for " + GrenadesMod.MOD_ID);
     }
 
     public static void registerBlocks() {
