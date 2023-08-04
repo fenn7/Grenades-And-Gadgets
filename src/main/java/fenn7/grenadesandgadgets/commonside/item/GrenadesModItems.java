@@ -2,6 +2,9 @@ package fenn7.grenadesandgadgets.commonside.item;
 
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlocks;
+import fenn7.grenadesandgadgets.commonside.item.custom.block.GrenadierTableBlockItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.ConvergenceGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.DecoyGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.DivergenceGrenadeItem;
@@ -54,6 +57,12 @@ public class GrenadesModItems {
         new StormGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(6)));
     public static final Item GRENADE_TEMPORAL_FISSURE = register("grenade_temporal_fissure_3d",
         new TemporalFissureGrenadeItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(4).rarity(Rarity.EPIC)));
+
+    // BLOCKITEMS
+    public static final Item HIDDEN_EXPLOSIVE_BLOCK = register("hidden_explosive_block",
+        new HiddenExplosiveBlockItem(GrenadesModBlocks.HIDDEN_EXPLOSIVE_BLOCK, new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
+    public static final Item GRENADIER_TABLE_BLOCK = register("grenadier_table_block",
+        new GrenadierTableBlockItem(GrenadesModBlocks.GRENADIER_TABLE_BLOCK, new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");

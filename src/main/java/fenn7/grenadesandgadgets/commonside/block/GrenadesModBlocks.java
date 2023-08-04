@@ -27,11 +27,11 @@ public class GrenadesModBlocks {
     public static final Block RADIANT_LIGHT_BLOCK = registerBlockWithoutBlockItem("radiant_light_block",
         new RadiantLightBlock(FabricBlockSettings.of(Material.AIR).luminance(20).nonOpaque().dropsNothing().breakInstantly().noCollision().blockVision((state, world, pos) -> false)));
 
-    public static final Block HIDDEN_EXPLOSIVE_BLOCK = registerBlock("hidden_explosive_block",
-        new HiddenExplosiveBlock(FabricBlockSettings.of(Material.METAL)), GrenadesModItemGroup.GRENADESMOD_MISC);
+    public static final Block HIDDEN_EXPLOSIVE_BLOCK = registerBlockWithoutBlockItem("hidden_explosive_block",
+        new HiddenExplosiveBlock(FabricBlockSettings.of(Material.METAL)));
 
-    public static final Block GRENADIER_TABLE_BLOCK = registerBlock("grenadier_table_block",
-        new GrenadierTableBlock(FabricBlockSettings.of(Material.METAL)), GrenadesModItemGroup.GRENADESMOD_MISC);
+    public static final Block GRENADIER_TABLE_BLOCK = registerBlockWithoutBlockItem("grenadier_table_block",
+        new GrenadierTableBlock(FabricBlockSettings.of(Material.METAL)));
 
     private static Block registerBlockTooltip(String name, Block block, ItemGroup group, String tooltipKey) {
         registerBlockItemTooltip(name, block, group, tooltipKey);

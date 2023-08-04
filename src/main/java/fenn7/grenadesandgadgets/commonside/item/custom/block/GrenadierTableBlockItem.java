@@ -1,10 +1,8 @@
-package fenn7.grenadesandgadgets.commonside.block.entity;
+package fenn7.grenadesandgadgets.commonside.item.custom.block;
 
-import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -12,11 +10,11 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class GrenadierTableBlockEntity extends BlockEntity implements IAnimatable {
+public class GrenadierTableBlockItem extends BlockItem implements IAnimatable {
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
 
-    public GrenadierTableBlockEntity(BlockPos pos, BlockState state) {
-        super(GrenadesModBlockEntities.GRENADIER_TABLE_BLOCK_ENTITY, pos, state);
+    public GrenadierTableBlockItem(Block block, Settings settings) {
+        super(block, settings);
     }
 
     @Override
@@ -28,8 +26,6 @@ public class GrenadierTableBlockEntity extends BlockEntity implements IAnimatabl
         //event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.model.spin", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
-
-
 
     @Override
     public AnimationFactory getFactory() {
