@@ -20,6 +20,6 @@ public class SimpleBlockRenderer<T extends BlockEntity & IAnimatable> extends Ge
     @Override
     public RenderLayer getRenderType(T animatable, float partialTick, MatrixStack poseStack, @Nullable VertexConsumerProvider bufferSource, @Nullable VertexConsumer buffer, int packedLight, Identifier texture) {
         var u = this.getTextureLocation(animatable);
-        return RenderLayer.getEntitySolid(texture);
+        return RenderLayer.getEntityTranslucent(texture);
     }
 }

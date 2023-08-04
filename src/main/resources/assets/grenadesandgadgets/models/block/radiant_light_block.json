@@ -4,10 +4,7 @@
   "textures": {
     "particle": "minecraft:block/glowstone"
   },
-  "texture_size": [
-    16,
-    16
-  ],
+  "texture_size": [16, 16],
   "display": {
     "thirdperson_righthand": {
       "scale": [

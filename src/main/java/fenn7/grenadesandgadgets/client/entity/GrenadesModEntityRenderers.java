@@ -50,9 +50,5 @@ public class GrenadesModEntityRenderers {
         EntityRendererRegistry.register(GrenadesModEntities.FRAGMENT_ENTITY, FragmentRenderer::new);
         EntityRendererRegistry.register(GrenadesModEntities.DECOY_ENTITY, DecoyRenderer::new);
         EntityRendererRegistry.register(GrenadesModEntities.TEMPORAL_FISSURE, TemporalFissureRenderer::new);
-
-        // block entities
-        BlockEntityRendererRegistry.register(GrenadesModBlockEntities.RADIANT_LIGHT_BLOCK_ENTITY,
-            ctx -> new SimpleBlockRenderer<RadiantLightBlockEntity>(ctx, "radiant_light_block"));
     }
 }

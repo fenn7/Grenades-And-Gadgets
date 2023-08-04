@@ -3,6 +3,8 @@ package fenn7.grenadesandgadgets.commonside.block;
 import java.util.List;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.block.custom.GrenadierTableBlock;
+import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.block.custom.RadiantLightBlock;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItemGroup;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
@@ -25,12 +27,18 @@ public class GrenadesModBlocks {
     public static final Block RADIANT_LIGHT_BLOCK = registerBlockWithoutBlockItem("radiant_light_block",
         new RadiantLightBlock(FabricBlockSettings.of(Material.AIR).luminance(20).nonOpaque().dropsNothing().breakInstantly().noCollision().blockVision((state, world, pos) -> false)));
 
-    private static Block registerBlock(String name, Block block, ItemGroup group, String tooltipKey) {
-        registerBlockItem(name, block, group, tooltipKey);
+    public static final Block HIDDEN_EXPLOSIVE_BLOCK = registerBlock("hidden_explosive_block",
+        new HiddenExplosiveBlock(FabricBlockSettings.of(Material.METAL)), GrenadesModItemGroup.GRENADESMOD_MISC);
+
+    public static final Block GRENADIER_TABLE_BLOCK = registerBlock("grenadier_table_block",
+        new GrenadierTableBlock(FabricBlockSettings.of(Material.METAL)), GrenadesModItemGroup.GRENADESMOD_MISC);
+
+    private static Block registerBlockTooltip(String name, Block block, ItemGroup group, String tooltipKey) {
+        registerBlockItemTooltip(name, block, group, tooltipKey);
         return Registry.register(Registry.BLOCK, new Identifier(GrenadesMod.MOD_ID, name), block);
     }
 
-    private static Item registerBlockItem(String name, Block block, ItemGroup group, String tooltipKey) {
+    private static Item registerBlockItemTooltip(String name, Block block, ItemGroup group, String tooltipKey) {
         return Registry.register(Registry.ITEM, new Identifier(GrenadesMod.MOD_ID, name),
             new BlockItem(block, new FabricItemSettings().group(group)) {
                 @Override
