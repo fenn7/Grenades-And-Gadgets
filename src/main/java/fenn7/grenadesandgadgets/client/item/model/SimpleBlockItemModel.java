@@ -9,7 +9,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public class SimpleBlockItemModel<T extends BlockItem & IAnimatable> extends AnimatedGeoModel<T> {
     private static final String MODEL_LOCATION = "geo/block/";
     private static final String TEXTURE_LOCATION = "textures/block/";
-    private static final String ANIMATION_LOCATION = "animations/item/";
+    private static final String ANIMATION_LOCATION = "animations/block/";
     private final String name;
 
     public SimpleBlockItemModel(String name) {

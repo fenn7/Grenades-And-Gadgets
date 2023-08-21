@@ -60,7 +60,7 @@ public class GrenadesModItems {
 
     // BLOCKITEMS
     public static final Item HIDDEN_EXPLOSIVE_BLOCK = register("hidden_explosive_block",
-        new HiddenExplosiveBlockItem(GrenadesModBlocks.HIDDEN_EXPLOSIVE_BLOCK, new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
+        new HiddenExplosiveBlockItem(GrenadesModBlocks.HIDDEN_EXPLOSIVE_BLOCK, new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(4)));
     public static final Item GRENADIER_TABLE_BLOCK = register("grenadier_table_block",
         new GrenadierTableBlockItem(GrenadesModBlocks.GRENADIER_TABLE_BLOCK, new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC)));
 
