@@ -559,11 +559,6 @@
 							}
 						}
 					]
-				},
-				{
-					"name": "Facade",
-					"parent": "Crown",
-					"pivot": [0, 4.5, 0]
 				}
 			]
 		}

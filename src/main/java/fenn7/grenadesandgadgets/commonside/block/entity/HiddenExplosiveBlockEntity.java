@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.block.entity;
 
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
@@ -12,6 +13,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -27,6 +29,10 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
 
     public HiddenExplosiveBlockEntity(BlockPos pos, BlockState state) {
         super(GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY, pos, state);
+    }
+
+    public static void tick(World world1, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
+        int x = 4;
     }
 
     public Item getDisguiseBlockItem() {

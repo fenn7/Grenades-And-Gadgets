@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.client.entity.block.renderer;
 
+import fenn7.grenadesandgadgets.client.entity.block.model.HiddenExplosiveBlockModel;
 import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import net.minecraft.block.Block;
@@ -9,14 +10,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3f;
+import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
-public class HiddenExplosiveBlockRenderer extends SimpleBlockRenderer<HiddenExplosiveBlockEntity> {
-    private static final String NAME = "hidden_explosive_block";
-
+public class HiddenExplosiveBlockRenderer extends GeoBlockRenderer<HiddenExplosiveBlockEntity> {
     public HiddenExplosiveBlockRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(ctx, NAME);
+        super(new HiddenExplosiveBlockModel());
     }
 
     @Override
@@ -46,10 +45,5 @@ public class HiddenExplosiveBlockRenderer extends SimpleBlockRenderer<HiddenExpl
             MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(block.getDefaultState(), stack, bufferIn, combinedLightIn, combinedOverlayIn);
             stack.pop();
         }
-    }
-
-    @Override
-    protected void rotateBlock(Direction facing, MatrixStack stack) {
-        super.rotateBlock(facing, stack);
     }
 }
