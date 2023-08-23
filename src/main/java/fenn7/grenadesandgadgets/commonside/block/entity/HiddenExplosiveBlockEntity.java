@@ -1,6 +1,5 @@
 package fenn7.grenadesandgadgets.commonside.block.entity;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
@@ -31,8 +30,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         super(GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY, pos, state);
     }
 
-    public static void tick(World world1, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
-        int x = 4;
+    public static void tick(World world, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
     }
 
     public Item getDisguiseBlockItem() {

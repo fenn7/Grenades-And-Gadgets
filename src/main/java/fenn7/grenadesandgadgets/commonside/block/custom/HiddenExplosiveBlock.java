@@ -1,13 +1,11 @@
 package fenn7.grenadesandgadgets.commonside.block.custom;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.FacingBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
@@ -18,7 +16,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -47,12 +44,11 @@ public class HiddenExplosiveBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.isSneaking()) {
-            if (state.get(ARMED)) {
-                world.setBlockState(pos, state.with(ARMED, false));
-            } else {
+            if (!state.get(ARMED)) {
                 world.setBlockState(pos, state.with(ARMED, true));
+            } else {
+                world.setBlockState(pos, state.with(ARMED, false));
             }
-            GrenadesMod.LOGGER.warn("ARMED: " + state.get(ARMED));
         }
         return ActionResult.SUCCESS;
     }
