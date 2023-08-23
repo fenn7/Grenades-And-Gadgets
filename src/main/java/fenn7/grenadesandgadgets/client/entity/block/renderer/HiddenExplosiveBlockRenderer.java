@@ -1,14 +1,16 @@
 package fenn7.grenadesandgadgets.client.entity.block.renderer;
 
+import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
 
 public class HiddenExplosiveBlockRenderer extends SimpleBlockRenderer<HiddenExplosiveBlockEntity> {
     private static final String NAME = "hidden_explosive_block";
@@ -18,15 +20,36 @@ public class HiddenExplosiveBlockRenderer extends SimpleBlockRenderer<HiddenExpl
     }
 
     @Override
-    public void render(HiddenExplosiveBlockEntity tile, float partialTicks, MatrixStack stack, VertexConsumerProvider bufferIn, int packedLightIn) {
-        super.render(tile, partialTicks, stack, bufferIn, packedLightIn);
-        stack.push();
-        var item = tile.getDisguiseBlockItem();
-        var block = Block.getBlockFromItem(item);
-        var bblock = Blocks.FURNACE;
-        RenderLayer renderType = this.getRenderType(tile, partialTicks, stack, bufferIn, null, packedLightIn, this.getTextureLocation(tile));
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlock(block.getDefaultState(), tile.getPos(), tile.getWorld(), stack, bufferIn.getBuffer(renderType), false, tile.getWorld().random);
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlock(block.getDefaultState(), tile.getPos().up(),tile.getWorld(), stack, bufferIn.getBuffer(RenderLayers.getBlockLayer(block.getDefaultState())), false, tile.getWorld().getRandom());
-        stack.pop();
+    public void render(BlockEntity tile, float partialTicks, MatrixStack stack, VertexConsumerProvider bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        var block = Block.getBlockFromItem(((HiddenExplosiveBlockEntity) tile).getDisguiseBlockItem());
+        if (block.equals(Blocks.AIR)) {
+            super.render(tile, partialTicks, stack, bufferIn, combinedLightIn, combinedOverlayIn);
+        } else {
+            stack.push();
+            switch(tile.getCachedState().get(HiddenExplosiveBlock.FACING)) {
+                case SOUTH -> {
+                    stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+                    stack.translate(-1, 0, -1);
+                }
+                case WEST -> {
+                    stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+                    stack.translate(-1, 0, 0);
+                }
+                case NORTH -> {
+                    stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(0.0F));
+                }
+                case EAST -> {
+                    stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
+                    stack.translate(0, 0, -1);
+                }
+            }
+            MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(block.getDefaultState(), stack, bufferIn, combinedLightIn, combinedOverlayIn);
+            stack.pop();
+        }
+    }
+
+    @Override
+    protected void rotateBlock(Direction facing, MatrixStack stack) {
+        super.rotateBlock(facing, stack);
     }
 }

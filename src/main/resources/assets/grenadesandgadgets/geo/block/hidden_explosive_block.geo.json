@@ -13,7 +13,7 @@
 			"bones": [
 				{
 					"name": "Block",
-					"pivot": [8, 0, -8]
+					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "Base",
@@ -563,21 +563,7 @@
 				{
 					"name": "Facade",
 					"parent": "Crown",
-					"pivot": [0, 4.5, 0],
-					"cubes": [
-						{
-							"origin": [-8, 15, -8],
-							"size": [16, 0.8333, 16],
-							"uv": {
-								"north": {"uv": [0, 64], "uv_size": [16, 0]},
-								"east": {"uv": [0, 64], "uv_size": [16, 0]},
-								"south": {"uv": [0, 64], "uv_size": [16, 0]},
-								"west": {"uv": [0, 64], "uv_size": [16, 0]},
-								"up": {"uv": [128, 16], "uv_size": [-16, -16]},
-								"down": {"uv": [128, 16], "uv_size": [-16, -16]}
-							}
-						}
-					]
+					"pivot": [0, 4.5, 0]
 				}
 			]
 		}
