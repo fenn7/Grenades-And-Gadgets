@@ -7,6 +7,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
 
 public class HiddenExplosiveScreenHandler extends ScreenHandler {
@@ -31,6 +32,10 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
         return this.inventory.canPlayerUse(player);
+    }
+
+    public boolean hasGrenade() {
+        return !this.inventory.getStack(0).isEmpty();
     }
 
     @Override

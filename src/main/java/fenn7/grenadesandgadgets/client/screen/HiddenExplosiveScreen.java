@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -23,6 +24,11 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
     protected void init() {
         super.init();
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
+        this.addDrawableChild(new ButtonWidget(this.x + 124, this.y + 63, 14, 9, GrenadesModUtil.textOf(""), widget -> {
+            if (this.handler.hasGrenade()) {
+                GrenadesMod.LOGGER.warn("Grenade is already in the block");
+            }
+        }));
     }
 
     @Override
@@ -33,6 +39,9 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         int x = (this.width - this.backgroundWidth) / 2;
         int y = (this.height - this.backgroundHeight) / 2;
         this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        if (this.handler.hasGrenade()) {
+            this.drawTexture(matrices, this.x + 124, this.y + 63, 176, 63, 14, 9);
+        }
     }
 
     @Override
@@ -43,4 +52,6 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         this.textRenderer.draw(matrices, GrenadesModUtil.translatableTextOf(LEFT_TITLE), this.x + 10 + 2, this.y + 20, 0);
         this.textRenderer.draw(matrices, GrenadesModUtil.translatableTextOf(RIGHT_TITLE), this.x + 10 + 88, this.y + 20, 0);
     }
+
+
 }
