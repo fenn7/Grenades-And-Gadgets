@@ -34,7 +34,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, NamedScreenHandlerFactory, ImplementedInventory {
     private static final int ARMING_TICKS = 40;
-    private final DefaultedList<ItemStack> bombInv = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     private int sensorRange = 1;
     private Direction launchDirection;
@@ -45,7 +45,9 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
-
+        var x = entity.getStack(0);
+        var i = entity.inventory;
+        int y = 1;
     }
 
     public Item getDisguiseBlockItem() {
@@ -54,7 +56,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
 
     @Override
     public void readNbt(NbtCompound nbt) {
-        Inventories.readNbt(nbt, this.bombInv);
+        Inventories.readNbt(nbt, this.inventory);
         super.readNbt(nbt);
         var item = nbt.getCompound(HiddenExplosiveBlockItem.DISGUISE_KEY);
         if (!item.isEmpty() && this.disguiseBlockItem == null) {
@@ -65,10 +67,10 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
+        Inventories.writeNbt(nbt, this.inventory);
         if (this.disguiseBlockItem != null) {
             nbt.put(HiddenExplosiveBlockItem.DISGUISE_KEY, this.disguiseBlockItem.getDefaultStack().writeNbt(new NbtCompound()));
         }
-        Inventories.writeNbt(nbt, this.bombInv);
     }
 
     @Nullable
@@ -99,7 +101,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
 
     @Override
     public DefaultedList<ItemStack> getItems() {
-        return this.bombInv;
+        return this.inventory;
     }
 
     @Override

@@ -7,16 +7,13 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.collection.DefaultedList;
-import org.jetbrains.annotations.Nullable;
 
 public class HiddenExplosiveScreenHandler extends ScreenHandler {
     private final Inventory inventory;
 
     public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv) {
-        this(syncId, playerInv, new SimpleInventory(4));
+        this(syncId, playerInv, new SimpleInventory(1));
     }
 
     public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
@@ -25,7 +22,7 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 
-        this.addSlot(new HiddenExplosiveGrenadeSlot(this.inventory, 0, 0, 0));
+        this.addSlot(new HiddenExplosiveGrenadeSlot(this.inventory, 0, 123, 34));
 
         this.addPlayerInventory(playerInventory);
         this.addPlayerHotbar(playerInventory);
