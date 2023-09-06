@@ -3,5 +3,7 @@
 
   "container.grenadesandgadgets.hidden_explosive": "Hidden Explosive",
   "container.grenadesandgadgets.range": "Configuration",
-  "container.grenadesandgadgets.arming": "Arm Explosive"
+  "container.grenadesandgadgets.arming": "Arm Explosive",
+  "container.grenadesandgadgets.cannot_arm": "Cannot arm without an explosive!",
+  "container.grenadesandgadgets.arming_started": "§cARMING..."
 }

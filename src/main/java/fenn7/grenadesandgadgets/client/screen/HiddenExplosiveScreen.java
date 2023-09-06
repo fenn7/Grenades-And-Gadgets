@@ -3,6 +3,7 @@ package fenn7.grenadesandgadgets.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -15,20 +16,20 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
     private static final Identifier SCREEN = new Identifier(GrenadesMod.MOD_ID, "textures/gui/hidden_explosive_block_gui.png");
     private static final String LEFT_TITLE = "container.grenadesandgadgets.range";
     private static final String RIGHT_TITLE = "container.grenadesandgadgets.arming";
+    private static final String CANT_ARM = "container.grenadesandgadgets.cannot_arm";
+    private static final String ARM_START = "container.grenadesandgadgets.arming_started";
 
     public HiddenExplosiveScreen(HiddenExplosiveScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     protected void init() {
         super.init();
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
-        this.addDrawableChild(new ButtonWidget(this.x + 124, this.y + 63, 14, 9, GrenadesModUtil.textOf(""), widget -> {
-            if (this.handler.hasGrenade()) {
-                GrenadesMod.LOGGER.warn("Grenade is already in the block");
-            }
-        }));
+        this.addSelectableChild(new ButtonWidget(this.x + 124, this.y + 63, 14, 9, GrenadesModUtil.textOf(""),
+            widget -> MinecraftClient.getInstance().player.sendMessage(GrenadesModUtil.translatableTextOf(this.handler.hasGrenade() ? ARM_START : CANT_ARM), false)));
     }
 
     @Override

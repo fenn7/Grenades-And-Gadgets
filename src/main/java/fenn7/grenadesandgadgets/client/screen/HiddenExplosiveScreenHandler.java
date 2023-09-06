@@ -52,7 +52,6 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
             } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
                 return ItemStack.EMPTY;
             }
-
             if (originalStack.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);
             } else {
@@ -60,6 +59,16 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
             }
         }
         return newStack;
+    }
+
+    @Override
+    protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
+        return !this.hasGrenade() && super.insertItem(stack, startIndex, endIndex, fromLast);
+    }
+
+    @Override
+    public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
+        return super.canInsertIntoSlot(stack, slot);
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory) {
