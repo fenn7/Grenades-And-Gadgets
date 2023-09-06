@@ -1,3 +1,7 @@
 {
   "itemGroup.grenadesandgadgets.": "Grenades And Gadgets",
+
+  "container.grenadesandgadgets.hidden_explosive": "Hidden Explosive",
+  "container.grenadesandgadgets.range": "Configuration",
+  "container.grenadesandgadgets.arming": "Arm Explosive"
 }

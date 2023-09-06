@@ -34,6 +34,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, NamedScreenHandlerFactory, ImplementedInventory {
     private static final int ARMING_TICKS = 40;
+    private static final String TRANSLATABLE = "container.grenadesandgadgets.hidden_explosive";
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     private int sensorRange = 1;
@@ -47,7 +48,9 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     public static void tick(World world, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
         var x = entity.getStack(0);
         var i = entity.inventory;
-        int y = 1;
+        if (x != ItemStack.EMPTY) {
+            int y = 1;
+        }
     }
 
     public Item getDisguiseBlockItem() {
@@ -106,7 +109,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
 
     @Override
     public Text getDisplayName() {
-        return GrenadesModUtil.translatableTextOf("container.hidden_explosive");
+        return GrenadesModUtil.translatableTextOf(TRANSLATABLE);
     }
 
     @Nullable
