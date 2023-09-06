@@ -19,4 +19,9 @@ public class HiddenExplosiveGrenadeSlot extends Slot {
     public int getMaxItemCount() {
         return 1;
     }
+
+    @Override
+    public int getMaxItemCount(ItemStack stack) {
+        return 1;
+    }
 }

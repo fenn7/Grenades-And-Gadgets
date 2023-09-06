@@ -1,34 +1,48 @@
 package fenn7.grenadesandgadgets.client.screen;
 
 import fenn7.grenadesandgadgets.client.screen.slot.HiddenExplosiveGrenadeSlot;
+import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.collection.DefaultedList;
-import org.jetbrains.annotations.Nullable;
 
 public class HiddenExplosiveScreenHandler extends ScreenHandler {
     private final Inventory inventory;
+    private final PropertyDelegate delegate;
 
     public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv) {
-        this(syncId, playerInv, new SimpleInventory(4));
+        this(syncId, playerInv, new SimpleInventory(1), new ArrayPropertyDelegate(4));
     }
 
-    public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate delegate) {
         super(GrenadesModScreens.HIDDEN_EXPLOSIVE_SCREEN_HANDLER, syncId);
         checkSize(inventory, 1);
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
+        this.delegate = delegate;
 
         this.addSlot(new HiddenExplosiveGrenadeSlot(this.inventory, 0, 0, 0));
 
         this.addPlayerInventory(playerInventory);
         this.addPlayerHotbar(playerInventory);
+        this.addProperties(delegate);
+    }
+
+    public boolean isCurrentlyArming() {
+        return this.delegate.get(0) > 0 && this.delegate.get(3) == 1;
+    }
+
+    public int getScaledProgress() {
+        int armingTicks = this.delegate.get(0);
+        int progressBarSize = 60; // This is the width in pixels of your arrow
+
+        return this.isCurrentlyArming() ? armingTicks * progressBarSize / HiddenExplosiveBlockEntity.MAX_ARMING_TICKS : 0;
     }
 
     @Override
