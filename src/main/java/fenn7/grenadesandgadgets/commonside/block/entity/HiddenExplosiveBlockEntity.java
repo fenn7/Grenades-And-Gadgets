@@ -1,6 +1,7 @@
 package fenn7.grenadesandgadgets.commonside.block.entity;
 
 import fenn7.grenadesandgadgets.client.screen.HiddenExplosiveScreenHandler;
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
@@ -17,6 +18,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
@@ -33,7 +35,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, NamedScreenHandlerFactory, ImplementedInventory {
-    private static final int ARMING_TICKS = 40;
+    public static final int MAX_ARMING_TICKS = 40;
     private static final String TRANSLATABLE = "container.grenadesandgadgets.hidden_explosive";
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
@@ -41,16 +43,56 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     private Direction launchDirection;
     private Item disguiseBlockItem;
 
+    private final PropertyDelegate delegate;
+    private int currentArmingTicks = 0;
+    private int armingFlag = 0;
+
     public HiddenExplosiveBlockEntity(BlockPos pos, BlockState state) {
         super(GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY, pos, state);
+        this.delegate = new PropertyDelegate() {
+            @Override
+            public int get(int index) {
+                return switch (index) {
+                    case 0 -> HiddenExplosiveBlockEntity.this.currentArmingTicks;
+                    case 1 -> HiddenExplosiveBlockEntity.this.armingFlag;
+                    default -> 0;
+                };
+            }
+
+            @Override
+            public void set(int index, int value) {
+                switch (index) {
+                    case 0 -> HiddenExplosiveBlockEntity.this.currentArmingTicks = value;
+                    case 1 -> HiddenExplosiveBlockEntity.this.armingFlag = value;
+                }
+            }
+
+            @Override
+            public int size() {
+                return 2;
+            }
+        };
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
-        var x = entity.getStack(0);
-        var i = entity.inventory;
-        if (x != ItemStack.EMPTY) {
-            int y = 1;
+        GrenadesMod.LOGGER.warn("ENTITY THINKS ARM FLAG IS " + entity.armingFlag);
+        if (/*entity.armingFlag == 1 &&*/ !entity.getStack(0).isEmpty()) {
+            if (entity.currentArmingTicks < MAX_ARMING_TICKS) {
+                ++entity.currentArmingTicks;
+                if (entity.currentArmingTicks >= MAX_ARMING_TICKS) {
+                    GrenadesMod.LOGGER.warn("AARMED");
+                }
+            }
+        } else {
+            entity.resetArming();
         }
+    }
+
+    public void resetArming() {
+        if (this.currentArmingTicks > 0) {
+            --this.currentArmingTicks;
+        };
+        this.armingFlag = 0;
     }
 
     public Item getDisguiseBlockItem() {
@@ -65,6 +107,8 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         if (!item.isEmpty() && this.disguiseBlockItem == null) {
             this.disguiseBlockItem = ItemStack.fromNbt(item).getItem();
         }
+        this.currentArmingTicks = nbt.getInt("current.arming.ticks");
+        this.armingFlag = nbt.getInt("arming.flag");
     }
 
     @Override
@@ -74,6 +118,8 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         if (this.disguiseBlockItem != null) {
             nbt.put(HiddenExplosiveBlockItem.DISGUISE_KEY, this.disguiseBlockItem.getDefaultStack().writeNbt(new NbtCompound()));
         }
+        nbt.putInt("current.arming.ticks", this.currentArmingTicks);
+        nbt.putInt("arming.flag", this.armingFlag);
     }
 
     @Nullable
@@ -115,6 +161,6 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new HiddenExplosiveScreenHandler(syncId, inv, this);
+        return new HiddenExplosiveScreenHandler(syncId, inv, this, this.delegate);
     }
 }

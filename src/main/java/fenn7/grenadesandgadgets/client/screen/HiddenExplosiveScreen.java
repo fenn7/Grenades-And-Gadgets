@@ -29,7 +29,11 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         super.init();
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
         this.addSelectableChild(new ButtonWidget(this.x + 124, this.y + 63, 14, 9, GrenadesModUtil.textOf(""),
-            widget -> MinecraftClient.getInstance().player.sendMessage(GrenadesModUtil.translatableTextOf(this.handler.hasGrenade() ? ARM_START : CANT_ARM), false)));
+            widget -> {
+                MinecraftClient.getInstance().player.sendMessage(GrenadesModUtil.translatableTextOf(this.handler.hasGrenade() ? ARM_START : CANT_ARM), false);
+                this.handler.setDelegateValue(1, this.handler.hasGrenade() && !this.handler.isArming() ? 1 : 0);
+            })
+        );
     }
 
     @Override
@@ -43,6 +47,9 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         if (this.handler.hasGrenade()) {
             this.drawTexture(matrices, this.x + 124, this.y + 63, 176, 63, 14, 9);
         }
+        GrenadesMod.LOGGER.warn("SCREEN THINKS ARM FLAG IS " + (this.handler.isArming() ? 1 : 0));
+        this.drawTexture(matrices, this.x + 101, this.y + 62, 190, 62, this.handler.getScaledProgress() / 2, 11);
+        this.drawTexture(matrices, this.x + 161 - (handler.getScaledProgress() / 2), this.y + 62, 250 - (handler.getScaledProgress() / 2), 62, this.handler.getScaledProgress() / 2, 11);
     }
 
     @Override
@@ -53,6 +60,4 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         this.textRenderer.draw(matrices, GrenadesModUtil.translatableTextOf(LEFT_TITLE), this.x + 10 + 2, this.y + 20, 0);
         this.textRenderer.draw(matrices, GrenadesModUtil.translatableTextOf(RIGHT_TITLE), this.x + 10 + 88, this.y + 20, 0);
     }
-
-
 }

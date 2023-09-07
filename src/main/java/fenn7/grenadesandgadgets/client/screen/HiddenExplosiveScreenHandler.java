@@ -1,32 +1,56 @@
 package fenn7.grenadesandgadgets.client.screen;
 
 import fenn7.grenadesandgadgets.client.screen.slot.HiddenExplosiveGrenadeSlot;
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
 
 public class HiddenExplosiveScreenHandler extends ScreenHandler {
+    private static final int PIXEL_BAR_LENGTH = 60;
     private final Inventory inventory;
+    private final PropertyDelegate delegate;
 
     public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv) {
-        this(syncId, playerInv, new SimpleInventory(1));
+        this(syncId, playerInv, new SimpleInventory(1), new ArrayPropertyDelegate(2));
     }
 
-    public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv, Inventory inventory, PropertyDelegate delegate) {
         super(GrenadesModScreens.HIDDEN_EXPLOSIVE_SCREEN_HANDLER, syncId);
         checkSize(inventory, 1);
         this.inventory = inventory;
-        inventory.onOpen(playerInventory.player);
+        inventory.onOpen(playerInv.player);
+        this.delegate = delegate;
 
         this.addSlot(new HiddenExplosiveGrenadeSlot(this.inventory, 0, 123, 34));
 
-        this.addPlayerInventory(playerInventory);
-        this.addPlayerHotbar(playerInventory);
+        this.addPlayerInventory(playerInv);
+        this.addPlayerHotbar(playerInv);
+        this.addProperties(delegate);
+    }
+
+    public void setDelegateValue(int index, int value) {
+        if (index >= 0 && index < this.delegate.size()) {
+            this.delegate.set(index, value);
+        }
+    }
+
+    public boolean isArming() {
+        GrenadesMod.LOGGER.warn("HANLDER THINKS ARM FLAG IS " + this.delegate.get(1));
+        return this.delegate.get(1) == 1;
+    }
+
+    public int getScaledProgress() {
+        int currentArmTicks = this.delegate.get(0);
+        return isArming() ? currentArmTicks * PIXEL_BAR_LENGTH / HiddenExplosiveBlockEntity.MAX_ARMING_TICKS : 0;
     }
 
     @Override
@@ -46,10 +70,10 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
             ItemStack originalStack = slot.getStack();
             newStack = originalStack.copy();
             if (invSlot < this.inventory.size()) {
-                if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
+                if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true, invSlot)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
+            } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false, invSlot)) {
                 return ItemStack.EMPTY;
             }
             if (originalStack.isEmpty()) {
@@ -61,14 +85,13 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
         return newStack;
     }
 
-    @Override
-    protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
-        return !this.hasGrenade() && super.insertItem(stack, startIndex, endIndex, fromLast);
+    private boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast, int invSlot) {
+        return (!this.hasGrenade() || invSlot == 0) && this.insertItem(stack, startIndex, endIndex, fromLast);
     }
 
     @Override
-    public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-        return super.canInsertIntoSlot(stack, slot);
+    protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
+        return super.insertItem(stack, startIndex, endIndex, fromLast);
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory) {

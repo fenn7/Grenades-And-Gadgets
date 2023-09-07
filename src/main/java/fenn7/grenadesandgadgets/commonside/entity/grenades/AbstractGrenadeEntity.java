@@ -202,7 +202,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity target = entityHitResult.getEntity();
-        target.damage(DamageSource.thrownProjectile(this, this.getOwner()), 2.0F);
+        float throwDmg = 2.0F;
         switch (this.getModifierName()) {
             case STICKY -> {
                 NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
@@ -213,14 +213,19 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             case AQUATIC -> {
                 if (this.isSubmergedInWater()) {
                     this.setPower(this.power * AQUATIC_MULTIPLIER);
-                    this.explodeWithEffects(this.power);
                 }
+                this.explodeWithEffects(this.power);
             }
-            case MOLTEN -> target.setOnFireFor(5);
+            case MOLTEN -> {
+                target.setOnFireFor(5);
+                this.explodeWithEffects(this.power);
+            }
             case GRAVITY -> {
                 if (target instanceof LivingEntity alive) {
                     alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 20, 4));
+                    throwDmg += 2.0F;
                 }
+                this.explodeWithEffects(this.power);
             }
             case CATACLYSMIC -> {
                 if (this.getVelocity().length() >= MINIMUM_CATACLYSMIC_THRESHOLD) {
@@ -233,6 +238,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             }
             default -> this.explodeWithEffects(this.power);
         }
+        target.damage(DamageSource.thrownProjectile(this, this.getOwner()), throwDmg);
         super.onEntityHit(entityHitResult);
     }
 
