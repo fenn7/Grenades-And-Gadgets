@@ -9,18 +9,22 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.BlockPos;
 
 public class HiddenExplosiveScreenHandler extends ScreenHandler {
     private static final int PIXEL_BAR_LENGTH = 60;
+    private BlockPos blockEntityPos;
     private final Inventory inventory;
     private final PropertyDelegate delegate;
 
-    public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv) {
+    public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv, PacketByteBuf buf) {
         this(syncId, playerInv, new SimpleInventory(1), new ArrayPropertyDelegate(2));
+        this.blockEntityPos = buf.readBlockPos();
     }
 
     public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv, Inventory inventory, PropertyDelegate delegate) {
@@ -29,12 +33,17 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
         this.inventory = inventory;
         inventory.onOpen(playerInv.player);
         this.delegate = delegate;
+        this.blockEntityPos = BlockPos.ORIGIN;
 
         this.addSlot(new HiddenExplosiveGrenadeSlot(this.inventory, 0, 123, 34));
 
         this.addPlayerInventory(playerInv);
         this.addPlayerHotbar(playerInv);
         this.addProperties(delegate);
+    }
+
+    public BlockPos getBlockEntityPos() {
+        return this.blockEntityPos;
     }
 
     public void setDelegateValue(int index, int value) {
@@ -44,7 +53,6 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
     }
 
     public boolean isArming() {
-        GrenadesMod.LOGGER.warn("HANLDER THINKS ARM FLAG IS " + this.delegate.get(1));
         return this.delegate.get(1) == 1;
     }
 

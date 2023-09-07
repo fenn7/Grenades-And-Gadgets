@@ -6,6 +6,7 @@ import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,11 +16,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +37,7 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, NamedScreenHandlerFactory, ImplementedInventory {
+public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     public static final int MAX_ARMING_TICKS = 40;
     private static final String TRANSLATABLE = "container.grenadesandgadgets.hidden_explosive";
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -75,8 +78,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
-        GrenadesMod.LOGGER.warn("ENTITY THINKS ARM FLAG IS " + entity.armingFlag);
-        if (/*entity.armingFlag == 1 &&*/ !entity.getStack(0).isEmpty()) {
+        if (entity.armingFlag == 1 && !entity.getStack(0).isEmpty()) {
             if (entity.currentArmingTicks < MAX_ARMING_TICKS) {
                 ++entity.currentArmingTicks;
                 if (entity.currentArmingTicks >= MAX_ARMING_TICKS) {
@@ -88,11 +90,17 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         }
     }
 
+    public PropertyDelegate getDelegate() {
+        return this.delegate;
+    }
+
     public void resetArming() {
         if (this.currentArmingTicks > 0) {
             --this.currentArmingTicks;
+            if (this.currentArmingTicks <= 0) {
+                this.armingFlag = 0;
+            }
         };
-        this.armingFlag = 0;
     }
 
     public Item getDisguiseBlockItem() {
@@ -162,5 +170,10 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new HiddenExplosiveScreenHandler(syncId, inv, this, this.delegate);
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeBlockPos(this.pos);
     }
 }

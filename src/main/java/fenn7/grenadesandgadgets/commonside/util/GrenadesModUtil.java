@@ -78,11 +78,15 @@ public interface GrenadesModUtil {
             state -> state.getMaterial().isSolid())).getType() == HitResult.Type.BLOCK;
     }
 
+    static PacketByteBuf createBuffer() {
+        return new PacketByteBuf(Unpooled.buffer());
+    }
+
     static void addEffectServerAndClient(LivingEntity entity, StatusEffectInstance effect) {
         entity.addStatusEffect(effect);
         if (!entity.world.isClient) {
             try {
-                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                PacketByteBuf buf = createBuffer();
                 buf.writeIntList(IntList.of(entity.getId(), StatusEffect.getRawId(effect.getEffectType()),
                     effect.getDuration(), effect.getAmplifier()));
                 ServerPlayerEntity player = (ServerPlayerEntity) entity.world.getPlayers().get(0);
@@ -95,7 +99,7 @@ public interface GrenadesModUtil {
         if (entity.hasStatusEffect(effect)) {
             if (!entity.world.isClient) {
                 try {
-                    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                    PacketByteBuf buf = createBuffer();
                     buf.writeIntList(IntList.of(entity.getId(), StatusEffect.getRawId(effect)));
                     ServerPlayerEntity player = (ServerPlayerEntity) entity.world.getPlayers().get(0);
                     ServerPlayNetworking.send(player, GrenadesModS2CPackets.REMOVE_EFFECT_S2C, buf);

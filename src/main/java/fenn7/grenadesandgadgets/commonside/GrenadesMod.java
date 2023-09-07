@@ -5,6 +5,7 @@ import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlocks;
 import fenn7.grenadesandgadgets.commonside.damage.GrenadesModDamageSources;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
+import fenn7.grenadesandgadgets.commonside.item.network.GrenadesModC2SPackets;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModRegistries;
@@ -33,5 +34,6 @@ public class GrenadesMod implements ModInitializer {
         GrenadesModSpecialRecipes.registerRecipes();
         GrenadesModStatus.registerEffects();
         GrenadesModRegistries.registerRegistries();
+        GrenadesModC2SPackets.registerC2SPackets();
     }
 }

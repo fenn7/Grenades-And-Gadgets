@@ -2,7 +2,10 @@ package fenn7.grenadesandgadgets.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.item.network.GrenadesModC2SPackets;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -30,8 +33,8 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
         this.addSelectableChild(new ButtonWidget(this.x + 124, this.y + 63, 14, 9, GrenadesModUtil.textOf(""),
             widget -> {
-                MinecraftClient.getInstance().player.sendMessage(GrenadesModUtil.translatableTextOf(this.handler.hasGrenade() ? ARM_START : CANT_ARM), false);
                 this.handler.setDelegateValue(1, this.handler.hasGrenade() && !this.handler.isArming() ? 1 : 0);
+                ClientPlayNetworking.send(GrenadesModC2SPackets.SYNC_HIDDEN_EXPLOSIVE_C2S, GrenadesModUtil.createBuffer().writeBlockPos(this.handler.getBlockEntityPos()));
             })
         );
     }
@@ -59,5 +62,6 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
         this.textRenderer.draw(matrices, GrenadesModUtil.translatableTextOf(LEFT_TITLE), this.x + 10 + 2, this.y + 20, 0);
         this.textRenderer.draw(matrices, GrenadesModUtil.translatableTextOf(RIGHT_TITLE), this.x + 10 + 88, this.y + 20, 0);
+        this.textRenderer.draw(matrices, Text.of(this.handler.getBlockEntityPos().toShortString()), 0, 0, 0);
     }
 }
