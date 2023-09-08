@@ -23,7 +23,9 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
     private final PropertyDelegate delegate;
 
     public HiddenExplosiveScreenHandler(int syncId, PlayerInventory playerInv, PacketByteBuf buf) {
-        this(syncId, playerInv, new SimpleInventory(1), new ArrayPropertyDelegate(2));
+        this(syncId, playerInv, new SimpleInventory(1), new ArrayPropertyDelegate(4));
+        this.delegate.set(2, 1);
+        this.delegate.set(3, -1);
         this.blockEntityPos = buf.readBlockPos();
     }
 
@@ -46,6 +48,10 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
         return this.blockEntityPos;
     }
 
+    public int getDelegateValue(int index) {
+        return this.delegate.get(index);
+    }
+
     public void setDelegateValue(int index, int value) {
         if (index >= 0 && index < this.delegate.size()) {
             this.delegate.set(index, value);
@@ -57,8 +63,7 @@ public class HiddenExplosiveScreenHandler extends ScreenHandler {
     }
 
     public int getScaledProgress() {
-        int currentArmTicks = this.delegate.get(0);
-        return isArming() ? currentArmTicks * PIXEL_BAR_LENGTH / HiddenExplosiveBlockEntity.MAX_ARMING_TICKS : 0;
+        return this.delegate.get(0) * PIXEL_BAR_LENGTH / HiddenExplosiveBlockEntity.MAX_ARMING_TICKS;
     }
 
     @Override

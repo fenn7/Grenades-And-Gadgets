@@ -14,13 +14,14 @@ public class SyncHiddenExplosiveC2SPacket {
     public static void receive(MinecraftServer server, ServerPlayerEntity serverPlayerEntity,
                                ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf buf, PacketSender packetSender) {
         BlockPos pos = buf.readBlockPos();
-        if (pos != null) {
+        var array = buf.readIntArray();
+        if (pos != null && array != null && array.length == 2) {
             var optional = serverPlayerEntity.getWorld().getBlockEntity(pos, GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY);
             var handler = serverPlayerEntity.currentScreenHandler;
             if (optional.isPresent()) {
-                optional.get().getDelegate().set(1, 1);
+                optional.get().getDelegate().set(array[0], array[1]);
             } else if (handler instanceof HiddenExplosiveScreenHandler hiddenHandler) {
-                hiddenHandler.setDelegateValue(1, 1);
+                hiddenHandler.setDelegateValue(array[0], array[1]);
             }
         }
     }
