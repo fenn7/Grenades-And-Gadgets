@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
+import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
@@ -58,7 +59,9 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     private static final float CATACLYSMIC_MULTIPLIER = 0.75F;
     private static final float ECHOING_MULTIPLIER = 1.5F;
     private static final float AQUATIC_MULTIPLIER = 1.25F;
+    private static final float AQUATIC_VELOCITY_MULTIPLIER = 2.0F;
     protected static final String STICK_TARGET = "sticky.target";
+    protected static final String AQUATIC_APPLIED = "aquatic.applied";
     protected static final byte STATUS_BYTE = (byte) 3;
     protected static TrackedData<Boolean> BOUNCE_FLAG = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected static TrackedData<Float> BOUNCE_MULTIPLIER = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -120,8 +123,12 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     private void updateAquaticVelocity(Vec3d velocity) {
+        var nbt = ((GrenadesModEntityData) this).getPersistentData();
         if (this.isSubmergedInWater()) {
-            this.setVelocity(velocity);
+            this.setVelocity(nbt.contains(AQUATIC_APPLIED) ? velocity : velocity.multiply(AQUATIC_VELOCITY_MULTIPLIER));
+            if (!nbt.contains(AQUATIC_APPLIED)) {
+                nbt.putBoolean(AQUATIC_APPLIED, true);
+            }
         }
     }
 

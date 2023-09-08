@@ -12,10 +12,7 @@ import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SculkSensorBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.SculkSensorBlockEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -36,9 +33,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.SculkSensorListener;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -48,11 +42,13 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory, SculkSensorListener.Callback {
+public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     public static final int MAX_ARMING_TICKS = 40;
+    private static final float INCREASED_POWER_PER_RANGE = 0.25F;
     private static final String NBT_TAG = "configuration.data";
     private static final String LAST_USER = "last.user";
     private static final String TITLE = "container.grenadesandgadgets.hidden_explosive";
+    private static final String ARMED = "container.grenadesandgadgets.armed";
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     private Item disguiseBlockItem;
@@ -100,12 +96,12 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         if (!world.isClient) {
             entity.tickArming(world, pos, state);
             if (state.get(HiddenExplosiveBlock.ARMED)) {
-                entity.detonate(world, pos);
+
             }
         }
     }
 
-    private void detonate(World world, BlockPos pos) {
+    public void detonate(World world, BlockPos pos) {
         ItemStack stack = this.getStack(0);
         if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem && this.getLastUser() != null) {
             var grenadeEntity = grenadeItem.createGrenadeAt(world, this.getLastUser(), stack);
@@ -116,6 +112,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
             grenadeEntity.setNoGravity(true);
             BlockPos potentialPos = pos.offset(Direction.byId(this.directionID));
             grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));
+            grenadeEntity.setPower(grenadeEntity.getPower() * (2 - (this.detectRange * INCREASED_POWER_PER_RANGE)));
             world.spawnEntity(grenadeEntity);
             world.breakBlock(pos, false);
         }
@@ -127,6 +124,9 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
                 ++this.currentArmingTicks;
                 if (this.currentArmingTicks >= MAX_ARMING_TICKS) {
                     world.setBlockState(pos, state.with(HiddenExplosiveBlock.ARMED, true));
+                    if (this.getLastUser() != null) {
+                        this.getLastUser().sendMessage(GrenadesModUtil.translatableTextOf(ARMED), false);
+                    }
                 }
             }
         } else {
@@ -143,6 +143,10 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
 
     public Item getDisguiseBlockItem() {
         return this.disguiseBlockItem;
+    }
+
+    public int getDetectRange() {
+        return this.detectRange;
     }
 
     private PlayerEntity getLastUser() {
@@ -240,20 +244,5 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.writeBlockPos(this.pos);
-    }
-
-    @Override
-    public boolean accepts(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
-        boolean bl = event == GameEvent.BLOCK_DESTROY && pos.equals(this.getPos());
-        boolean bl2 = event == GameEvent.BLOCK_PLACE && pos.equals(this.getPos());
-        return !bl && !bl2 && SculkSensorBlock.isInactive(this.getCachedState());
-    }
-
-    @Override
-    public void accept(World world, GameEventListener listener, GameEvent event, int distance) {
-        BlockState blockState = this.getCachedState();
-        if (!world.isClient() && SculkSensorBlock.isInactive(blockState)) {
-            SculkSensorBlock.setActive(world, this.pos, blockState, SculkSensorBlockEntity.getPower(distance, listener.getRange()));
-        }
     }
 }

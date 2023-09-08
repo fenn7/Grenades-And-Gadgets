@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.block.custom;
 
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
+import fenn7.grenadesandgadgets.commonside.block.listener.HiddenExplosiveBlockListener;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -9,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.StairsBlock;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -34,6 +34,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.BlockPositionSource;
+import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 
 public class HiddenExplosiveBlock extends BlockWithEntity implements Waterloggable {
@@ -52,6 +54,13 @@ public class HiddenExplosiveBlock extends BlockWithEntity implements Waterloggab
         return checkType(type, GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY, HiddenExplosiveBlockEntity::tick);
     }
 
+    @Nullable
+    @Override
+    public <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
+        return blockEntity instanceof HiddenExplosiveBlockEntity h ? new HiddenExplosiveBlockListener(
+            new BlockPositionSource(h.getPos()), h) : super.getGameEventListener(world, blockEntity);
+    }
+
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
@@ -66,12 +75,8 @@ public class HiddenExplosiveBlock extends BlockWithEntity implements Waterloggab
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (player.isSneaking()) {
-            if (!state.get(ARMED)) {
-                world.setBlockState(pos, state.with(ARMED, true));
-            } else {
-                world.setBlockState(pos, state.with(ARMED, false));
-            }
+        if (state.get(ARMED) && !player.isSneaking() && world.getBlockEntity(pos) instanceof HiddenExplosiveBlockEntity h) {
+            h.detonate(world, pos);
         } else {
             if (!world.isClient) {
                 NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
