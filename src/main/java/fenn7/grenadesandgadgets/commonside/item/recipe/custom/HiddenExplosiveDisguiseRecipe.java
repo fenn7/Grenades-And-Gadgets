@@ -1,5 +1,8 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe.custom;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
@@ -14,6 +17,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
@@ -59,6 +63,22 @@ public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
             }
         }
         return output;
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getRemainder(CraftingInventory inventory) {
+        DefaultedList<ItemStack> remainderList = super.getRemainder(inventory); //new ArrayList<>(super.getRemainder(inventory));
+        for (int i = 0; i < inventory.size(); ++i) {
+            ItemStack stack = inventory.getStack(i);
+            NbtCompound nbt = stack.getOrCreateNbt();
+            if (stack.getItem() instanceof HiddenExplosiveBlockItem && nbt.contains("BlockEntityTag")) {
+                ItemStack oldDisguise = ItemStack.fromNbt(nbt.getCompound("BlockEntityTag").getCompound(HiddenExplosiveBlockItem.DISGUISE_KEY));
+                remainderList.set(i, oldDisguise);
+            }
+        }
+        //var returnList = DefaultedList.ofSize(remainderList.size(), ItemStack.EMPTY);
+        //remainderList.forEach(itemStack -> returnList.set(remainderList.indexOf(itemStack), itemStack));
+        return remainderList;
     }
 
     @Override

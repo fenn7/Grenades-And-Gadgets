@@ -13,8 +13,10 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.item.WallStandingBlockItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 import software.bernie.example.client.EntityResources;
@@ -123,6 +125,14 @@ public class DecoyRenderer extends ExtendedGeoEntityRenderer<DecoyEntity> {
     }
 
     protected void postRenderBlock(MatrixStack stack, BlockState block, String boneName, DecoyEntity currentEntity) {
+    }
+
+    @Override
+    protected void handleArmorRenderingForBone(GeoBone bone, MatrixStack stack, VertexConsumer buffer, int packedLight, int packedOverlay, Identifier currentTexture) {
+        if (bone.getName().equals("armorHead") && this.helmetItem != null && !(this.helmetItem.getItem() instanceof ArmorItem)) {
+            stack.translate(0.0, -3.0, 0);
+        }
+        super.handleArmorRenderingForBone(bone, stack, buffer, packedLight, packedOverlay, currentTexture);
     }
 
     protected Identifier getTextureForBone(String boneName, DecoyEntity animatable) {

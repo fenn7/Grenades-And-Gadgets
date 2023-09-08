@@ -6,6 +6,7 @@ import java.util.Set;
 
 import fenn7.grenadesandgadgets.commonside.damage.GrenadesModDamageSources;
 import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
+import fenn7.grenadesandgadgets.commonside.entity.grenades.TemporalFissureGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.tags.GrenadesModTags;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
@@ -136,7 +137,7 @@ public class TemporalFissureEntity extends Entity implements IAnimatable {
             positions.stream().filter(this::canOverwrite).forEach(pos -> this.world.breakBlock(pos, true, this));
         }
         this.world.getNonSpectatingEntities(Entity.class, collisionBox).stream()
-            .filter(entity -> !(entity instanceof TemporalFissureEntity)).forEach(entity -> {
+            .filter(entity -> !(entity instanceof TemporalFissureEntity || entity instanceof TemporalFissureGrenadeEntity)).forEach(entity -> {
                 this.spawnHitParticles(entity);
                 if (entity instanceof LivingEntity alive) {
                     var displacementStats = this.calculateDisplacementDamage(alive, worldsMatch);

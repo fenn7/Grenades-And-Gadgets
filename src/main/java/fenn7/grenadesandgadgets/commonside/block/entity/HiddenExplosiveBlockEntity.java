@@ -108,13 +108,14 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     private void detonate(World world, BlockPos pos) {
         ItemStack stack = this.getStack(0);
         if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem && this.getLastUser() != null) {
-            var grenadeEntity = grenadeItem.createGrenadeAt(world, this.lastUser, stack);
+            var grenadeEntity = grenadeItem.createGrenadeAt(world, this.getLastUser(), stack);
+            grenadeEntity.setItem(stack);
             GrenadeItem.addNbtModifier(stack, grenadeEntity);
             this.removeStack(0);
             grenadeEntity.setMaxAgeTicks(10);
             grenadeEntity.setNoGravity(true);
-            grenadeEntity.setInvisible(true);
-            grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? pos.offset(Direction.byId(this.directionID)) : pos));
+            BlockPos potentialPos = pos.offset(Direction.byId(this.directionID));
+            grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));
             world.spawnEntity(grenadeEntity);
             world.breakBlock(pos, false);
         }

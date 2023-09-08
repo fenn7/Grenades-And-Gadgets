@@ -16,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.TagKey;
@@ -119,10 +120,12 @@ public interface GrenadesModUtil {
     static <T extends AbstractGrenadeEntity> T copyGrenadeFrom(T entity, boolean keepModifier) {
         T newEntity = (T) entity.getType().create(entity.world);
         if (newEntity != null) {
-            if (keepModifier) {
-                var oldModifier = entity.getGrenadeItemStack().getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY);
-                newEntity.getGrenadeItemStack().getOrCreateNbt().putString(GrenadeModifierRecipe.MODIFIER_KEY, oldModifier);
+            ItemStack grenadeStack = entity.getGrenadeItemStack();
+            if (!keepModifier) {
+                grenadeStack.getOrCreateNbt().remove(GrenadeModifierRecipe.MODIFIER_KEY);
             }
+            newEntity.setItem(grenadeStack);
+            newEntity.setOwner(entity.getOwner());
             return newEntity;
         }
         return null;
