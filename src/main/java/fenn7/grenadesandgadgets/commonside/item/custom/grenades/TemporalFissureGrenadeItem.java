@@ -4,10 +4,8 @@ import java.util.List;
 
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.TemporalFissureGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -33,7 +31,7 @@ public class TemporalFissureGrenadeItem extends AbstractGrenadeItem implements I
     }
 
     @Override
-    protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
+    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new TemporalFissureGrenadeEntity(world, player);
     }
 

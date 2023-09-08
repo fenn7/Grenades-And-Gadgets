@@ -1,7 +1,10 @@
 package fenn7.grenadesandgadgets.commonside.block.custom;
 
+import java.util.List;
+
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
+import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -13,6 +16,8 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -74,6 +79,17 @@ public class HiddenExplosiveBlock extends BlockWithEntity {
         return ActionResult.SUCCESS;
     }
 
+    @Override
+    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
+        if (blockEntity instanceof HiddenExplosiveBlockEntity h) {
+            var blockNbt = h.createNbt();
+            if (blockNbt.contains(HiddenExplosiveBlockItem.DISGUISE_KEY)) {
+                Block.dropStack(world, pos, ItemStack.fromNbt(blockNbt.getCompound(HiddenExplosiveBlockItem.DISGUISE_KEY)));
+            }
+        }
+        super.afterBreak(world, player, pos, state, blockEntity, stack);
+    }
+
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
@@ -99,5 +115,15 @@ public class HiddenExplosiveBlock extends BlockWithEntity {
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return world.getBlockEntity(pos) instanceof HiddenExplosiveBlockEntity h && !h.getStack(0).isEmpty() ? 15 : 0;
     }
 }

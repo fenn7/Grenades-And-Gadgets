@@ -1,14 +1,21 @@
 package fenn7.grenadesandgadgets.commonside.block.entity;
 
+import java.util.UUID;
+
 import fenn7.grenadesandgadgets.client.screen.HiddenExplosiveScreenHandler;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.AbstractGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.GrenadeItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SculkSensorBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.SculkSensorBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -22,10 +29,16 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.listener.SculkSensorListener;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -35,13 +48,16 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
+public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory, SculkSensorListener.Callback {
     public static final int MAX_ARMING_TICKS = 40;
     private static final String NBT_TAG = "configuration.data";
+    private static final String LAST_USER = "last.user";
     private static final String TITLE = "container.grenadesandgadgets.hidden_explosive";
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     private Item disguiseBlockItem;
+    private @Nullable PlayerEntity lastUser;
+    private @Nullable UUID lastUserUUID;
 
     private final PropertyDelegate delegate;
     private int currentArmingTicks = 0;
@@ -82,15 +98,40 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
 
     public static void tick(World world, BlockPos pos, BlockState state, HiddenExplosiveBlockEntity entity) {
         if (!world.isClient) {
-            if (entity.armingFlag == 1 && !entity.getStack(0).isEmpty()) {
-                if (entity.currentArmingTicks < MAX_ARMING_TICKS) {
-                    ++entity.currentArmingTicks;
-                    if (entity.currentArmingTicks >= MAX_ARMING_TICKS) {
-                        world.setBlockState(pos, state.with(HiddenExplosiveBlock.ARMED, true));
-                    }
+            entity.tickArming(world, pos, state);
+            if (state.get(HiddenExplosiveBlock.ARMED)) {
+                entity.detonate(world, pos);
+            }
+        }
+    }
+
+    private void detonate(World world, BlockPos pos) {
+        ItemStack stack = this.getStack(0);
+        if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem && this.getLastUser() != null) {
+            var grenadeEntity = grenadeItem.createGrenadeAt(world, this.lastUser, stack);
+            GrenadeItem.addNbtModifier(stack, grenadeEntity);
+            this.removeStack(0);
+            grenadeEntity.setMaxAgeTicks(10);
+            grenadeEntity.setNoGravity(true);
+            grenadeEntity.setInvisible(true);
+            grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? pos.offset(Direction.byId(this.directionID)) : pos));
+            world.spawnEntity(grenadeEntity);
+            world.breakBlock(pos, false);
+        }
+    }
+
+    private void tickArming(World world, BlockPos pos, BlockState state) {
+        if (this.armingFlag == 1 && !this.getStack(0).isEmpty()) {
+            if (this.currentArmingTicks < MAX_ARMING_TICKS) {
+                ++this.currentArmingTicks;
+                if (this.currentArmingTicks >= MAX_ARMING_TICKS) {
+                    world.setBlockState(pos, state.with(HiddenExplosiveBlock.ARMED, true));
                 }
-            } else {
-                entity.resetArming(world, pos, state);
+            }
+        } else {
+            world.setBlockState(pos, state.with(HiddenExplosiveBlock.ARMED, false));
+            if (this.currentArmingTicks > 0) {
+                --this.currentArmingTicks;
             }
         }
     }
@@ -99,15 +140,28 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         return this.delegate;
     }
 
-    public void resetArming(World world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, state.with(HiddenExplosiveBlock.ARMED, false));
-        if (this.currentArmingTicks > 0) {
-            --this.currentArmingTicks;
-        };
-    }
-
     public Item getDisguiseBlockItem() {
         return this.disguiseBlockItem;
+    }
+
+    private PlayerEntity getLastUser() {
+        if (this.lastUser != null && !this.lastUser.isRemoved()) {
+            return this.lastUser;
+        }
+        if (this.lastUserUUID != null && this.world instanceof ServerWorld) {
+            return this.world.getPlayerByUuid(this.lastUserUUID);
+        }
+        return null;
+    }
+
+    private void setLastUser(PlayerEntity player) {
+        this.lastUser = player;
+        this.lastUserUUID = player.getUuid();
+    }
+
+    @Override
+    public void onOpen(PlayerEntity player) {
+        this.setLastUser(player);
     }
 
     @Override
@@ -122,8 +176,9 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         for (int i = 0; i < configData.length; ++i) {
             this.delegate.set(i, configData[i]);
         }
-        //this.currentArmingTicks = nbt.getInt("current.arming.ticks");
-        //this.armingFlag = nbt.getInt("arming.flag");
+        if (nbt.containsUuid(LAST_USER)) {
+            this.lastUserUUID = nbt.getUuid(LAST_USER);
+        }
     }
 
     @Override
@@ -133,9 +188,10 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         if (this.disguiseBlockItem != null) {
             nbt.put(HiddenExplosiveBlockItem.DISGUISE_KEY, this.disguiseBlockItem.getDefaultStack().writeNbt(new NbtCompound()));
         }
-        //nbt.putInt("current.arming.ticks", this.currentArmingTicks);
-        //nbt.putInt("arming.flag", this.armingFlag);
         nbt.putIntArray(NBT_TAG, new int[]{this.currentArmingTicks, this.armingFlag, this.detectRange, this.directionID});
+        if (this.lastUserUUID != null) {
+            nbt.putUuid(LAST_USER, this.lastUserUUID);
+        }
     }
 
     @Nullable
@@ -183,5 +239,20 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.writeBlockPos(this.pos);
+    }
+
+    @Override
+    public boolean accepts(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+        boolean bl = event == GameEvent.BLOCK_DESTROY && pos.equals(this.getPos());
+        boolean bl2 = event == GameEvent.BLOCK_PLACE && pos.equals(this.getPos());
+        return !bl && !bl2 && SculkSensorBlock.isInactive(this.getCachedState());
+    }
+
+    @Override
+    public void accept(World world, GameEventListener listener, GameEvent event, int distance) {
+        BlockState blockState = this.getCachedState();
+        if (!world.isClient() && SculkSensorBlock.isInactive(blockState)) {
+            SculkSensorBlock.setActive(world, this.pos, blockState, SculkSensorBlockEntity.getPower(distance, listener.getRange()));
+        }
     }
 }

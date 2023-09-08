@@ -1,7 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.grenades.RadiantGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.StormGrenadeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

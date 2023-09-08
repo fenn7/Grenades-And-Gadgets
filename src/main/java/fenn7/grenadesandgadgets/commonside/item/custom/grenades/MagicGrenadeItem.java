@@ -1,24 +1,17 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.MagicGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import it.unimi.dsi.fastutil.Hash;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +43,7 @@ public class MagicGrenadeItem extends AbstractGrenadeItem {
     }
 
     @Override
-    protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
+    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new MagicGrenadeEntity(world, player);
     }
 }

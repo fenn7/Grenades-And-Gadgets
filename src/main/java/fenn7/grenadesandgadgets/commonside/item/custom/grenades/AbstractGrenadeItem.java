@@ -1,6 +1,5 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
-import static fenn7.grenadesandgadgets.client.network.GrenadesModS2CPackets.SYNC_GRENADE_S2C;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.CATACLYSMIC;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.ECHOING;
 import static fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe.ELASTIC;
@@ -16,14 +15,11 @@ import java.util.List;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -54,7 +50,30 @@ public abstract class AbstractGrenadeItem extends Item {
         user.getItemCooldownManager().set(this, 20);
         AbstractGrenadeEntity grenade = this.createGrenadeAt(world, user, user.getStackInHand(hand));
         grenade.setItem(stack);
-        float speed = this.defaultSpeed;
+        float speed = this.defaultSpeed * addNbtModifier(stack, grenade);
+        this.setPitchYawVelocity(user, grenade, this.defaultRoll, speed, this.defaultDiv);
+        if (!world.isClient()) {
+            world.spawnEntity(grenade);
+            //ServerPlayNetworking.send((ServerPlayerEntity) user, SYNC_GRENADE_S2C, this.buildGrenadeBuf(grenade));
+        }
+        if (!user.isCreative()) {
+            stack.decrement(1);
+        }
+        return TypedActionResult.success(stack, world.isClient());
+    }
+
+    /*private PacketByteBuf buildGrenadeBuf(AbstractGrenadeEntity grenade) {
+        var buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeInt(grenade.getId());
+        buf.writeInt(grenade.getMaxAgeTicks());
+        buf.writeBoolean(grenade.getShouldBounce());
+        buf.writeFloat(grenade.getBounceMultiplier());
+        buf.writeFloat(grenade.getPower());
+        return buf;
+    }*/
+
+    public static float addNbtModifier(ItemStack stack, AbstractGrenadeEntity grenade) {
+        float speed = 1.0F;
         switch (stack.getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY)) {
             case STICKY, ECHOING -> grenade.setShouldBounce(false);
             case ELASTIC -> grenade.setBounceMultiplier(ELASTIC_BOUNCE_FACTOR);
@@ -79,25 +98,7 @@ public abstract class AbstractGrenadeItem extends Item {
                 grenade.setBounceMultiplier(grenade.getBounceMultiplier() * CATACLYSMIC_BOUNCE_MULTIPLIER);
             }
         }
-        this.setPitchYawVelocity(user, grenade, this.defaultRoll, speed, this.defaultDiv);
-        if (!world.isClient()) {
-            world.spawnEntity(grenade);
-            ServerPlayNetworking.send((ServerPlayerEntity) user, SYNC_GRENADE_S2C, this.buildGrenadeBuf(grenade));
-        }
-        if (!user.isCreative()) {
-            stack.decrement(1);
-        }
-        return TypedActionResult.success(stack, world.isClient());
-    }
-
-    private PacketByteBuf buildGrenadeBuf(AbstractGrenadeEntity grenade) {
-        var buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeInt(grenade.getId());
-        buf.writeInt(grenade.getMaxAgeTicks());
-        buf.writeBoolean(grenade.getShouldBounce());
-        buf.writeFloat(grenade.getBounceMultiplier());
-        buf.writeFloat(grenade.getPower());
-        return buf;
+        return speed;
     }
 
     @Override
@@ -112,9 +113,10 @@ public abstract class AbstractGrenadeItem extends Item {
         grenade.setVelocity(user, user.getPitch(), user.getYaw(), roll, speed, divergence);
     }
 
-    protected abstract AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack);
+    public abstract AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack);
 
     public float getDefaultSpeed() {
         return this.defaultSpeed;
     }
 }
+

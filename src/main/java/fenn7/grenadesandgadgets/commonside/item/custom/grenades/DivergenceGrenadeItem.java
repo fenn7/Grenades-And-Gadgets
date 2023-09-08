@@ -1,7 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.item.custom.grenades;
 
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
-import fenn7.grenadesandgadgets.commonside.entity.grenades.ConvergenceGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.DivergenceGrenadeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -14,7 +13,7 @@ public class DivergenceGrenadeItem extends AbstractGrenadeItem {
     }
 
     @Override
-    protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
+    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new DivergenceGrenadeEntity(world, player);
     }
 }

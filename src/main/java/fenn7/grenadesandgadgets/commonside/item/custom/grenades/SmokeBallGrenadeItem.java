@@ -39,7 +39,7 @@ public class SmokeBallGrenadeItem extends AbstractGrenadeItem {
     }
 
     @Override
-    protected AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
+    public AbstractGrenadeEntity createGrenadeAt(World world, PlayerEntity player, ItemStack stack) {
         return new SmokeBallGrenadeEntity(world, player);
     }
 }
