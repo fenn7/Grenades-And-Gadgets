@@ -57,8 +57,7 @@ public class HiddenExplosiveBlock extends BlockWithEntity implements Waterloggab
     @Nullable
     @Override
     public <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
-        return blockEntity instanceof HiddenExplosiveBlockEntity h ? new HiddenExplosiveBlockListener(
-            new BlockPositionSource(h.getPos()), h) : super.getGameEventListener(world, blockEntity);
+        return blockEntity instanceof HiddenExplosiveBlockEntity h ? h.getListener() : super.getGameEventListener(world, blockEntity);
     }
 
     @Override
