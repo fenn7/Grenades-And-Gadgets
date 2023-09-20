@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import fenn7.grenadesandgadgets.client.screen.HiddenExplosiveScreenHandler;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
@@ -31,6 +30,7 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.GameEventTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
@@ -57,7 +57,8 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     public static final int MAX_ARMING_TICKS = 40;
-    private static final float INCREASED_POWER_PER_RANGE = 0.25F;
+    private static final float INCREASED_POWER_PER_RANGE = 0.15F;
+    private static final float INCREASED_POWER_BASE = 1.5F;
     private static final String NBT_TAG = "configuration.data";
     private static final String LAST_USER = "last.user";
     private static final String TITLE = "container.grenadesandgadgets.hidden_explosive";
@@ -127,7 +128,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
             grenadeEntity.setNoGravity(true);
             BlockPos potentialPos = pos.offset(Direction.byId(this.directionID));
             grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));
-            grenadeEntity.setPower(grenadeEntity.getPower() * (2 - (this.detectRange * INCREASED_POWER_PER_RANGE)));
+            grenadeEntity.setPower(grenadeEntity.getPower() * INCREASED_POWER_BASE * (2.0F - (this.detectRange * INCREASED_POWER_PER_RANGE)));
             world.spawnEntity(grenadeEntity);
             world.breakBlock(pos, false);
         }
@@ -158,10 +159,6 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
 
     public Item getDisguiseBlockItem() {
         return this.disguiseBlockItem;
-    }
-
-    public int getDetectRange() {
-        return this.detectRange;
     }
 
     public HiddenExplosiveListener getListener() {
@@ -265,6 +262,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         buf.writeBlockPos(this.pos);
     }
 
+    @SuppressWarnings("ALL")
     private class HiddenExplosiveListener implements GameEventListener {
         protected final PositionSource positionSource;
         protected Optional<GameEvent> event = Optional.empty();
@@ -308,7 +306,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
                 return false;
             }
             BlockPos blockPos = optional.get();
-            if (!this.accepts(world, this, pos, event, entity) || this.isBlocked(world, pos, blockPos)) {
+            if (this.rejects(pos, event) || this.isBlocked(world, pos, blockPos)) {
                 return false;
             }
             this.listen(world, event, pos, blockPos);
@@ -319,10 +317,8 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
             if (this.event.isPresent() || !event.isIn(GameEventTags.VIBRATIONS)) {
                 return false;
             }
-            if (entity != null) {
-                if (entity.occludeVibrationSignals() || event.isIn(GameEventTags.IGNORE_VIBRATIONS_SNEAKING) && entity.bypassesSteppingEffects()) {
-                    return false;
-                }
+            if (entity != null && (entity.occludeVibrationSignals() || event.isIn(GameEventTags.IGNORE_VIBRATIONS_SNEAKING) && entity.bypassesSteppingEffects())) {
+                return false;
             }
             return entity == null || !entity.isSpectator();
         }
@@ -330,25 +326,20 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         private void listen(World world, GameEvent event, BlockPos pos, BlockPos sourcePos) {
             this.event = Optional.of(event);
             if (world instanceof ServerWorld sw) {
-                GrenadesMod.LOGGER.warn("Vibration detected at " + pos + " from " + sourcePos);
                 this.delay = this.distance = MathHelper.floor(Math.sqrt(pos.getSquaredDistance(sourcePos)));
                 sw.spawnParticles(new VibrationParticleEffect(new Vibration(pos, this.positionSource, this.delay)), pos.getX(), pos.getY(), pos.getZ(), 1,0, 0, 0, 0);
-                ((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.delay));
             }
         }
 
         private boolean isBlocked(World world, BlockPos pos, BlockPos sourcePos) {
-            return false; //world.raycast(new BlockStateRaycastContext(Vec3d.ofCenter(pos), Vec3d.ofCenter(sourcePos), s -> true)).getType() == HitResult.Type.BLOCK;
+            return world.raycast(new BlockStateRaycastContext(Vec3d.ofCenter(pos), Vec3d.ofCenter(sourcePos), s -> s.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS))).getType() == HitResult.Type.BLOCK;
         }
 
-        public boolean accepts(World world, HiddenExplosiveListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+        public boolean rejects(BlockPos pos, GameEvent event) {
             boolean placeEvent = event == GameEvent.BLOCK_PLACE && pos.equals(HiddenExplosiveBlockEntity.this.getPos());
-            boolean destroyEvent = event == GameEvent.BLOCK_DESTROY && pos.equals(HiddenExplosiveBlockEntity.this.getPos());
-            return !placeEvent && !destroyEvent;
-        }
-
-        public void accept(World world, fenn7.grenadesandgadgets.commonside.block.listener.HiddenExplosiveBlockListener listener, GameEvent event, int distance) {
-            int y = 0;
+            boolean destroyEvent = event == GameEvent.BLOCK_DESTROY && pos.equals(HiddenExplosiveBlockEntity.this.getPos())
+                && !HiddenExplosiveBlockEntity.this.getCachedState().get(HiddenExplosiveBlock.ARMED);
+            return placeEvent || destroyEvent;
         }
     }
 }

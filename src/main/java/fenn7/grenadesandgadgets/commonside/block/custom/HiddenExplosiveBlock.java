@@ -2,7 +2,6 @@ package fenn7.grenadesandgadgets.commonside.block.custom;
 
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
-import fenn7.grenadesandgadgets.commonside.block.listener.HiddenExplosiveBlockListener;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -34,7 +33,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,6 +68,14 @@ public class HiddenExplosiveBlock extends BlockWithEntity implements Waterloggab
             }
             super.onStateReplaced(state, world, pos, newState, moved);
         }
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (state.get(ARMED) && world.getBlockEntity(pos) instanceof HiddenExplosiveBlockEntity h) {
+            h.detonate(world, pos);
+        }
+        super.onBreak(world, pos, state, player);
     }
 
     @Override
