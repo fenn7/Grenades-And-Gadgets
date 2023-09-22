@@ -15,18 +15,25 @@ import java.util.List;
 import fenn7.grenadesandgadgets.commonside.entity.grenades.AbstractGrenadeEntity;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ThrowablePotionItem;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractGrenadeItem extends Item {
+    public static final int DEFAULT_MAX_AGE = 100;
+    public static final float DEFAULT_BOUNCE_MULTIPLIER = 2F / 3F;
     private static final float MASS_BOUNCE_MULTIPLIER = 1.125F;
     private static final float MASS_VELOCITY_MULTIPLIER = 1.15F;
     private static final float MASS_POWER_MULTIPLIER = 1.1F;
@@ -45,9 +52,31 @@ public abstract class AbstractGrenadeItem extends Item {
     }
 
     @Override
+    public int getMaxUseTime(ItemStack stack) {
+        return Math.round(DEFAULT_MAX_AGE * switch (stack.getOrCreateNbt().getString(GrenadeModifierRecipe.MODIFIER_KEY)) {
+            case CATACLYSMIC -> CATACLYSMIC_AGE_MULTIPLIER;
+            case REACTIVE -> REACTIVE_AGE_MULTIPLIER;
+            default -> 1.0F;
+        });
+    }
+
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        int x = 4;
+        if (remainingUseTicks == 0) {
+            int y = 4;
+        }
+    }
+
+    @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BLOCK;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        user.getItemCooldownManager().set(this, 20);
+        /*user.getItemCooldownManager().set(this, 20);
         AbstractGrenadeEntity grenade = this.createGrenadeAt(world, user, user.getStackInHand(hand));
         grenade.setItem(stack);
         float speed = this.defaultSpeed * addNbtModifier(stack, grenade);
@@ -57,8 +86,9 @@ public abstract class AbstractGrenadeItem extends Item {
         }
         if (!user.isCreative()) {
             stack.decrement(1);
-        }
-        return TypedActionResult.success(stack, world.isClient());
+        }*/
+        user.setCurrentHand(hand);
+        return TypedActionResult.consume(stack);
     }
 
     public static float addNbtModifier(ItemStack stack, AbstractGrenadeEntity grenade) {

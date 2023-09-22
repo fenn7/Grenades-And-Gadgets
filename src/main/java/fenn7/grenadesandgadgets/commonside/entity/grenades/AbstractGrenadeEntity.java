@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.AbstractGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
@@ -89,8 +90,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(BOUNCE_FLAG, true);
-        this.dataTracker.startTracking(BOUNCE_MULTIPLIER, 2F / 3F);
-        this.dataTracker.startTracking(MAX_AGE, 100);
+        this.dataTracker.startTracking(BOUNCE_MULTIPLIER, AbstractGrenadeItem.DEFAULT_BOUNCE_MULTIPLIER);
+        this.dataTracker.startTracking(MAX_AGE, AbstractGrenadeItem.DEFAULT_MAX_AGE);
         this.dataTracker.startTracking(POWER, 0.0F);
     }
 
