@@ -68,15 +68,12 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
                     ParticleEffect smokeEffect = GrenadesModClientUtil.getMaxSizeDustParticleType(
                         this.getOrCreateColours().get(this.random.nextInt(this.getOrCreateColours().size()))
                     );
-                    double xRand = this.random.nextDouble(0.3D, 0.7D);
-                    double yRand = this.random.nextDouble(0.3D, 0.7D);
-                    double zRand = this.random.nextDouble(0.3D, 0.7D);
+                    double xRand = this.random.nextDouble(0.2D, 0.8D);
+                    double yRand = this.random.nextDouble(0.2D, 0.8D);
+                    double zRand = this.random.nextDouble(0.2D, 0.8D);
                     this.world.addParticle(smokeEffect, pos.getX() + xRand, pos.getY() + yRand, pos.getZ() + zRand,
                         0, 0, 0);
-                    this.world.addParticle(smokeEffect, pos.getX() - xRand, pos.getY() - yRand, pos.getZ() - zRand,
-                        0, 0, 0);
-                    }
-                );
+                });
             }
             smokeBlocks.forEach(pos -> {
                 BlockState blockState = this.world.getBlockState(pos);
@@ -98,7 +95,7 @@ public class SmokeBallGrenadeEntity extends AbstractLingeringGrenadeEntity imple
         if (this.smokeBlocks != null && !this.isStuckToEntity()) {
             return this.smokeBlocks;
         } else {
-            Set<BlockPos> newSmokeBlocks = this.getAffectedBlocksAtRange(this.power);
+            Set<BlockPos> newSmokeBlocks = this.getAffectedBlocksAtRange(this.getPower());
             this.smokeBlocks = newSmokeBlocks;
             return newSmokeBlocks;
         }

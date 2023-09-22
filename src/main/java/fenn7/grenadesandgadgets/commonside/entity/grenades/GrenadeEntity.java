@@ -47,12 +47,12 @@ public class GrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
-    protected void explode(float power) {
+    protected void explode() {
         if (!this.world.isClient()) {
             Set<LivingEntity> list =
-                GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, power);
+                GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, this.getPower());
             list.stream().forEach(e -> e.damage(DamageSource.thrownProjectile(this, this.getOwner()), PROXIMITY_DAMAGE));
-            this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), power, Explosion.DestructionType.NONE);
+            this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), this.getPower(), Explosion.DestructionType.NONE);
         }
         this.discard();
     }

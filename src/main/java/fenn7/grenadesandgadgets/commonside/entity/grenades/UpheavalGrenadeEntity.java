@@ -57,7 +57,7 @@ public class UpheavalGrenadeEntity extends AbstractDisplacementGrenadeEntity {
         int interval = MAX_DELAY_TICKS / MAX_UPHEAVAL_ROUNDS;
         int remainder = this.lingeringTicks % interval;
         if (this.lingeringTicks > 0 && remainder == (interval - 1)) {
-            Vec3d pos = new Vec3d(this.power * this.lingeringTicks / MAX_DELAY_TICKS, 0, 0);
+            Vec3d pos = new Vec3d(this.getPower() * this.lingeringTicks / MAX_DELAY_TICKS, 0, 0);
             for (int i = 0; i < 8; ++i) {
                 Vec3d spawnPos = this.getPos().add(pos.rotateY((float) (Math.PI * i / 4.0D)));
                 this.world.addParticle(UPHEAVAL_EFFECT, spawnPos.x, spawnPos.y, spawnPos.z, 0.0D, 0.0D, 0.0D);

@@ -57,7 +57,7 @@ public class StormGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     protected void handleParticleEffects() {
         if (this.lingeringTicks > 0 && this.lingeringTicks % TICKS_BETWEEN_EFFECTS == 0) {
             float angle = (float) ANGLE_BETWEEN_EFFECTS * (this.lingeringTicks / TICKS_BETWEEN_EFFECTS - 2);
-            Vec3d pos = new Vec3d(this.power, 0, 0).rotateZ(angle);
+            Vec3d pos = new Vec3d(this.getPower(), 0, 0).rotateZ(angle);
             for (int i = 0; i < 8; ++i) {
                 Vec3d spawnPos = this.getPos().add(pos.rotateY((float) (Math.PI * i / 4.0D)));
                 this.world.addParticle(SHOCK_EFFECT, spawnPos.x, spawnPos.y, spawnPos.z, 0.0D, 0.0D, 0.0D);

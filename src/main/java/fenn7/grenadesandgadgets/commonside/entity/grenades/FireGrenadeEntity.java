@@ -20,7 +20,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
-    private static final float FIRE_RANGE = 2.8F;
+    private static final float FIRE_RANGE = 1.9F;
     private static final float MAX_IMPACT_DAMAGE = 4.0F;
     private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.4F;
     private static final int MAX_LINGERING_TICKS = 10;
@@ -50,14 +50,15 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         if (!this.world.isClient()) {
-            this.explodeWithEffects(this.power * 0.66F);
+            this.explodeWithEffects();
         }
         super.onCollision(hitResult);
     }
 
     @Override
     protected void handleDiscard() {
-        this.explode(this.power);
+        this.setPower(this.getPower() * 1.5F);
+        this.explode();
         super.handleDiscard();
     }
 
@@ -67,9 +68,9 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
     }
 
     @Override
-    protected void explode(float power) {
-        super.explode(power);
-        this.getAffectedBlocksAtRange(power).forEach(pos -> {
+    protected void explode() {
+        super.explode();
+        this.getAffectedBlocksAtRange(this.getPower()).forEach(pos -> {
             this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
                 if (!entity.isFireImmune() && this.state != LingeringState.DISCARDED) {
                     entity.damage(DamageSource.LAVA, this.handleImpactDamage(entity));

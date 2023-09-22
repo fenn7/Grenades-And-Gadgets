@@ -7,24 +7,16 @@ import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import fenn7.grenadesandgadgets.commonside.entity.misc.TemporalFissureEntity;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModSoundProfile;
-import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -58,7 +50,7 @@ public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEnt
     @Override
     protected void handleParticleEffects() {
         if (this.world.isClient && this.lingeringTicks % INTERVAL_BETWEEN_EFFECTS == 1) {
-            Vec3d startPosHorizontal = new Vec3d(this.power - (float) (this.lingeringTicks / INTERVAL_BETWEEN_EFFECTS), 0, 0);
+            Vec3d startPosHorizontal = new Vec3d(this.getPower() - (float) (this.lingeringTicks / INTERVAL_BETWEEN_EFFECTS), 0, 0);
             Vec3d startPosVertical = startPosHorizontal.rotateY((float) Math.PI / 2F);
             Set<Vec3d> positions = new HashSet<>(Set.of(startPosVertical, startPosHorizontal));
             for (int i = 1; i < 9; ++i) {
@@ -74,11 +66,11 @@ public class TemporalFissureGrenadeEntity extends AbstractDisplacementGrenadeEnt
     }
 
     @Override
-    protected void explode(float power) {
-        super.explode(power);
+    protected void explode() {
+        super.explode();
         if (this.state == LingeringState.DISCARDED && !this.world.isClient) {
             int dimKey = this.getItem().getOrCreateNbt().getInt(TemporalFissureGrenadeItem.NBT_DIMENSION_KEY);
-            TemporalFissureEntity entity = new TemporalFissureEntity(this.world, this.power, dimKey);
+            TemporalFissureEntity entity = new TemporalFissureEntity(this.world, this.getPower(), dimKey);
             Vec3d newPos = this.getPos().subtract(0, 1, 0);
             entity.setPosition(newPos);
             entity.refreshPositionAndAngles(newPos.x, newPos.y, newPos.z, entity.getYaw(), entity.getPitch());

@@ -44,7 +44,7 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
-    protected void explode(float power) {
+    protected void explode() {
         if (!this.world.isClient) {
             BlockPos impactPos = this.getBlockPos();
             if (this.world.getBlockState(impactPos).isAir()) {
@@ -53,7 +53,7 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
                     player.sendMessage(GrenadesModUtil.textOf("§6Illuminated block at " + impactPos.getX() + ", " + impactPos.getY() + ", " + impactPos.getZ()), false);
                 }
             }
-            this.getLivingEntitiesFromBlocks(this.getAffectedBlocksAtRange(power)).forEach(entity -> {
+            this.getLivingEntitiesFromBlocks(this.getAffectedBlocksAtRange(this.getPower())).forEach(entity -> {
                     if (!(entity instanceof PlayerEntity) || this.canPlayerSeeThis()) {
                         Pair<Integer, Integer> parameters = this.getDurationAndAmplifier(entity);
                         entity.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.RADIANT_LIGHT, parameters.getLeft(), parameters.getRight()));
@@ -66,8 +66,8 @@ public class RadiantGrenadeEntity extends AbstractGrenadeEntity {
 
     private Pair<Integer, Integer> getDurationAndAmplifier(LivingEntity entity) {
         return this.blockDistanceTo(entity.getBlockPos()) <= MAX_PROPORTION_RANGE
-            ? new Pair<>(MAX_RADIANCE_DURATION, (int) this.power)
-            : new Pair<>(MAX_RADIANCE_DURATION - 20, (int) this.power);
+            ? new Pair<>(MAX_RADIANCE_DURATION, (int) this.getPower())
+            : new Pair<>(MAX_RADIANCE_DURATION - 20, (int) this.getPower());
     }
 
     private boolean canPlayerSeeThis() {

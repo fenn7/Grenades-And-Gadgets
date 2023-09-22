@@ -64,30 +64,30 @@ public class IceGrenadeEntity extends AbstractLingeringGrenadeEntity {
 
     @Override
     protected void handleDiscard() {
-        this.explode(this.power);
+        this.explode();
         super.handleDiscard();
     }
 
     @Override
-    protected void explode(float power) {
-        super.explode(power);
+    protected void explode() {
+        super.explode();
         if (this.state == LingeringState.DISCARDED) {
-            this.getAffectedBlocksAtRange(power).forEach(pos -> {
+            this.getAffectedBlocksAtRange(this.getPower()).forEach(pos -> {
                 this.world.getNonSpectatingEntities(LivingEntity.class, new Box(pos)).forEach(entity -> {
                     if (entity.canFreeze()) {
                         entity.damage(DamageSource.FREEZE, this.handleImpactDamage(entity));
                         if (!entity.hasStatusEffect(GrenadesModStatus.FROZEN)) {
                             GrenadesModUtil.addEffectServerAndClient(entity, new StatusEffectInstance(GrenadesModStatus.FROZEN, FROZEN_DURATION,
-                                Math.min(4, (int) Math.floor(power))));
+                                Math.min(4, (int) Math.floor(this.getPower()))));
                         }
                     }
                 });
                 if (this.world.getBlockState(pos).isOf(Blocks.WATER)) {
-                    this.world.setBlockState(pos, power <= PERMAFROST_THRESHOLD ? Blocks.FROSTED_ICE.getDefaultState() : Blocks.ICE.getDefaultState());
+                    this.world.setBlockState(pos, this.getPower() <= PERMAFROST_THRESHOLD ? Blocks.FROSTED_ICE.getDefaultState() : Blocks.ICE.getDefaultState());
                 } else if (this.world.getBlockState(pos).isOf(Blocks.WATER_CAULDRON)) {
-                    this.world.setBlockState(pos, Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Math.round(power) + 1));
+                    this.world.setBlockState(pos, Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Math.round(this.getPower()) + 1));
                 } else if (Blocks.SNOW.getDefaultState().canPlaceAt(this.world, pos)) {
-                    this.world.setBlockState(pos, Blocks.SNOW.getStateManager().getDefaultState().with(SnowBlock.LAYERS, this.random.nextInt(1, Math.round(power) + 1)));
+                    this.world.setBlockState(pos, Blocks.SNOW.getStateManager().getDefaultState().with(SnowBlock.LAYERS, this.random.nextInt(1, Math.round(this.getPower()) + 1)));
                 }
             });
         }

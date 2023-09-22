@@ -48,10 +48,10 @@ public class MagicGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
-    protected void explode(float power) {
+    protected void explode() {
         NbtCompound stackNbt = this.getItem().getOrCreateNbt();
         if (stackNbt.contains(EFFECTS) && stackNbt.get(EFFECTS) instanceof NbtList) {
-            this.getLivingEntitiesFromBlocks(this.getAffectedBlocksAtRange(power)).forEach(entity -> {
+            this.getLivingEntitiesFromBlocks(this.getAffectedBlocksAtRange(this.getPower())).forEach(entity -> {
                 NbtList effectNbtList = stackNbt.getList(EFFECTS, 10);
                 effectNbtList.forEach(effectNbt -> {
                     if (effectNbt instanceof NbtCompound effectNbtCompound && effectNbtCompound.contains(EFFECT_TYPE) && effectNbtCompound.contains(EFFECT_COUNT)) {

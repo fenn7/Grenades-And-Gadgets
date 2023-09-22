@@ -51,10 +51,10 @@ public class HighExplosiveGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     @Override
-    protected void explode(float power) {
+    protected void explode() {
         if (!this.world.isClient()) {
-            this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), power, Explosion.DestructionType.NONE);
-            Set<LivingEntity> list = GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, power);
+            this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), this.getPower(), Explosion.DestructionType.NONE);
+            Set<LivingEntity> list = GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, this.getPower());
             list.forEach(e -> {
                 e.damage(DamageSource.thrownProjectile(this, this.getOwner()), PROXIMITY_DAMAGE);
                 StatusEffectInstance currentAB = e.getStatusEffect(GrenadesModStatus.ARMOUR_BREAK);

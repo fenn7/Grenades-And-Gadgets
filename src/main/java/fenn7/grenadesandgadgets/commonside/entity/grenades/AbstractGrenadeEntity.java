@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fenn7.grenadesandgadgets.client.GrenadesModClientUtil;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
 import fenn7.grenadesandgadgets.commonside.status.GrenadesModStatus;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModEntityData;
@@ -66,8 +65,8 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     protected static TrackedData<Boolean> BOUNCE_FLAG = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected static TrackedData<Float> BOUNCE_MULTIPLIER = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.FLOAT);
     protected static TrackedData<Integer> MAX_AGE = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    protected static TrackedData<Float> POWER = DataTracker.registerData(AbstractGrenadeEntity.class, TrackedDataHandlerRegistry.FLOAT);
     protected final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
-    protected float power;
     protected ParticleEffect explosionEffect;
     protected GrenadesModSoundProfile explosionSoundProfile;
 
@@ -92,6 +91,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.dataTracker.startTracking(BOUNCE_FLAG, true);
         this.dataTracker.startTracking(BOUNCE_MULTIPLIER, 2F / 3F);
         this.dataTracker.startTracking(MAX_AGE, 100);
+        this.dataTracker.startTracking(POWER, 0.0F);
     }
 
     @Override
@@ -102,7 +102,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         }
         if (this.age >= this.getMaxAgeTicks() && !(this instanceof AbstractLingeringGrenadeEntity lingering
             && lingering.state != AbstractLingeringGrenadeEntity.LingeringState.UNEXPLODED)) {
-            this.explodeWithEffects(this.power);
+            this.explodeWithEffects();
         }
         Vec3d velocity = this.getVelocity();
         super.tick();
@@ -118,7 +118,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             this.setOnFireFor(1);
         }
         if (this.isSubmergedInWater()) {
-            this.explodeWithEffects(this.power);
+            this.explodeWithEffects();
         }
     }
 
@@ -145,7 +145,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                 if (entity != null && entity.isAlive()) {
                     this.setPos(entity.getX(), entity.getBodyY(0.5D), entity.getZ());
                 } else {
-                    this.explodeWithEffects(this.power);
+                    this.explodeWithEffects();
                 }
             }
         }
@@ -173,21 +173,21 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
                     if (velocity.length() >= MINIMUM_CATACLYSMIC_THRESHOLD) {
                         var copy = this.spawnCopyAtLocation();
                         if (copy != null) {
-                            copy.setPower(this.power * CATACLYSMIC_MULTIPLIER);
+                            copy.setPower(this.getPower() * CATACLYSMIC_MULTIPLIER);
                             copy.setMaxAgeTicks(0);
                         }
                     }
                 }
                 case AQUATIC -> {
                     if (this.isSubmergedInWater()) {
-                        this.setPower(this.power * AQUATIC_MULTIPLIER);
-                        this.explodeWithEffects(this.power);
+                        this.setPower(this.getPower() * AQUATIC_MULTIPLIER);
+                        this.explodeWithEffects();
                     }
                 }
             }
         } else {
             switch (this.getModifierName()) {
-                case REACTIVE, ECHOING -> this.explodeWithEffects(this.power);
+                case REACTIVE, ECHOING -> this.explodeWithEffects();
                 case STICKY -> {
                     NbtCompound nbt = ((GrenadesModEntityData) this).getPersistentData();
                     if (!nbt.contains(STICK_TARGET)) {
@@ -219,31 +219,31 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             }
             case AQUATIC -> {
                 if (this.isSubmergedInWater()) {
-                    this.setPower(this.power * AQUATIC_MULTIPLIER);
+                    this.setPower(this.getPower() * AQUATIC_MULTIPLIER);
                 }
-                this.explodeWithEffects(this.power);
+                this.explodeWithEffects();
             }
             case MOLTEN -> {
                 target.setOnFireFor(5);
-                this.explodeWithEffects(this.power);
+                this.explodeWithEffects();
             }
             case GRAVITY -> {
                 if (target instanceof LivingEntity alive) {
                     alive.addStatusEffect(new StatusEffectInstance(GrenadesModStatus.DECELERATE, 20, 4));
                     throwDmg += 2.0F;
                 }
-                this.explodeWithEffects(this.power);
+                this.explodeWithEffects();
             }
             case CATACLYSMIC -> {
                 if (this.getVelocity().length() >= MINIMUM_CATACLYSMIC_THRESHOLD) {
                     var copy = this.spawnCopyAtLocation();
                     if (copy != null) {
-                        copy.setPower(this.power * CATACLYSMIC_MULTIPLIER);
+                        copy.setPower(this.getPower() * CATACLYSMIC_MULTIPLIER);
                         copy.setMaxAgeTicks(0);
                     }
                 }
             }
-            default -> this.explodeWithEffects(this.power);
+            default -> this.explodeWithEffects();
         }
         target.damage(DamageSource.thrownProjectile(this, this.getOwner()), throwDmg);
         super.onEntityHit(entityHitResult);
@@ -253,7 +253,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     public NbtCompound writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("current_age", this.age);
-        nbt.putFloat("explosion_power", this.power);
+        nbt.putFloat("explosion_power", this.getPower());
         nbt.putInt("max_age", this.getMaxAgeTicks());
         nbt.putBoolean("should_bounce", this.getShouldBounce());
         nbt.putFloat("bounce_multiplier", this.getBounceMultiplier());
@@ -263,7 +263,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     @Override
     public void readNbt(NbtCompound nbt) {
         this.age = nbt.getInt("current_age");
-        this.power = nbt.getFloat("explosion_power");
+        this.dataTracker.set(POWER, nbt.getFloat("explosion_power"));
         this.dataTracker.set(MAX_AGE, nbt.getInt("max_age"));
         this.dataTracker.set(BOUNCE_FLAG, nbt.getBoolean("should_bounce"));
         this.dataTracker.set(BOUNCE_MULTIPLIER, nbt.getFloat("bounce_multiplier"));
@@ -275,19 +275,19 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         if (this.getModifierName().equals(ECHOING)) {
             var clone = this.spawnCopyAtLocation();
             if (clone != null) {
-                clone.setPower(this.power * ECHOING_MULTIPLIER);
+                clone.setPower(this.getPower() * ECHOING_MULTIPLIER);
                 clone.setMaxAgeTicks(20);
             }
         }
         super.remove(reason);
     }
 
-    protected void explodeWithEffects(float power) {
+    protected void explodeWithEffects() {
         this.world.sendEntityStatus(this, STATUS_BYTE);
-        this.explode(power);
+        this.explode();
     }
 
-    protected abstract void explode(float power);
+    protected abstract void explode();
 
     protected abstract void initialise();
 
@@ -338,11 +338,11 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     public void setPower(float power) {
-        this.power = power;
+        this.dataTracker.set(POWER, power);
     }
 
     public float getPower() {
-        return this.power;
+        return this.dataTracker.get(POWER);
     }
 
     public float getBounceMultiplier() {
@@ -369,7 +369,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     public void handleStatus(byte status) {
         if (status == STATUS_BYTE) {
             if (this.explosionEffect != null) {
-                GrenadesModClientUtil.createExplosionEffects(this.world, this.explosionEffect, this.getPos(), 3, this.power);
+                GrenadesModClientUtil.createExplosionEffects(this.world, this.explosionEffect, this.getPos(), 3, this.getPower());
             }
             if (this.explosionSoundProfile != null) {
                 GrenadesModClientUtil.playExplosionSound(this.world, this.explosionSoundProfile, this.getPos());
@@ -379,7 +379,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
     }
 
     protected float proportionalDistanceTo(Entity entity) {
-        return this.distanceTo(entity) / this.power;
+        return this.distanceTo(entity) / this.getPower();
     }
 
     protected double blockDistanceTo(BlockPos position) {

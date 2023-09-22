@@ -45,11 +45,11 @@ public class DecoyGrenadeEntity extends AbstractGrenadeEntity {
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    protected void explode(float power) {
+    protected void explode() {
         if (this.getOwner() instanceof PlayerEntity player) {
-            DecoyEntity decoyEntity = new DecoyEntity(this.world, player, power);
+            DecoyEntity decoyEntity = new DecoyEntity(this.world, player, this.getPower());
             decoyEntity.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).addPersistentModifier(
-                new EntityAttributeModifier("bonus_health", power * ABSORPTION_MULTIPLIER, EntityAttributeModifier.Operation.ADDITION));
+                new EntityAttributeModifier("bonus_health", this.getPower() * ABSORPTION_MULTIPLIER, EntityAttributeModifier.Operation.ADDITION));
             decoyEntity.setHealth(decoyEntity.getMaxHealth());
             decoyEntity.setPosition(this.getPos());
             this.world.spawnEntity(decoyEntity);

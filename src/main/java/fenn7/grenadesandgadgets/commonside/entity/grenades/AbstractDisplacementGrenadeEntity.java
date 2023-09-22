@@ -35,15 +35,15 @@ public abstract class AbstractDisplacementGrenadeEntity extends AbstractLingerin
 
     @Override
     protected void handleDiscard() {
-        this.explode(this.power);
+        this.explode();
         super.handleDiscard();
     }
 
     @Override
-    protected void explode(float power) {
-        super.explode(power);
+    protected void explode() {
+        super.explode();
         if (this.state == LingeringState.DISCARDED) {
-            var entities = this.getEntitiesFromBlocks(this.getAffectedBlocksAtRange(power));
+            var entities = this.getEntitiesFromBlocks(this.getAffectedBlocksAtRange(this.getPower()));
             entities.forEach(entity -> this.handleDisplacement(entity, this.getBlockPos(), entities));
         }
     }

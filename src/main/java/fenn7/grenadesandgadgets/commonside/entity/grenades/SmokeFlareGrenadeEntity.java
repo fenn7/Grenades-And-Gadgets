@@ -40,7 +40,7 @@ public class SmokeFlareGrenadeEntity extends AbstractLingeringGrenadeEntity {
             double zRand = this.random.nextDouble(-0.03D, 0.03D);
             ParticleEffect smokeEffect = ParticleTypes.CAMPFIRE_SIGNAL_SMOKE;
             this.world.addParticle(smokeEffect, this.getX(), this.getY(), this.getZ(),
-                xRand, this.power, zRand);
+                xRand, this.getPower(), zRand);
         }
         super.tick();
     }

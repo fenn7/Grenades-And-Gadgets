@@ -1,7 +1,5 @@
 package fenn7.grenadesandgadgets.commonside.entity.grenades;
 
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
-import fenn7.grenadesandgadgets.commonside.entity.GrenadesModEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -110,7 +108,7 @@ public abstract class AbstractLingeringGrenadeEntity extends AbstractGrenadeEnti
     }
 
     @Override
-    protected void explode(float power) {
+    protected void explode() {
         if (this.state == LingeringState.UNEXPLODED) {
             this.setInactive();
             this.setState(LingeringState.LINGERING);

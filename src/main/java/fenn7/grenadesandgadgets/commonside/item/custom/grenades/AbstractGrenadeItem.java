@@ -54,23 +54,12 @@ public abstract class AbstractGrenadeItem extends Item {
         this.setPitchYawVelocity(user, grenade, this.defaultRoll, speed, this.defaultDiv);
         if (!world.isClient()) {
             world.spawnEntity(grenade);
-            //ServerPlayNetworking.send((ServerPlayerEntity) user, SYNC_GRENADE_S2C, this.buildGrenadeBuf(grenade));
         }
         if (!user.isCreative()) {
             stack.decrement(1);
         }
         return TypedActionResult.success(stack, world.isClient());
     }
-
-    /*private PacketByteBuf buildGrenadeBuf(AbstractGrenadeEntity grenade) {
-        var buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeInt(grenade.getId());
-        buf.writeInt(grenade.getMaxAgeTicks());
-        buf.writeBoolean(grenade.getShouldBounce());
-        buf.writeFloat(grenade.getBounceMultiplier());
-        buf.writeFloat(grenade.getPower());
-        return buf;
-    }*/
 
     public static float addNbtModifier(ItemStack stack, AbstractGrenadeEntity grenade) {
         float speed = 1.0F;

@@ -61,9 +61,9 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
 
 
     @Override
-    protected void explode(float power) {
+    protected void explode() {
         if (!this.world.isClient) {
-            this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), power, Explosion.DestructionType.NONE);
+            this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), this.getPower(), Explosion.DestructionType.NONE);
             NbtCompound nbt = this.getItem().getOrCreateNbt();
             if (nbt.contains(FRAGMENTS) && nbt.get(FRAGMENTS) instanceof NbtList) {
                 NbtList nbtList = nbt.getList(FRAGMENTS, 10);

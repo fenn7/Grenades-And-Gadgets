@@ -54,9 +54,9 @@ public class DivergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
     @Override
     protected void handleParticleEffects() {
         if (this.world.isClient) {
-            double randomX = this.random.nextDouble(this.power);
+            double randomX = this.random.nextDouble(this.getPower());
             double randomY = this.random.nextDouble(-0.5, 0.5);
-            double correspondingZ = Math.sqrt(Math.pow(this.power, 2) - Math.pow(randomX, 2));
+            double correspondingZ = Math.sqrt(Math.pow(this.getPower(), 2) - Math.pow(randomX, 2));
             boolean shouldNegate = this.random.nextBoolean();
 
             double spawnX = shouldNegate ? this.getX() - randomX : this.getX() + randomX;
@@ -70,7 +70,7 @@ public class DivergenceGrenadeEntity extends AbstractDisplacementGrenadeEntity {
 
     @Override
     protected void handleDisplacement(Entity entity, BlockPos pos, Set<Entity> entities) {
-        entity.move(MovementType.SELF, entity.getPos().subtract(this.getPos()).normalize().multiply(this.power));
+        entity.move(MovementType.SELF, entity.getPos().subtract(this.getPos()).normalize().multiply(this.getPower()));
         if (entity instanceof LivingEntity alive) {
             alive.damage(DamageSource.thrownProjectile(this, this.getOwner()), DISPLACEMENT_DAMAGE_PER_ENTITY);
             alive.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40));
