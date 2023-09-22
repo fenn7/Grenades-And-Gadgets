@@ -57,7 +57,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     public static final int MAX_ARMING_TICKS = 40;
-    private static final float INCREASED_POWER_PER_RANGE = 0.15F;
+    private static final float INCREASED_POWER_PER_RANGE = 0.2F;
     private static final float INCREASED_POWER_BASE = 1.5F;
     private static final String NBT_TAG = "configuration.data";
     private static final String LAST_USER = "last.user";
@@ -128,7 +128,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
             grenadeEntity.setNoGravity(true);
             BlockPos potentialPos = pos.offset(Direction.byId(this.directionID));
             grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));
-            grenadeEntity.setPower(grenadeEntity.getPower() * INCREASED_POWER_BASE * (2.0F - (this.detectRange * INCREASED_POWER_PER_RANGE)));
+            grenadeEntity.setPower(grenadeEntity.getPower() * (INCREASED_POWER_BASE + (1.1F - (this.detectRange * INCREASED_POWER_PER_RANGE))));
             world.spawnEntity(grenadeEntity);
             world.breakBlock(pos, false);
         }

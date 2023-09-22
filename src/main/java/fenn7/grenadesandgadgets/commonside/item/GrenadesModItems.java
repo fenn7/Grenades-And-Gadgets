@@ -20,6 +20,7 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeFlareGrenad
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.StormGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.UpheavalGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.misc.RemoteDetonatorItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -63,6 +64,9 @@ public class GrenadesModItems {
         new HiddenExplosiveBlockItem(GrenadesModBlocks.HIDDEN_EXPLOSIVE_BLOCK, new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(4)));
     public static final Item GRENADIER_TABLE_BLOCK = register("grenadier_table_block",
         new GrenadierTableBlockItem(GrenadesModBlocks.GRENADIER_TABLE_BLOCK, new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC)));
+
+    public static final Item REMOTE_DETONATOR = register("remote_detonator",
+        new RemoteDetonatorItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(1)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");

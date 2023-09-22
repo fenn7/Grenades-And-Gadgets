@@ -28,7 +28,7 @@ public class GrenadesModBlocks {
         new RadiantLightBlock(FabricBlockSettings.of(Material.AIR).luminance(20).nonOpaque().dropsNothing().breakInstantly().noCollision().blockVision((state, world, pos) -> false)));
 
     public static final Block HIDDEN_EXPLOSIVE_BLOCK = registerBlockWithoutBlockItem("hidden_explosive_block",
-        new HiddenExplosiveBlock(FabricBlockSettings.of(Material.METAL)));
+        new HiddenExplosiveBlock(FabricBlockSettings.of(Material.METAL).strength(1.5F, 0F).nonOpaque()));
 
     public static final Block GRENADIER_TABLE_BLOCK = registerBlockWithoutBlockItem("grenadier_table_block",
         new GrenadierTableBlock(FabricBlockSettings.of(Material.METAL)));
