@@ -120,7 +120,7 @@ public interface GrenadesModUtil {
     static <T extends AbstractGrenadeEntity> T copyGrenadeFrom(T entity, boolean keepModifier) {
         T newEntity = (T) entity.getType().create(entity.world);
         if (newEntity != null) {
-            ItemStack grenadeStack = entity.getGrenadeItemStack();
+            ItemStack grenadeStack = entity.getGrenadeItemStack().copy();
             if (!keepModifier) {
                 grenadeStack.getOrCreateNbt().remove(GrenadeModifierRecipe.MODIFIER_KEY);
             }

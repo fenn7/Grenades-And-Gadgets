@@ -31,8 +31,8 @@ public class GrenadeModifierRecipe extends SpecialCraftingRecipe {
     public static final Map<Item, String> MODIFIER_MAP = Map.of(
         Items.HONEYCOMB, STICKY,
         Items.SLIME_BALL, ELASTIC,
-        Items.REDSTONE, REACTIVE,
-        Items.GUNPOWDER, POTENT,
+        Items.REDSTONE, POTENT,
+        Items.GUNPOWDER, REACTIVE,
         Items.KELP, AQUATIC,
         Items.MAGMA_CREAM, MOLTEN,
         Items.FEATHER, LEVITY,

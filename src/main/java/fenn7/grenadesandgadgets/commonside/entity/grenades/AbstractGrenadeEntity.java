@@ -159,6 +159,10 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.setShouldBounce(false);
     }
 
+    private boolean isImmobile() {
+        return this.hasNoGravity() && this.isInvulnerable() && !this.getShouldBounce();
+    }
+
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
         if (this.getShouldBounce()) {
@@ -204,7 +208,12 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
 
     @Override
     public boolean isImmuneToExplosion() {
-        return EXPLOSION_IMMUNE_MODIFIERS.contains(this.getModifierName());
+        return EXPLOSION_IMMUNE_MODIFIERS.contains(this.getModifierName()) || this.isImmobile();
+    }
+
+    @Override
+    public boolean isFireImmune() {
+        return this.isInvisible();
     }
 
     @Override
@@ -281,6 +290,19 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
             }
         }
         super.remove(reason);
+    }
+
+    @Override
+    public void handleStatus(byte status) {
+        if (status == STATUS_BYTE) {
+            if (this.explosionEffect != null) {
+                GrenadesModClientUtil.createExplosionEffects(this.world, this.explosionEffect, this.getPos(), 3, this.getPower());
+            }
+            if (this.explosionSoundProfile != null) {
+                GrenadesModClientUtil.playExplosionSound(this.world, this.explosionSoundProfile, this.getPos());
+            }
+        }
+        super.handleStatus(status);
     }
 
     protected void explodeWithEffects() {
@@ -366,19 +388,6 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         this.explosionSoundProfile = sound;
     }
 
-    @Override
-    public void handleStatus(byte status) {
-        if (status == STATUS_BYTE) {
-            if (this.explosionEffect != null) {
-                GrenadesModClientUtil.createExplosionEffects(this.world, this.explosionEffect, this.getPos(), 3, this.getPower());
-            }
-            if (this.explosionSoundProfile != null) {
-                GrenadesModClientUtil.playExplosionSound(this.world, this.explosionSoundProfile, this.getPos());
-            }
-        }
-        super.handleStatus(status);
-    }
-
     protected float proportionalDistanceTo(Entity entity) {
         return this.distanceTo(entity) / this.getPower();
     }
@@ -397,6 +406,7 @@ public abstract class AbstractGrenadeEntity extends ThrownItemEntity implements 
         return PlayState.CONTINUE;
     }
 
+    @Override
     public void registerControllers(AnimationData animationData) {
         animationData.addAnimationController(new AnimationController<>(this, "controller", 0, this::flyingAnimation));
     }

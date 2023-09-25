@@ -20,7 +20,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
-    private static final float FIRE_RANGE = 1.9F;
+    private static final float FIRE_RANGE = 1.85F;
     private static final float MAX_IMPACT_DAMAGE = 4.0F;
     private static final float MAX_DAMAGE_PROPORTION_RANGE = 0.4F;
     private static final int MAX_LINGERING_TICKS = 10;
@@ -45,14 +45,6 @@ public class FireGrenadeEntity extends AbstractLingeringGrenadeEntity {
         this.setPower(FIRE_RANGE);
         this.setExplosionEffect(FIRE_GRENADE_EFFECT);
         this.setExplosionSoundProfile(FIRE_GRENADE_SOUND_PROFILE);
-    }
-
-    @Override
-    protected void onCollision(HitResult hitResult) {
-        if (!this.world.isClient()) {
-            this.explodeWithEffects();
-        }
-        super.onCollision(hitResult);
     }
 
     @Override

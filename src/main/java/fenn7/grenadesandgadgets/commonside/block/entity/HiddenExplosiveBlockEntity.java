@@ -30,6 +30,8 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.GameEventTags;
 import net.minecraft.text.Text;
@@ -129,6 +131,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
             BlockPos potentialPos = pos.offset(Direction.byId(this.directionID));
             grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));
             grenadeEntity.setPower(grenadeEntity.getPower() * (INCREASED_POWER_BASE + (0.9F - (MathHelper.clamp(this.detectRange, 1, 4) * INCREASED_POWER_PER_RANGE))));
+            world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.HOSTILE, 20.0F, 0.5F);
             world.spawnEntity(grenadeEntity);
             world.breakBlock(pos, false);
         }
@@ -140,6 +143,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
                 ++this.currentArmingTicks;
                 if (this.currentArmingTicks >= MAX_ARMING_TICKS) {
                     world.setBlockState(pos, state.with(HiddenExplosiveBlock.ARMED, true));
+                    world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_PLING, SoundCategory.BLOCKS, 2.0F, 1.5F);
                     if (this.getLastUser() != null) {
                         this.getLastUser().sendMessage(GrenadesModUtil.translatableTextOf(ARMED), false);
                     }

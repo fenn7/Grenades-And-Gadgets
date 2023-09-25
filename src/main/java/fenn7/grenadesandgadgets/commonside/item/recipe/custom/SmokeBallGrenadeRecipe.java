@@ -1,8 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe.custom;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeBallGrenadeItem;
@@ -55,7 +53,7 @@ public class SmokeBallGrenadeRecipe extends SpecialCraftingRecipe {
 
     @Override
     public ItemStack craft(CraftingInventory inventory) {
-        HashSet<Integer> dyes = new HashSet<>();
+        LinkedHashSet<Integer> dyes = new LinkedHashSet<>();
         ItemStack output = new ItemStack(GrenadesModItems.GRENADE_SMOKE_BALL, 3);
         NbtCompound nbt = output.getOrCreateSubNbt(SmokeBallGrenadeItem.SMOKE_BALL_COLOUR);
         for (int i = 0; i < inventory.size(); ++i) {
