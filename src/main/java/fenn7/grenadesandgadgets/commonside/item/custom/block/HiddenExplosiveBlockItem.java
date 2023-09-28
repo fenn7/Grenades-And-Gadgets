@@ -6,8 +6,10 @@ import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -29,6 +31,11 @@ public class HiddenExplosiveBlockItem extends BlockItem implements IAnimatable {
         if (!disguiseKey.isEmpty()) {
             tooltip.add(GrenadesModUtil.mutableTextOf("§lDisguise: ").append(GrenadesModUtil.translatableTextOf(disguiseKey)));
         }
+    }
+
+    @Override
+    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+        super.appendStacks(group, stacks);
     }
 
     @Override

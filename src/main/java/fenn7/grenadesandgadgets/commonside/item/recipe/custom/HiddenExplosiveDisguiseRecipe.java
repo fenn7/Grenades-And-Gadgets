@@ -54,11 +54,11 @@ public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
         ItemStack output = new ItemStack(GrenadesModItems.HIDDEN_EXPLOSIVE_BLOCK, 1);
         NbtCompound nbt = output.getOrCreateNbt();
         for (int i = 0; i < inventory.size(); ++i) {
-            ItemStack stack = inventory.getStack(i);
-            if (IS_BLOCK.test(stack.getItem())) {
-                nbt.putString(HiddenExplosiveBlockItem.DISGUISE_KEY, stack.getItem().getTranslationKey());
+            Item item = inventory.getStack(i).getItem();
+            if (IS_BLOCK.test(item)) {
+                nbt.putString(HiddenExplosiveBlockItem.DISGUISE_KEY, item.getTranslationKey());
                 var itemNBT = output.getOrCreateSubNbt("BlockEntityTag");
-                itemNBT.put(HiddenExplosiveBlockItem.DISGUISE_KEY, stack.writeNbt(new NbtCompound()));
+                itemNBT.put(HiddenExplosiveBlockItem.DISGUISE_KEY, new ItemStack(item).writeNbt(new NbtCompound()));
                 break;
             }
         }
@@ -67,7 +67,7 @@ public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
 
     @Override
     public DefaultedList<ItemStack> getRemainder(CraftingInventory inventory) {
-        DefaultedList<ItemStack> remainderList = super.getRemainder(inventory); //new ArrayList<>(super.getRemainder(inventory));
+        DefaultedList<ItemStack> remainderList = super.getRemainder(inventory);
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
             NbtCompound nbt = stack.getOrCreateNbt();
@@ -76,8 +76,6 @@ public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
                 remainderList.set(i, oldDisguise);
             }
         }
-        //var returnList = DefaultedList.ofSize(remainderList.size(), ItemStack.EMPTY);
-        //remainderList.forEach(itemStack -> returnList.set(remainderList.indexOf(itemStack), itemStack));
         return remainderList;
     }
 
