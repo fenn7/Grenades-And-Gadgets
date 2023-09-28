@@ -6,7 +6,10 @@
 			"bones": {
 				"RemoteExplosive": {
 					"position": {
-						"vector": [0, 0.16, 0]
+						"vector": [0, 0.16, -0.75]
+					},
+					"scale": {
+						"vector": [1.33, 1.33, 1.33]
 					}
 				}
 			}

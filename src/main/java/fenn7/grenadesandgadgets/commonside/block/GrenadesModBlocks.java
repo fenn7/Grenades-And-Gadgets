@@ -6,6 +6,7 @@ import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.custom.GrenadierTableBlock;
 import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.block.custom.RadiantLightBlock;
+import fenn7.grenadesandgadgets.commonside.block.custom.RemoteExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItemGroup;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -28,7 +29,10 @@ public class GrenadesModBlocks {
         new RadiantLightBlock(FabricBlockSettings.of(Material.AIR).luminance(20).nonOpaque().dropsNothing().breakInstantly().noCollision().blockVision((state, world, pos) -> false)));
 
     public static final Block HIDDEN_EXPLOSIVE_BLOCK = registerBlockWithoutBlockItem("hidden_explosive_block",
-        new HiddenExplosiveBlock(FabricBlockSettings.of(Material.METAL).strength(1.5F, 0F).nonOpaque()));
+        new HiddenExplosiveBlock(FabricBlockSettings.of(Material.METAL).strength(2.0F, 0F).nonOpaque()));
+
+    public static final Block REMOTE_EXPLOSIVE_BLOCK = registerBlockWithoutBlockItem("remote_explosive_block",
+        new RemoteExplosiveBlock(FabricBlockSettings.of(Material.METAL).strength(1.5F, 0F).nonOpaque()));
 
     public static final Block GRENADIER_TABLE_BLOCK = registerBlockWithoutBlockItem("grenadier_table_block",
         new GrenadierTableBlock(FabricBlockSettings.of(Material.METAL)));

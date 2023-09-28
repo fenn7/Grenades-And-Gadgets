@@ -7,6 +7,7 @@ import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.GrenadierTableBlockEntity;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import fenn7.grenadesandgadgets.commonside.block.entity.RadiantLightBlockEntity;
+import fenn7.grenadesandgadgets.commonside.block.entity.RemoteExplosiveBlockEntity;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 
 public class GrenadesModBlockEntityRenderers {
@@ -16,8 +17,10 @@ public class GrenadesModBlockEntityRenderers {
         BlockEntityRendererRegistry.register(GrenadesModBlockEntities.RADIANT_LIGHT_BLOCK_ENTITY,
             ctx -> new SimpleBlockRenderer<RadiantLightBlockEntity>(ctx, "radiant_light_block"));
 
-        BlockEntityRendererRegistry.register(GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY,
-            ctx -> new HiddenExplosiveBlockRenderer(ctx));
+        BlockEntityRendererRegistry.register(GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY, HiddenExplosiveBlockRenderer::new);
+
+        BlockEntityRendererRegistry.register(GrenadesModBlockEntities.REMOTE_EXPLOSIVE_BLOCK_ENTITY,
+            ctx -> new SimpleBlockRenderer<RemoteExplosiveBlockEntity>(ctx, "remote_explosive_block"));
 
         BlockEntityRendererRegistry.register(GrenadesModBlockEntities.GRENADIER_TABLE_BLOCK_ENTITY,
             ctx -> new SimpleBlockRenderer<GrenadierTableBlockEntity>(ctx, "grenadier_table_block"));

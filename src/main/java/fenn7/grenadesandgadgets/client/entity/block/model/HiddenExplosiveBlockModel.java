@@ -16,9 +16,10 @@ public class HiddenExplosiveBlockModel extends SimpleBlockModel<HiddenExplosiveB
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     public Identifier getTextureLocation(HiddenExplosiveBlockEntity entity) {
         return entity.getCachedState().get(HiddenExplosiveBlock.ARMED)
-            && entity.getWorld().getTime() % TPS > UNLIT_ARMED_TICKS
+            && (entity.getWorld().getTime() % TPS > UNLIT_ARMED_TICKS)
             ? new Identifier(GrenadesMod.MOD_ID, TEXTURE) : super.getTextureLocation(entity);
     }
 }
