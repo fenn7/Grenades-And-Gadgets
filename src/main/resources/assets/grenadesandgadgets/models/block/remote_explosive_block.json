@@ -6,7 +6,7 @@
     64
   ],
   "textures": {
-    "particle": "minecraft:block/tnt"
+    "particle": "minecraft:block/redstone_block"
   },
   "display": {
     "thirdperson_righthand": {

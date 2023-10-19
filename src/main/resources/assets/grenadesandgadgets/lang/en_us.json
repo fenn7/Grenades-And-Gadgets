@@ -7,5 +7,7 @@
   "container.grenadesandgadgets.cannot_arm": "Cannot arm without an explosive!",
   "container.grenadesandgadgets.arming_started": "§cARMING...",
   "container.grenadesandgadgets.arming_stopped": "Stopped Arming!",
-  "container.grenadesandgadgets.armed": "§4ARMED!"
+  "container.grenadesandgadgets.armed": "§4ARMED!",
+  "container.grenadesandgadgets.remote_explosive": "Remote Explosive",
+  "container.grenadesandgadgets.time_ticks": "Delay:"
 }

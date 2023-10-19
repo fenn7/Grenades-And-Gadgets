@@ -41,15 +41,15 @@ public class HiddenExplosiveScreen extends HandledScreen<HiddenExplosiveScreenHa
         );
         for (int i = 0; i < RANGE_BUTTONS; ++i) {
             int a = i + 1;
-            this.addSelectableChild(new ButtonWidget(this.x + i * 14 + 19, this.y + 34, 11, 11, GrenadesModUtil.textOf(""), widget -> {
-                this.setAndSyncValue(2, a);
-            }));
+            this.addSelectableChild(new ButtonWidget(this.x + i * 14 + 19, this.y + 34, 11, 11, GrenadesModUtil.textOf(""), widget ->
+                this.setAndSyncValue(2, a)
+            ));
         }
         for (int j = 0; j < DIRECTION_BUTTONS; ++j) {
             int b = j - 1;
-            this.addSelectableChild(new ButtonWidget(this.x + j * 11 + 7, this.y + 53, 11, 11, GrenadesModUtil.textOf(""), widget -> {
-                this.setAndSyncValue(3, b);
-            }));
+            this.addSelectableChild(new ButtonWidget(this.x + j * 11 + 7, this.y + 53, 11, 11, GrenadesModUtil.textOf(""), widget ->
+                this.setAndSyncValue(3, b)
+            ));
         }
     }
 
