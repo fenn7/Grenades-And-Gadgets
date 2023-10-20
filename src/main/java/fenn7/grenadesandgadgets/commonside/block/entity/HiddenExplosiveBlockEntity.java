@@ -113,7 +113,7 @@ public class HiddenExplosiveBlockEntity extends AbstractDisguisedBlockEntity imp
             grenadeEntity.setItem(stack);
             GrenadeItem.addNbtModifier(stack, grenadeEntity);
             this.removeStack(0);
-            grenadeEntity.setMaxAgeTicks(10);
+            grenadeEntity.setMaxAgeTicks(5);
             grenadeEntity.setNoGravity(true);
             BlockPos potentialPos = pos.offset(Direction.byId(this.directionID));
             grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));

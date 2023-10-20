@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.block.entity.RemoteExplosiveBlockEntity;
 import fenn7.grenadesandgadgets.commonside.item.network.GrenadesModC2SPackets;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,10 +13,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHandler> {
     private static final Identifier SCREEN = new Identifier(GrenadesMod.MOD_ID, "textures/gui/remote_explosive_block_gui.png");
     private static final String TIME_TITLE = "container.grenadesandgadgets.time_ticks";
+    private static final int MAX_SECONDS_COUNTDOWN = RemoteExplosiveBlockEntity.MAX_DELAY_TICKS / 20;
     private static final int INCREMENT_BUTTONS = 4;
     private static final int BUTTON_DIMENSION = 14;
     private static final int BUTTON_X_RIGHT = 132;
@@ -31,20 +34,21 @@ public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHa
         super.init();
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
         for (int i = 0; i < INCREMENT_BUTTONS; i++) {
-            this.addDrawableChild(new ButtonWidget(this.x + BUTTON_X_RIGHT + (i / 2 <= 0 ? 0 : BUTTON_DIMENSION),
-                this.y + BUTTON_Y + (i % 2 == 0 ? 0 : BUTTON_DIMENSION), BUTTON_DIMENSION, BUTTON_DIMENSION, Text.of("+" + (int) (1 + Math.pow(i, 2))), button ->
-            {}
-            ));
-            this.addDrawableChild(new ButtonWidget(this.x + BUTTON_X_LEFT + (i / 2 <= 0 ? 0 : BUTTON_DIMENSION),
-                this.y + BUTTON_Y + (i % 2 == 0 ? 0 : BUTTON_DIMENSION), BUTTON_DIMENSION, BUTTON_DIMENSION, Text.of("-" + (int) (1 + Math.pow(i, 2))), button ->
-            {}
-            ));
+            int increment = (int) (1 + Math.pow(i, 2));
+            this.addSelectableChild(new ButtonWidget(this.x + BUTTON_X_RIGHT + (i % 2 == 0 ? 0 : BUTTON_DIMENSION),
+                this.y + BUTTON_Y + (i / 2 <= 0 ? 0 : BUTTON_DIMENSION), BUTTON_DIMENSION, BUTTON_DIMENSION, Text.of("+" + increment), button ->
+                this.setAndSyncValue(0, MathHelper.clamp(this.handler.getDelegateValue(0) + increment, 0, MAX_SECONDS_COUNTDOWN)))
+            );
+            this.addSelectableChild(new ButtonWidget(this.x + BUTTON_X_LEFT + (i % 2 == 0 ? 0 : BUTTON_DIMENSION),
+                this.y + BUTTON_Y + (i / 2 <= 0 ? 0 : BUTTON_DIMENSION), BUTTON_DIMENSION, BUTTON_DIMENSION, Text.of("-" + increment), button ->
+                this.setAndSyncValue(0, MathHelper.clamp(this.handler.getDelegateValue(0) - increment, 0, MAX_SECONDS_COUNTDOWN)))
+            );
         }
     }
 
     private void setAndSyncValue(int id, int value) {
         this.handler.setDelegateValue(id, value);
-        ClientPlayNetworking.send(GrenadesModC2SPackets.SYNC_HIDDEN_EXPLOSIVE_C2S,
+        ClientPlayNetworking.send(GrenadesModC2SPackets.SYNC_REMOTE_EXPLOSIVE_C2S,
             GrenadesModUtil.createBuffer().writeBlockPos(this.handler.getBlockEntityPos()).writeIntArray(new int[]{id, value}));
     }
 
