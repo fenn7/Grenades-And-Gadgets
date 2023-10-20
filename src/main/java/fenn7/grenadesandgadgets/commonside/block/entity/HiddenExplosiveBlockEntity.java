@@ -1,34 +1,25 @@
 package fenn7.grenadesandgadgets.commonside.block.entity;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import fenn7.grenadesandgadgets.client.screen.HiddenExplosiveScreenHandler;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
-import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.AbstractGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.GrenadeItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -57,20 +48,16 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
+public class HiddenExplosiveBlockEntity extends AbstractDisguisedBlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     public static final int MAX_ARMING_TICKS = 40;
     private static final float INCREASED_POWER_PER_RANGE = 0.15F;
     private static final float INCREASED_POWER_BASE = 1.5F;
     private static final String NBT_TAG = "configuration.data";
-    private static final String LAST_USER = "last.user";
     private static final String TITLE = "container.grenadesandgadgets.hidden_explosive";
     private static final String ARMED = "container.grenadesandgadgets.armed";
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     private final HiddenExplosiveListener listener;
-    private Item disguiseBlockItem;
-    private @Nullable PlayerEntity lastUser;
-    private @Nullable UUID lastUserUUID;
 
     private final PropertyDelegate delegate;
     private int currentArmingTicks = 0;
@@ -161,48 +148,17 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
         return this.delegate;
     }
 
-    public Item getDisguiseBlockItem() {
-        return this.disguiseBlockItem;
-    }
-
     public HiddenExplosiveListener getListener() {
         return this.listener;
-    }
-
-    private PlayerEntity getLastUser() {
-        if (this.lastUser != null && !this.lastUser.isRemoved()) {
-            return this.lastUser;
-        }
-        if (this.lastUserUUID != null && this.world instanceof ServerWorld) {
-            return this.world.getPlayerByUuid(this.lastUserUUID);
-        }
-        return null;
-    }
-
-    private void setLastUser(PlayerEntity player) {
-        this.lastUser = player;
-        this.lastUserUUID = player.getUuid();
-    }
-
-    @Override
-    public void onOpen(PlayerEntity player) {
-        this.setLastUser(player);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         Inventories.readNbt(nbt, this.inventory);
         super.readNbt(nbt);
-        var item = nbt.getCompound(HiddenExplosiveBlockItem.DISGUISE_KEY);
-        if (!item.isEmpty() && this.disguiseBlockItem == null) {
-            this.disguiseBlockItem = ItemStack.fromNbt(item).getItem();
-        }
         var configData = nbt.getIntArray(NBT_TAG);
         for (int i = 0; i < configData.length; ++i) {
             this.delegate.set(i, configData[i]);
-        }
-        if (nbt.containsUuid(LAST_USER)) {
-            this.lastUserUUID = nbt.getUuid(LAST_USER);
         }
     }
 
@@ -210,24 +166,7 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
-        if (this.disguiseBlockItem != null) {
-            nbt.put(HiddenExplosiveBlockItem.DISGUISE_KEY, this.disguiseBlockItem.getDefaultStack().writeNbt(new NbtCompound()));
-        }
         nbt.putIntArray(NBT_TAG, new int[]{this.currentArmingTicks, this.armingFlag, this.detectRange, this.directionID});
-        if (this.lastUserUUID != null) {
-            nbt.putUuid(LAST_USER, this.lastUserUUID);
-        }
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
     }
 
     @Override
@@ -259,11 +198,6 @@ public class HiddenExplosiveBlockEntity extends BlockEntity implements IAnimatab
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new HiddenExplosiveScreenHandler(syncId, inv, this, this.delegate);
-    }
-
-    @Override
-    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeBlockPos(this.pos);
     }
 
     @SuppressWarnings("ALL")

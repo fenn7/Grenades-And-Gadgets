@@ -3,11 +3,10 @@ package fenn7.grenadesandgadgets.commonside.item.recipe;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.FragmentationGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
-import fenn7.grenadesandgadgets.commonside.item.recipe.custom.HiddenExplosiveDisguiseRecipe;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.ExplosiveDisguiseRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.MagicGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.SmokeBallGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.TemporalFissureGrenadeRecipe;
-import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -33,9 +32,9 @@ public class GrenadesModSpecialRecipes {
         Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(GrenadesMod.MOD_ID, "crafting_special_grenade_modifier"),
             new SpecialRecipeSerializer<>(GrenadeModifierRecipe::new));
 
-    public static final SpecialRecipeSerializer<HiddenExplosiveDisguiseRecipe> HIDDEN_EXPLOSIVE_DISGUISE =
+    public static final SpecialRecipeSerializer<ExplosiveDisguiseRecipe> HIDDEN_EXPLOSIVE_DISGUISE =
         Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(GrenadesMod.MOD_ID, "crafting_special_hidden_explosive_disguise"),
-            new SpecialRecipeSerializer<>(HiddenExplosiveDisguiseRecipe::new));
+            new SpecialRecipeSerializer<>(ExplosiveDisguiseRecipe::new));
 
     public static void registerRecipes() {
         GrenadesMod.LOGGER.warn("Initialising Grenades And Gadgets Recipes...");

@@ -1,9 +1,7 @@
 package fenn7.grenadesandgadgets.client.screen;
 
 import fenn7.grenadesandgadgets.client.screen.slot.HiddenExplosiveGrenadeSlot;
-import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;

@@ -2,7 +2,6 @@ package fenn7.grenadesandgadgets.commonside.item.network.packets;
 
 import fenn7.grenadesandgadgets.client.screen.HiddenExplosiveScreenHandler;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
-import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;

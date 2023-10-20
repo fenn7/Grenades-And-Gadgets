@@ -1,7 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.block.custom;
 
 import fenn7.grenadesandgadgets.commonside.block.entity.GrenadierTableBlockEntity;
-import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;

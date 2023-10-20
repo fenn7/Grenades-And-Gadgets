@@ -2,7 +2,7 @@ package fenn7.grenadesandgadgets.commonside.block.custom;
 
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
-import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.block.DisguisedExplosiveBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -97,8 +97,8 @@ public class HiddenExplosiveBlock extends BlockWithEntity implements Waterloggab
     public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
         if (blockEntity instanceof HiddenExplosiveBlockEntity h) {
             var blockNbt = h.createNbt();
-            if (blockNbt.contains(HiddenExplosiveBlockItem.DISGUISE_KEY)) {
-                Block.dropStack(world, pos, ItemStack.fromNbt(blockNbt.getCompound(HiddenExplosiveBlockItem.DISGUISE_KEY)));
+            if (blockNbt.contains(DisguisedExplosiveBlockItem.DISGUISE_KEY)) {
+                Block.dropStack(world, pos, ItemStack.fromNbt(blockNbt.getCompound(DisguisedExplosiveBlockItem.DISGUISE_KEY)));
             }
         }
         super.afterBreak(world, player, pos, state, blockEntity, stack);

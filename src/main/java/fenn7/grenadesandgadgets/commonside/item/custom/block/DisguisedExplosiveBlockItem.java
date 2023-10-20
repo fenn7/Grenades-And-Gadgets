@@ -14,11 +14,11 @@ import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class RemoteExplosiveBlockItem extends BlockItem implements IAnimatable {
+public class DisguisedExplosiveBlockItem extends BlockItem implements IAnimatable {
     public static final String DISGUISE_KEY = "disguise.key";
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
 
-    public RemoteExplosiveBlockItem(Block block, Settings settings) {
+    public DisguisedExplosiveBlockItem(Block block, Settings settings) {
         super(block, settings);
     }
 

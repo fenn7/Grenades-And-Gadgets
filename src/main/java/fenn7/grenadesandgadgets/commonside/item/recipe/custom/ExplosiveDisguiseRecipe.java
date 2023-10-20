@@ -1,12 +1,11 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe.custom;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
-import fenn7.grenadesandgadgets.commonside.item.custom.block.HiddenExplosiveBlockItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.block.DisguisedExplosiveBlockItem;
 import fenn7.grenadesandgadgets.commonside.item.recipe.GrenadesModSpecialRecipes;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BlockItem;
@@ -20,11 +19,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
-public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
-    private static final Ingredient EXPLOSIVE = Ingredient.ofItems(GrenadesModItems.HIDDEN_EXPLOSIVE_BLOCK);
-    private static final Predicate<Item> IS_BLOCK = item -> item instanceof BlockItem && !item.equals(GrenadesModItems.HIDDEN_EXPLOSIVE_BLOCK);
+public class ExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
+    private static final Ingredient EXPLOSIVE = Ingredient.ofItems(GrenadesModItems.HIDDEN_EXPLOSIVE_BLOCK, GrenadesModItems.REMOTE_EXPLOSIVE_BLOCK);
+    private static final Predicate<ItemStack> IS_BLOCK = stack -> stack.getItem() instanceof BlockItem && !EXPLOSIVE.test(stack);
 
-    public HiddenExplosiveDisguiseRecipe(Identifier id) {
+    public ExplosiveDisguiseRecipe(Identifier id) {
         super(id);
     }
 
@@ -40,10 +39,9 @@ public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
                 hasExplosive = true;
                 continue;
             }
-            if (IS_BLOCK.test(stack.getItem())) {
+            if (IS_BLOCK.test(stack)) {
                 if (hasBlockItem) return false;
                 hasBlockItem = true;
-                continue;
             }
         }
         return hasExplosive && hasBlockItem;
@@ -51,14 +49,21 @@ public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
 
     @Override
     public ItemStack craft(CraftingInventory inventory) {
-        ItemStack output = new ItemStack(GrenadesModItems.HIDDEN_EXPLOSIVE_BLOCK, 1);
+        ItemStack output = ItemStack.EMPTY;
+        for (int i = 0; i < inventory.size(); ++i) {
+            ItemStack stack = inventory.getStack(i);
+            if (EXPLOSIVE.test(stack)) {
+                output = stack.copy();
+                break;
+            }
+        }
         NbtCompound nbt = output.getOrCreateNbt();
         for (int i = 0; i < inventory.size(); ++i) {
-            Item item = inventory.getStack(i).getItem();
-            if (IS_BLOCK.test(item)) {
-                nbt.putString(HiddenExplosiveBlockItem.DISGUISE_KEY, item.getTranslationKey());
+            ItemStack stack = inventory.getStack(i);
+            if (IS_BLOCK.test(stack)) {
+                nbt.putString(DisguisedExplosiveBlockItem.DISGUISE_KEY, stack.getItem().getTranslationKey());
                 var itemNBT = output.getOrCreateSubNbt("BlockEntityTag");
-                itemNBT.put(HiddenExplosiveBlockItem.DISGUISE_KEY, new ItemStack(item).writeNbt(new NbtCompound()));
+                itemNBT.put(DisguisedExplosiveBlockItem.DISGUISE_KEY, new ItemStack(stack.getItem()).writeNbt(new NbtCompound()));
                 break;
             }
         }
@@ -71,8 +76,8 @@ public class HiddenExplosiveDisguiseRecipe extends SpecialCraftingRecipe {
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack stack = inventory.getStack(i);
             NbtCompound nbt = stack.getOrCreateNbt();
-            if (stack.getItem() instanceof HiddenExplosiveBlockItem && nbt.contains("BlockEntityTag")) {
-                ItemStack oldDisguise = ItemStack.fromNbt(nbt.getCompound("BlockEntityTag").getCompound(HiddenExplosiveBlockItem.DISGUISE_KEY));
+            if (stack.getItem() instanceof DisguisedExplosiveBlockItem && nbt.contains("BlockEntityTag")) {
+                ItemStack oldDisguise = ItemStack.fromNbt(nbt.getCompound("BlockEntityTag").getCompound(DisguisedExplosiveBlockItem.DISGUISE_KEY));
                 remainderList.set(i, oldDisguise);
             }
         }

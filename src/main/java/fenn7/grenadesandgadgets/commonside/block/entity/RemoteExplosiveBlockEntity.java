@@ -27,7 +27,7 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class RemoteExplosiveBlockEntity extends BlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
+public class RemoteExplosiveBlockEntity extends AbstractDisguisedBlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     private static final int MAX_DELAY_TICKS = 1200;
     private static final String TITLE = "container.grenadesandgadgets.remote_explosive";
@@ -72,11 +72,6 @@ public class RemoteExplosiveBlockEntity extends BlockEntity implements IAnimatab
     @Override
     public DefaultedList<ItemStack> getItems() {
         return this.inventory;
-    }
-
-    @Override
-    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeBlockPos(this.pos);
     }
 
     @Override

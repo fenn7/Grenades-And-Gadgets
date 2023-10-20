@@ -5,7 +5,6 @@ import fenn7.grenadesandgadgets.client.entity.block.renderer.SimpleBlockRenderer
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.GrenadierTableBlockEntity;
-import fenn7.grenadesandgadgets.commonside.block.entity.HiddenExplosiveBlockEntity;
 import fenn7.grenadesandgadgets.commonside.block.entity.RadiantLightBlockEntity;
 import fenn7.grenadesandgadgets.commonside.block.entity.RemoteExplosiveBlockEntity;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
