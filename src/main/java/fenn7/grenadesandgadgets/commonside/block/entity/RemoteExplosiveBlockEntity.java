@@ -31,34 +31,24 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedBlockEntity imp
     private static final String NBT_TAG = "configuration.data";
     private static final String TITLE = "container.grenadesandgadgets.remote_explosive";
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
-
-    private final PropertyDelegate delegate;
     private int delayTicks = 0;
-    private int armingFlag = 0;
 
     public RemoteExplosiveBlockEntity(BlockPos pos, BlockState state) {
         super(GrenadesModBlockEntities.REMOTE_EXPLOSIVE_BLOCK_ENTITY, pos, state);
         this.delegate = new PropertyDelegate() {
             @Override
             public int get(int index) {
-                return switch (index) {
-                    case 0 -> RemoteExplosiveBlockEntity.this.delayTicks;
-                    case 1 -> RemoteExplosiveBlockEntity.this.armingFlag;
-                    default -> 0;
-                };
+                return RemoteExplosiveBlockEntity.this.delayTicks;
             }
 
             @Override
             public void set(int index, int value) {
-                switch (index) {
-                    case 0 -> RemoteExplosiveBlockEntity.this.delayTicks = value;
-                    case 1 -> RemoteExplosiveBlockEntity.this.armingFlag = value;
-                }
+                RemoteExplosiveBlockEntity.this.delayTicks = value;
             }
 
             @Override
             public int size() {
-                return 2;
+                return 1;
             }
         };
     }
@@ -67,17 +57,14 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedBlockEntity imp
     public void readNbt(NbtCompound nbt) {
         Inventories.readNbt(nbt, this.inventory);
         super.readNbt(nbt);
-        var configData = nbt.getIntArray(NBT_TAG);
-        for (int i = 0; i < configData.length; ++i) {
-            this.delegate.set(i, configData[i]);
-        }
+        this.delegate.set(0, nbt.getInt(NBT_TAG));
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
-        nbt.putIntArray(NBT_TAG, new int[]{this.delayTicks, this.armingFlag});
+        nbt.putInt(NBT_TAG, this.delayTicks);
     }
 
     @Override

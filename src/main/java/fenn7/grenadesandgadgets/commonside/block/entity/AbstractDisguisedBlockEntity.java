@@ -16,6 +16,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +27,7 @@ public abstract class AbstractDisguisedBlockEntity extends BlockEntity implement
     protected Item disguiseBlockItem;
     protected @Nullable PlayerEntity lastUser;
     protected @Nullable UUID lastUserUUID;
+    protected PropertyDelegate delegate;
 
     public AbstractDisguisedBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -48,6 +50,10 @@ public abstract class AbstractDisguisedBlockEntity extends BlockEntity implement
     protected void setLastUser(PlayerEntity player) {
         this.lastUser = player;
         this.lastUserUUID = player.getUuid();
+    }
+
+    public PropertyDelegate getDelegate() {
+        return this.delegate;
     }
 
     @Override

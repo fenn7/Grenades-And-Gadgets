@@ -1,11 +1,9 @@
 package fenn7.grenadesandgadgets.commonside.block.custom;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
-import com.google.common.collect.ImmutableMap;
 import fenn7.grenadesandgadgets.commonside.block.entity.RemoteExplosiveBlockEntity;
+import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
@@ -16,7 +14,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -41,11 +38,14 @@ public class RemoteExplosiveBlock extends AbstractDisguisedExplosiveBlock {
 
     public RemoteExplosiveBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
+        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP).with(ARMED, false));
     }
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (player.getStackInHand(hand).getItem().equals(GrenadesModItems.REMOTE_DETONATOR)) {
+            return ActionResult.PASS;
+        }
         if (!world.isClient) {
             NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
             if (screenHandlerFactory != null) {
@@ -59,7 +59,6 @@ public class RemoteExplosiveBlock extends AbstractDisguisedExplosiveBlock {
     @Override
     @SuppressWarnings("ConstantConditions")
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        ctx.getPlayer().sendMessage(Text.of(ctx.getSide().toString()), false);
         return super.getPlacementState(ctx).with(FACING, ctx.getSide());
     }
 

@@ -9,5 +9,8 @@
   "container.grenadesandgadgets.arming_stopped": "Stopped Arming!",
   "container.grenadesandgadgets.armed": "§4ARMED!",
   "container.grenadesandgadgets.remote_explosive": "Remote Explosive",
-  "container.grenadesandgadgets.time_ticks": "Delay:"
+  "container.grenadesandgadgets.time_ticks": "Delay:",
+  "container.grenadesandgadgets.already": "§cAlready linked to this detonator!",
+  "container.grenadesandgadgets.added": "Linked to explosive at: ",
+  "container.grenadesandgadgets.maxsize": "§cCannot link any more explosives to this detonator!"
 }

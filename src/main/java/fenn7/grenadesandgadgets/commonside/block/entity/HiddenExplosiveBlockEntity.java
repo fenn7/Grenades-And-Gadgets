@@ -58,8 +58,6 @@ public class HiddenExplosiveBlockEntity extends AbstractDisguisedBlockEntity imp
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     private final HiddenExplosiveListener listener;
-
-    private final PropertyDelegate delegate;
     private int currentArmingTicks = 0;
     private int armingFlag = 0;
     private int detectRange = 1;
@@ -142,10 +140,6 @@ public class HiddenExplosiveBlockEntity extends AbstractDisguisedBlockEntity imp
                 --this.currentArmingTicks;
             }
         }
-    }
-
-    public PropertyDelegate getDelegate() {
-        return this.delegate;
     }
 
     public HiddenExplosiveListener getListener() {

@@ -1,9 +1,8 @@
 package fenn7.grenadesandgadgets.client.entity.block.renderer;
 
-import fenn7.grenadesandgadgets.client.entity.block.model.SimpleBlockModel;
+import fenn7.grenadesandgadgets.client.entity.block.model.RemoteExplosiveBlockModel;
 import fenn7.grenadesandgadgets.commonside.block.custom.RemoteExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.block.entity.RemoteExplosiveBlockEntity;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,7 +15,7 @@ import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
 public class RemoteExplosiveBlockRenderer extends GeoBlockRenderer<RemoteExplosiveBlockEntity> {
     public RemoteExplosiveBlockRenderer(BlockEntityRendererFactory.Context ctx) {
-        super(new SimpleBlockModel<>("remote_explosive_block"));
+        super(new RemoteExplosiveBlockModel());
     }
 
     @Override
