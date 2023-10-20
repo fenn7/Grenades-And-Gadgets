@@ -1,6 +1,7 @@
 package fenn7.grenadesandgadgets.client.entity.block;
 
 import fenn7.grenadesandgadgets.client.entity.block.renderer.HiddenExplosiveBlockRenderer;
+import fenn7.grenadesandgadgets.client.entity.block.renderer.RemoteExplosiveBlockRenderer;
 import fenn7.grenadesandgadgets.client.entity.block.renderer.SimpleBlockRenderer;
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
@@ -18,8 +19,7 @@ public class GrenadesModBlockEntityRenderers {
 
         BlockEntityRendererRegistry.register(GrenadesModBlockEntities.HIDDEN_EXPLOSIVE_BLOCK_ENTITY, HiddenExplosiveBlockRenderer::new);
 
-        BlockEntityRendererRegistry.register(GrenadesModBlockEntities.REMOTE_EXPLOSIVE_BLOCK_ENTITY,
-            ctx -> new SimpleBlockRenderer<RemoteExplosiveBlockEntity>(ctx, "remote_explosive_block"));
+        BlockEntityRendererRegistry.register(GrenadesModBlockEntities.REMOTE_EXPLOSIVE_BLOCK_ENTITY, RemoteExplosiveBlockRenderer::new);
 
         BlockEntityRendererRegistry.register(GrenadesModBlockEntities.GRENADIER_TABLE_BLOCK_ENTITY,
             ctx -> new SimpleBlockRenderer<GrenadierTableBlockEntity>(ctx, "grenadier_table_block"));
