@@ -19,7 +19,7 @@ public class RemoteExplosiveScreenHandler extends ScreenHandler {
     private final PropertyDelegate delegate;
 
     public RemoteExplosiveScreenHandler(int syncId, PlayerInventory playerInv, PacketByteBuf buf) {
-        this(syncId, playerInv, new SimpleInventory(1), new ArrayPropertyDelegate(2));
+        this(syncId, playerInv, new SimpleInventory(1), new ArrayPropertyDelegate(1));
         this.blockEntityPos = buf.readBlockPos();
     }
 

@@ -58,14 +58,18 @@ public class RemoteDetonatorItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         NbtCompound nbt = user.getStackInHand(hand).getOrCreateNbt();
         var explosivePosList = new ArrayList<>(Arrays.stream(nbt.getLongArray(NBT_TAG)).mapToObj(BlockPos::fromLong).toList());
+        var usedPosList = new ArrayList<BlockPos>();
         explosivePosList.forEach(pos -> {
             if (!world.isClient) {
                 user.sendMessage(Text.of(pos.toShortString()), false);
             }
             if (world.getBlockEntity(pos) instanceof RemoteExplosiveBlockEntity) {
                 world.setBlockState(pos, world.getBlockState(pos).with(RemoteExplosiveBlock.ARMED, true));
+                usedPosList.add(pos);
             }
         });
+        explosivePosList.removeAll(usedPosList);
+        nbt.putLongArray(NBT_TAG, explosivePosList.stream().mapToLong(BlockPos::asLong).toArray());
         return TypedActionResult.consume(user.getStackInHand(hand));
     }
 }

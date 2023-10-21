@@ -48,7 +48,7 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class HiddenExplosiveBlockEntity extends AbstractDisguisedBlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
+public class HiddenExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     public static final int MAX_ARMING_TICKS = 40;
     private static final float INCREASED_POWER_PER_RANGE = 0.15F;
     private static final float INCREASED_POWER_BASE = 1.5F;
@@ -117,8 +117,8 @@ public class HiddenExplosiveBlockEntity extends AbstractDisguisedBlockEntity imp
             grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));
             grenadeEntity.setPower(grenadeEntity.getPower() * (INCREASED_POWER_BASE + (0.9F - (MathHelper.clamp(this.detectRange, 1, 4) * INCREASED_POWER_PER_RANGE))));
             world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.HOSTILE, 20.0F, 0.5F);
-            world.spawnEntity(grenadeEntity);
             world.breakBlock(pos, false);
+            world.spawnEntity(grenadeEntity);
         }
     }
 

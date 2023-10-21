@@ -20,16 +20,17 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractDisguisedBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
+public abstract class AbstractDisguisedExplosiveBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
     protected static final String LAST_USER = "last.user";
     protected Item disguiseBlockItem;
     protected @Nullable PlayerEntity lastUser;
     protected @Nullable UUID lastUserUUID;
     protected PropertyDelegate delegate;
 
-    public AbstractDisguisedBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    public AbstractDisguisedExplosiveBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
@@ -51,6 +52,8 @@ public abstract class AbstractDisguisedBlockEntity extends BlockEntity implement
         this.lastUser = player;
         this.lastUserUUID = player.getUuid();
     }
+
+    public abstract void detonate(World world, BlockPos pos);
 
     public PropertyDelegate getDelegate() {
         return this.delegate;

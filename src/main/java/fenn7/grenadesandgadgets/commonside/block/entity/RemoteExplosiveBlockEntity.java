@@ -2,10 +2,15 @@ package fenn7.grenadesandgadgets.commonside.block.entity;
 
 import fenn7.grenadesandgadgets.client.screen.RemoteExplosiveScreenHandler;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
+import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
+import fenn7.grenadesandgadgets.commonside.block.custom.RemoteExplosiveBlock;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.AbstractGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.grenades.GrenadeItem;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -13,9 +18,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -25,7 +34,7 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class RemoteExplosiveBlockEntity extends AbstractDisguisedBlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
+public class RemoteExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockEntity implements IAnimatable, ExtendedScreenHandlerFactory, ImplementedInventory {
     private final AnimationFactory factory = GrenadesModUtil.getAnimationFactoryFor(this);
     public static final int MAX_DELAY_TICKS = 1200;
     private static final String NBT_TAG = "configuration.data";
@@ -51,6 +60,38 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedBlockEntity imp
                 return 1;
             }
         };
+    }
+
+    public static void tick(World world, BlockPos pos, BlockState state, RemoteExplosiveBlockEntity entity) {
+        // ADD A DETONATED STATE TO CONTROL ARMED STATES AND EXPLOSIONS
+        if (!world.isClient) {
+            if (!entity.inventory.get(0).isEmpty()) {
+                if (entity.delayTicks > 0) {
+                    --entity.delayTicks;
+                }
+            } else {
+                world.setBlockState(pos, state.with(RemoteExplosiveBlock.ARMED, false));
+            }
+            if (state.get(HiddenExplosiveBlock.ARMED) && entity.delayTicks <= 0) {
+                entity.detonate(world, pos);
+            }
+        }
+    }
+
+    public void detonate(World world, BlockPos pos) {
+        ItemStack stack = this.getStack(0);
+        if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem && this.getLastUser() != null) {
+            var grenadeEntity = grenadeItem.createGrenadeAt(world, this.getLastUser(), stack);
+            grenadeEntity.setItem(stack);
+            this.removeStack(0);
+            GrenadeItem.addNbtModifier(stack, grenadeEntity);
+            grenadeEntity.setMaxAgeTicks(0);
+            grenadeEntity.setNoGravity(true);
+            grenadeEntity.setPosition(Vec3d.ofCenter(pos));
+            world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
+            world.breakBlock(pos, false);
+            world.spawnEntity(grenadeEntity);
+        }
     }
 
     @Override

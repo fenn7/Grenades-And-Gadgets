@@ -2,6 +2,7 @@ package fenn7.grenadesandgadgets.commonside.block.custom;
 
 import java.util.Map;
 
+import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
 import fenn7.grenadesandgadgets.commonside.block.entity.RemoteExplosiveBlockEntity;
 import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import net.minecraft.block.Block;
@@ -9,9 +10,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.ActionResult;
@@ -26,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class RemoteExplosiveBlock extends AbstractDisguisedExplosiveBlock {
     public static final DirectionProperty FACING = FacingBlock.FACING;
-    private static final VoxelShape SHAPE = Block.createCuboidShape(1.2, 0.0, 1.2, 14.8, 8.5, 14.8);
     private static final Map<Direction, VoxelShape> shapeMap = Map.of(
         Direction.NORTH, Block.createCuboidShape(3, 1.5, 12, 13, 14.5, 16),
         Direction.SOUTH, Block.createCuboidShape(3, 1.5, 0, 13, 14.5, 4),
@@ -42,17 +43,16 @@ public class RemoteExplosiveBlock extends AbstractDisguisedExplosiveBlock {
     }
 
     @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, GrenadesModBlockEntities.REMOTE_EXPLOSIVE_BLOCK_ENTITY, RemoteExplosiveBlockEntity::tick);
+    }
+
+    @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).getItem().equals(GrenadesModItems.REMOTE_DETONATOR)) {
             return ActionResult.PASS;
         }
-        if (!world.isClient) {
-            NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
-            if (screenHandlerFactory != null) {
-                player.openHandledScreen(screenHandlerFactory);
-            }
-        }
-        return ActionResult.SUCCESS;
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Nullable

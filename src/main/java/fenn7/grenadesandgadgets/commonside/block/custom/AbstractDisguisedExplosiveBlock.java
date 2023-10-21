@@ -1,21 +1,31 @@
 package fenn7.grenadesandgadgets.commonside.block.custom;
 
-import fenn7.grenadesandgadgets.commonside.block.entity.AbstractDisguisedBlockEntity;
+import fenn7.grenadesandgadgets.commonside.block.entity.AbstractDisguisedExplosiveBlockEntity;
+import fenn7.grenadesandgadgets.commonside.item.custom.block.DisguisedExplosiveBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractDisguisedExplosiveBlock extends BlockWithEntity implements Waterloggable {
     public static final BooleanProperty ARMED = BooleanProperty.of("armed");
@@ -24,6 +34,52 @@ public abstract class AbstractDisguisedExplosiveBlock extends BlockWithEntity im
     protected AbstractDisguisedExplosiveBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(ARMED, false).with(WATERLOGGED, false));
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() != newState.getBlock()) {
+            BlockEntity entity = world.getBlockEntity(pos);
+            if (entity instanceof AbstractDisguisedExplosiveBlockEntity) {
+                ItemScatterer.spawn(world, pos, (AbstractDisguisedExplosiveBlockEntity)entity);
+                world.updateComparators(pos,this);
+            }
+            super.onStateReplaced(state, world, pos, newState, moved);
+        }
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (state.get(ARMED) && world.getBlockEntity(pos) instanceof AbstractDisguisedExplosiveBlockEntity h) {
+            h.detonate(world, pos);
+        }
+        super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (state.get(ARMED) && !player.isSneaking() && world.getBlockEntity(pos) instanceof AbstractDisguisedExplosiveBlockEntity h) {
+            h.detonate(world, pos);
+        } else {
+            if (!world.isClient) {
+                NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
+                if (screenHandlerFactory != null) {
+                    player.openHandledScreen(screenHandlerFactory);
+                }
+            }
+        }
+        return ActionResult.SUCCESS;
+    }
+
+    @Override
+    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
+        if (blockEntity instanceof AbstractDisguisedExplosiveBlockEntity h) {
+            var blockNbt = h.createNbt();
+            if (blockNbt.contains(DisguisedExplosiveBlockItem.DISGUISE_KEY)) {
+                Block.dropStack(world, pos, ItemStack.fromNbt(blockNbt.getCompound(DisguisedExplosiveBlockItem.DISGUISE_KEY)));
+            }
+        }
+        super.afterBreak(world, player, pos, state, blockEntity, stack);
     }
 
     @Override
@@ -60,7 +116,7 @@ public abstract class AbstractDisguisedExplosiveBlock extends BlockWithEntity im
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return world.getBlockEntity(pos) instanceof AbstractDisguisedBlockEntity h && !h.getStack(0).isEmpty() ? 15 : 0;
+        return world.getBlockEntity(pos) instanceof AbstractDisguisedExplosiveBlockEntity h && !h.getStack(0).isEmpty() ? 15 : 0;
     }
 
     @Override
