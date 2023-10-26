@@ -27,6 +27,7 @@ public class GrenadesModTags {
         public static final TagKey<Item> FRAGMENT_MATERIALS = createCommonTag("fragment_materials");
         public static final TagKey<Item> DIMENSIONAL_ESSENCES = createCommonTag("dimensional_essences");
         public static final TagKey<Item> GRENADE_MODIFIERS = createCommonTag("grenade_modifiers");
+        public static final TagKey<Item> PAYLOAD_EXPLOSIVES = createCommonTag("payload_explosives");
 
         private static TagKey<Item> createTag(String name) {
             return TagKey.of(Registry.ITEM_KEY, new Identifier(GrenadesMod.MOD_ID, name));

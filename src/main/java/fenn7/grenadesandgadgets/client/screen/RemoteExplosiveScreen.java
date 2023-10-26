@@ -21,6 +21,7 @@ import net.minecraft.util.math.MathHelper;
 public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHandler> {
     private static final Identifier SCREEN = new Identifier(GrenadesMod.MOD_ID, "textures/gui/remote_explosive_block_gui.png");
     private static final String TIME_TITLE = "container.grenadesandgadgets.time_ticks";
+    private static final String ARMED = "container.grenadesandgadgets.armed";
     private static final int TPS = 20;
     private static final int INCREMENT_BUTTONS = 4;
     private static final int BUTTON_DIMENSION = 14;
@@ -41,16 +42,14 @@ public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHa
             this.addSelectableChild(new ButtonWidget(this.x + BUTTON_X_RIGHT + (i % 2 == 0 ? 0 : BUTTON_DIMENSION),
                 this.y + BUTTON_Y + (i / 2 <= 0 ? 0 : BUTTON_DIMENSION), BUTTON_DIMENSION, BUTTON_DIMENSION, Text.of("+" + increment),
                 button -> {
-                    var state = this.getBlockState();
-                    if (state != null && !state.get(RemoteExplosiveBlock.ARMED)) {
+                    if (!this.isBlockArmed()) {
                         this.setAndSyncValue(0, MathHelper.clamp(this.handler.getDelegateValue(0) + (increment * TPS), 0, RemoteExplosiveBlockEntity.MAX_DELAY_TICKS));
                     }
                 }));
             this.addSelectableChild(new ButtonWidget(this.x + BUTTON_X_LEFT + (i % 2 == 0 ? 0 : BUTTON_DIMENSION),
                 this.y + BUTTON_Y + (i / 2 <= 0 ? 0 : BUTTON_DIMENSION), BUTTON_DIMENSION, BUTTON_DIMENSION, Text.of("-" + increment),
                 button -> {
-                    var state = this.getBlockState();
-                    if (state != null && !state.get(RemoteExplosiveBlock.ARMED)) {
+                    if (!this.isBlockArmed()) {
                         this.setAndSyncValue(0, MathHelper.clamp(this.handler.getDelegateValue(0) - (increment * TPS), 0, RemoteExplosiveBlockEntity.MAX_DELAY_TICKS));
                     }
                 }));
@@ -61,6 +60,11 @@ public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHa
     private BlockState getBlockState() {
         var state = MinecraftClient.getInstance().world.getBlockState(this.handler.getBlockEntityPos());
         return MinecraftClient.getInstance().world.getBlockEntity(this.handler.getBlockEntityPos()) instanceof RemoteExplosiveBlockEntity ? state : null;
+    }
+
+    private boolean isBlockArmed() {
+        var state = this.getBlockState();
+        return state != null && state.get(RemoteExplosiveBlock.ARMED);
     }
 
     private void setAndSyncValue(int id, int value) {
@@ -77,8 +81,7 @@ public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHa
         int x = (this.width - this.backgroundWidth) / 2;
         int y = (this.height - this.backgroundHeight) / 2;
         this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-        var state = this.getBlockState();
-        if (state != null && state.get(RemoteExplosiveBlock.ARMED)) {
+        if (this.isBlockArmed()) {
             this.drawTexture(matrices, this.x + 57, this.y + 48, 176, 0, 62, 16);
         }
     }
@@ -88,7 +91,7 @@ public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHa
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-        Text titleText = GrenadesModUtil.translatableTextOf(TIME_TITLE).append(" " + this.handler.getDelegateValue(0) / TPS + "s");
+        Text titleText = GrenadesModUtil.translatableTextOf(this.isBlockArmed() ? ARMED : TIME_TITLE).append(" " + this.handler.getDelegateValue(0) / TPS + "s");
         this.textRenderer.draw(matrices, titleText, this.x + ((this.backgroundWidth - this.textRenderer.getWidth(titleText)) / 2.0F), this.y + 53, 0xCCCCCCCC);
     }
 }

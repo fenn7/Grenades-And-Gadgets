@@ -2,7 +2,6 @@ package fenn7.grenadesandgadgets.commonside.block.entity;
 
 import fenn7.grenadesandgadgets.client.screen.RemoteExplosiveScreenHandler;
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlockEntities;
-import fenn7.grenadesandgadgets.commonside.block.custom.HiddenExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.block.custom.RemoteExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.AbstractGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.GrenadeItem;
@@ -10,9 +9,11 @@ import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
 import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -78,10 +79,10 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockE
 
     public void detonate(World world, BlockPos pos) {
         ItemStack stack = this.getStack(0);
+        this.removeStack(0);
         if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem && this.getLastUser() != null) {
             var grenadeEntity = grenadeItem.createGrenadeAt(world, this.getLastUser(), stack);
             grenadeEntity.setItem(stack);
-            this.removeStack(0);
             GrenadeItem.addNbtModifier(stack, grenadeEntity);
             grenadeEntity.setMaxAgeTicks(0);
             grenadeEntity.setNoGravity(true);
@@ -90,6 +91,23 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockE
             world.breakBlock(pos, false);
             world.spawnEntity(grenadeEntity);
             //world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        } else {
+            Entity payload;
+            switch (PAYLOAD_TO_ENTITY.get(stack.getItem())) {
+                case "TNT" -> {
+                    payload = new TntEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.getLastUser());
+                    ((TntEntity) payload).setFuse(0);
+                }
+                default -> payload = null;
+            };
+            if (payload != null) {
+                payload.setNoGravity(true);
+                payload.setPosition(Vec3d.ofCenter(pos));
+                world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
+                world.breakBlock(pos, false);
+                world.spawnEntity(payload);
+                //world.setBlockState(pos, Blocks.AIR.getDefaultState());
+            }
         }
     }
 

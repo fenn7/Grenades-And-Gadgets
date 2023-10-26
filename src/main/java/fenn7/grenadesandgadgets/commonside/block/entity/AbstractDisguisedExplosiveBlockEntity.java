@@ -1,5 +1,6 @@
 package fenn7.grenadesandgadgets.commonside.block.entity;
 
+import java.util.Map;
 import java.util.UUID;
 
 import fenn7.grenadesandgadgets.commonside.item.custom.block.DisguisedExplosiveBlockItem;
@@ -8,9 +9,13 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -25,6 +30,9 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractDisguisedExplosiveBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
     protected static final String LAST_USER = "last.user";
+    protected static final Map<Item, String> PAYLOAD_TO_ENTITY = Map.of(
+        Items.TNT, "TNT"
+    );
     protected Item disguiseBlockItem;
     protected @Nullable PlayerEntity lastUser;
     protected @Nullable UUID lastUserUUID;

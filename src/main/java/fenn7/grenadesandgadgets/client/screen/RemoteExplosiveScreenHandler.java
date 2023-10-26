@@ -1,6 +1,6 @@
 package fenn7.grenadesandgadgets.client.screen;
 
-import fenn7.grenadesandgadgets.client.screen.slot.HiddenExplosiveGrenadeSlot;
+import fenn7.grenadesandgadgets.client.screen.slot.DisguisedExplosiveGrenadeSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -31,7 +31,7 @@ public class RemoteExplosiveScreenHandler extends ScreenHandler {
         this.delegate = delegate;
         this.blockEntityPos = BlockPos.ORIGIN;
 
-        this.addSlot(new HiddenExplosiveGrenadeSlot(this.inventory, 0, 80, 23));
+        this.addSlot(new DisguisedExplosiveGrenadeSlot(this.inventory, 0, 80, 23));
 
         this.addPlayerInventory(playerInv);
         this.addPlayerHotbar(playerInv);

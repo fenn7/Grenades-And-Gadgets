@@ -2,11 +2,13 @@ package fenn7.grenadesandgadgets.commonside.item.custom.misc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import fenn7.grenadesandgadgets.commonside.block.GrenadesModBlocks;
 import fenn7.grenadesandgadgets.commonside.block.custom.RemoteExplosiveBlock;
 import fenn7.grenadesandgadgets.commonside.block.entity.RemoteExplosiveBlockEntity;
 import fenn7.grenadesandgadgets.commonside.util.GrenadesModUtil;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,6 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class RemoteDetonatorItem extends Item {
     private static final String NBT_TAG = "explosive.list";
@@ -37,6 +40,13 @@ public class RemoteDetonatorItem extends Item {
             return ActionResult.SUCCESS;
         }
         return super.useOnBlock(context);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        super.appendTooltip(stack, world, tooltip, context);
+        var positions = stack.getOrCreateNbt().getLongArray(NBT_TAG);
+        tooltip.add(GrenadesModUtil.textOf("Linked Explosives: " + positions.length));
     }
 
     private void addExplosivePosToNbt(BlockPos explosivePos, NbtCompound nbt, PlayerEntity player) {

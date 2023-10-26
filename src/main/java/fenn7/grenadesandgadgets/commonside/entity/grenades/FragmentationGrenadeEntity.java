@@ -71,7 +71,6 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
                     GrenadesModUtil.getLivingEntitiesAtRangeFromEntity(this.world, this, TRACKING_RANGE).stream()
                         .filter(entity -> entity.canSee(this) && !entity.equals(this.getOwner()))
                         .toList();
-                GrenadesMod.LOGGER.warn(nearbyEntities.toString());
                 List<FragmentEntity> fragmentList = new ArrayList<>();
                 for (int i = 0; i < nbtList.size(); ++i) {
                     for (int j = 0; j < FRAGMENTS_PER_MATERIAL; ++j) {
@@ -89,8 +88,6 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
                     fragment.setVelocity(k < nearbyEntities.size()
                         ? nearbyEntities.get(k).getPos().subtract(fragment.getPos()).normalize()
                         : this.getRandomFragmentVelocity(fragment.getPos(), k % 2 == 0));
-                    GrenadesMod.LOGGER.warn("SPAWNING FRAGMENT " + fragment + " WITH " + fragment.getFragmentItem()
-                    + " TARGETING " + (k < nearbyEntities.size() ? nearbyEntities.get(k) : "RANDOM"));
                     this.world.spawnEntity(fragment);
                 }
             }
@@ -99,8 +96,9 @@ public class FragmentationGrenadeEntity extends AbstractGrenadeEntity {
     }
 
     private Vec3d getRandomFragmentVelocity(Vec3d fragmentPos, boolean above2Pi) {
-        return fragmentPos.add(1, 0, 0).rotateY((float) (above2Pi ? this.random.nextDouble(Math.PI, Math.PI * 2) : this.random.nextDouble(Math.PI)))
-            .subtract(fragmentPos).normalize();
+        double rotation = above2Pi ? this.random.nextDouble(Math.PI, Math.PI * 2) : this.random.nextDouble(Math.PI);
+        GrenadesMod.LOGGER.warn(above2Pi ? "ABOVE2 " : "BELOW2 " + rotation);
+        return fragmentPos.add(1, 0, 0).rotateY((float) (rotation)).subtract(fragmentPos).normalize();
     }
 
     @Override
