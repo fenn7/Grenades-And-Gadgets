@@ -63,17 +63,15 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockE
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, RemoteExplosiveBlockEntity entity) {
-        // ADD A DETONATED STATE TO CONTROL ARMED STATES AND EXPLOSIONS
-        if (!world.isClient) {
+        if (!world.isClient && state.get(RemoteExplosiveBlock.ARMED)) {
             if (!entity.inventory.get(0).isEmpty()) {
                 if (entity.delayTicks > 0) {
                     --entity.delayTicks;
+                } else if (entity.delayTicks == 0) {
+                    entity.detonate(world, pos);
                 }
             } else {
                 world.setBlockState(pos, state.with(RemoteExplosiveBlock.ARMED, false));
-            }
-            if (state.get(HiddenExplosiveBlock.ARMED) && entity.delayTicks <= 0) {
-                entity.detonate(world, pos);
             }
         }
     }
@@ -91,6 +89,7 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockE
             world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
             world.breakBlock(pos, false);
             world.spawnEntity(grenadeEntity);
+            //world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }
 
