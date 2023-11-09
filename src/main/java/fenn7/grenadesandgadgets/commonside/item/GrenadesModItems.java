@@ -20,6 +20,7 @@ import fenn7.grenadesandgadgets.commonside.item.custom.grenades.SmokeFlareGrenad
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.StormGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.TemporalFissureGrenadeItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.grenades.UpheavalGrenadeItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.misc.ClusterRoundItem;
 import fenn7.grenadesandgadgets.commonside.item.custom.misc.RemoteDetonatorItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
@@ -69,6 +70,8 @@ public class GrenadesModItems {
 
     public static final Item REMOTE_DETONATOR = register("remote_detonator",
         new RemoteDetonatorItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(1)));
+    public static final Item CLUSTER_ROUND = register("cluster_round",
+        new ClusterRoundItem(new FabricItemSettings().group(GrenadesModItemGroup.GRENADESMOD_MISC).maxCount(8)));
 
     public static void registerItems() {
         GrenadesMod.LOGGER.debug("Initialising Grenades And Gadgets Items...");

@@ -73,6 +73,6 @@ public class SmokeBallGrenadeRecipe extends SpecialCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return GrenadesModSpecialRecipes.FRAGMENTATION_GRENADE;
+        return GrenadesModSpecialRecipes.SMOKE_BALL;
     }
 }

@@ -1,9 +1,10 @@
 package fenn7.grenadesandgadgets.commonside.item.recipe;
 
 import fenn7.grenadesandgadgets.commonside.GrenadesMod;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.ClusterRoundRecipe;
+import fenn7.grenadesandgadgets.commonside.item.recipe.custom.ExplosiveDisguiseRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.FragmentationGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.GrenadeModifierRecipe;
-import fenn7.grenadesandgadgets.commonside.item.recipe.custom.ExplosiveDisguiseRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.MagicGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.SmokeBallGrenadeRecipe;
 import fenn7.grenadesandgadgets.commonside.item.recipe.custom.TemporalFissureGrenadeRecipe;
@@ -35,6 +36,10 @@ public class GrenadesModSpecialRecipes {
     public static final SpecialRecipeSerializer<ExplosiveDisguiseRecipe> HIDDEN_EXPLOSIVE_DISGUISE =
         Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(GrenadesMod.MOD_ID, "crafting_special_hidden_explosive_disguise"),
             new SpecialRecipeSerializer<>(ExplosiveDisguiseRecipe::new));
+
+    public static final SpecialRecipeSerializer<ClusterRoundRecipe> CLUSTER_ROUND =
+        Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(GrenadesMod.MOD_ID, "crafting_special_cluster_round"),
+            new SpecialRecipeSerializer<>(ClusterRoundRecipe::new));
 
     public static void registerRecipes() {
         GrenadesMod.LOGGER.warn("Initialising Grenades And Gadgets Recipes...");

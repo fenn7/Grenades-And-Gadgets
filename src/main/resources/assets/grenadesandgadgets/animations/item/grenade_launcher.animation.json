@@ -1,0 +1,51 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.grenade_launcher.idle": {
+			"loop": true,
+			"bones": {
+				"BarrelDetails": {
+					"position": {
+						"vector": [0, 0, -0.5]
+					}
+				},
+				"Stock": {
+					"position": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"Barrel": {
+					"position": {
+						"vector": [0, 0, -0.5]
+					}
+				}
+			}
+		},
+		"animation.grenade_launcher.reload_start": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 0.33333,
+			"bones": {
+				"BarrelDetails": {
+					"position": {
+						"vector": [0, 0, -0.5]
+					}
+				},
+				"Barrel": {
+					"position": {
+						"vector": [0, 0, -0.5]
+					}
+				},
+				"Front": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.3333": {
+							"vector": [-45, 0, 0]
+						}
+					}
+				}
+			}
+		}
+	}
+}
