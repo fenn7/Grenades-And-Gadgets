@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -24,14 +23,18 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractDisguisedExplosiveBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
     protected static final String LAST_USER = "last.user";
     protected static final Map<Item, String> PAYLOAD_TO_ENTITY = Map.of(
-        Items.TNT, "TNT"
+        Items.TNT, "TNT",
+        Items.TNT_MINECART, "TNT"
     );
     protected Item disguiseBlockItem;
     protected @Nullable PlayerEntity lastUser;
@@ -61,7 +64,31 @@ public abstract class AbstractDisguisedExplosiveBlockEntity extends BlockEntity 
         this.lastUserUUID = player.getUuid();
     }
 
-    public abstract void detonate(World world, BlockPos pos);
+    public void detonate(World world, BlockPos pos) {
+        if (!world.isClient()) {
+            this.handleDetonation(world, pos);
+        }
+    }
+
+    protected abstract void handleDetonation(World world, BlockPos pos);
+
+    protected void handlePayload(ItemStack stack, World world, BlockPos pos) {
+        Entity payload;
+        switch (PAYLOAD_TO_ENTITY.getOrDefault(stack.getItem(), "")) {
+            case "TNT" -> {
+                payload = new TntEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.getLastUser());
+                ((TntEntity) payload).setFuse(0);
+            }
+            default -> payload = null;
+        };
+        if (payload != null) {
+            payload.setNoGravity(true);
+            payload.setPosition(Vec3d.ofCenter(pos));
+            world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
+            world.breakBlock(pos, false);
+            world.spawnEntity(payload);
+        }
+    }
 
     public PropertyDelegate getDelegate() {
         return this.delegate;

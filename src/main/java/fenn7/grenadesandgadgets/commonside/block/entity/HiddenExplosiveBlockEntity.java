@@ -12,6 +12,7 @@ import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -104,21 +105,24 @@ public class HiddenExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockE
         }
     }
 
-    public void detonate(World world, BlockPos pos) {
+    @Override
+    protected void handleDetonation(World world, BlockPos pos) {
         ItemStack stack = this.getStack(0);
-        if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem && this.getLastUser() != null) {
+        this.removeStack(0);
+        if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem) {
             var grenadeEntity = grenadeItem.createGrenadeAt(world, this.getLastUser(), stack);
             grenadeEntity.setItem(stack);
             GrenadeItem.addNbtModifier(stack, grenadeEntity);
-            this.removeStack(0);
             grenadeEntity.setMaxAgeTicks(5);
             grenadeEntity.setNoGravity(true);
             BlockPos potentialPos = pos.offset(Direction.byId(this.directionID));
             grenadeEntity.setPosition(Vec3d.ofCenter(this.directionID > 0 ? (!world.getBlockState(potentialPos).isSolidBlock(world, pos) ? potentialPos : pos) : pos));
             grenadeEntity.setPower(grenadeEntity.getPower() * (INCREASED_POWER_BASE + (0.9F - (MathHelper.clamp(this.detectRange, 1, 4) * INCREASED_POWER_PER_RANGE))));
-            world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.HOSTILE, 20.0F, 0.5F);
+            world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
             world.breakBlock(pos, false);
             world.spawnEntity(grenadeEntity);
+        } else {
+            this.handlePayload(stack, world, pos);
         }
     }
 

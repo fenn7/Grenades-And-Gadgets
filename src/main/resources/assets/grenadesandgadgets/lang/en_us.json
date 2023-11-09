@@ -12,5 +12,8 @@
   "container.grenadesandgadgets.time_ticks": "Delay:",
   "container.grenadesandgadgets.already": "§cAlready linked to this detonator!",
   "container.grenadesandgadgets.added": "Linked to explosive at: ",
-  "container.grenadesandgadgets.maxsize": "§cCannot link any more explosives to this detonator!"
+  "container.grenadesandgadgets.maxsize": "§cCannot link any more explosives to this detonator!",
+  "container.grenadesandgadgets.notfound": "§cExplosive is not linked to this detonator!",
+  "container.grenadesandgadgets.removed": "Removed explosive at: ",
+  "container.grenadesandgadgets.armed_remote": "ARMED"
 }

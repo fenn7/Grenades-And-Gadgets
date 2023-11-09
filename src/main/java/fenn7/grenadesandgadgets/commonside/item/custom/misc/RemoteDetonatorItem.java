@@ -27,6 +27,8 @@ public class RemoteDetonatorItem extends Item {
     private static final String ALREADY = "container.grenadesandgadgets.already";
     private static final String ADDED = "container.grenadesandgadgets.added";
     private static final String MAXSIZE = "container.grenadesandgadgets.maxsize";
+    private static final String NOTFOUND = "container.grenadesandgadgets.notfound";
+    private static final String REMOVED = "container.grenadesandgadgets.removed";
     private static final int MAX_LINKED_EXPLOSIVES = 8;
 
     public RemoteDetonatorItem(Settings settings) {
@@ -46,7 +48,7 @@ public class RemoteDetonatorItem extends Item {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         var positions = stack.getOrCreateNbt().getLongArray(NBT_TAG);
-        tooltip.add(GrenadesModUtil.textOf("Linked Explosives: " + positions.length));
+        tooltip.add(GrenadesModUtil.textOf("Linked Explosives: " + positions.length + "/" + MAX_LINKED_EXPLOSIVES));
     }
 
     private void addExplosivePosToNbt(BlockPos explosivePos, NbtCompound nbt, PlayerEntity player) {
@@ -64,22 +66,38 @@ public class RemoteDetonatorItem extends Item {
         nbt.putLongArray(NBT_TAG, explosivePosList.stream().mapToLong(BlockPos::asLong).toArray());
     }
 
+    public void removeExplosivePosFromNbt(BlockPos explosivePos, NbtCompound nbt, PlayerEntity player) {
+        var explosivePosList = new ArrayList<>(Arrays.stream(nbt.getLongArray(NBT_TAG)).mapToObj(BlockPos::fromLong).toList());
+        if (!explosivePosList.contains(explosivePos)) {
+            player.sendMessage(GrenadesModUtil.translatableTextOf(NOTFOUND), false);
+        } else {
+            if (!player.world.isClient) {
+                player.sendMessage(GrenadesModUtil.translatableTextOf(REMOVED).append(explosivePos.toShortString()), false);
+            }
+            explosivePosList.remove(explosivePos);
+        }
+        nbt.putLongArray(NBT_TAG, explosivePosList.stream().mapToLong(BlockPos::asLong).toArray());
+    }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        NbtCompound nbt = user.getStackInHand(hand).getOrCreateNbt();
-        var explosivePosList = new ArrayList<>(Arrays.stream(nbt.getLongArray(NBT_TAG)).mapToObj(BlockPos::fromLong).toList());
-        var usedPosList = new ArrayList<BlockPos>();
-        explosivePosList.forEach(pos -> {
+        if (user.isSneaking()) {
+            NbtCompound nbt = user.getStackInHand(hand).getOrCreateNbt();
+            var explosivePosList = new ArrayList<>(Arrays.stream(nbt.getLongArray(NBT_TAG)).mapToObj(BlockPos::fromLong).toList());
+            var usedPosList = new ArrayList<BlockPos>();
+            explosivePosList.forEach(pos -> {
+                if (world.getBlockEntity(pos) instanceof RemoteExplosiveBlockEntity) {
+                    world.setBlockState(pos, world.getBlockState(pos).with(RemoteExplosiveBlock.ARMED, true));
+                    usedPosList.add(pos);
+                }
+            });
             if (!world.isClient) {
-                user.sendMessage(Text.of(pos.toShortString()), false);
+                user.sendMessage(GrenadesModUtil.textOf("Detonating " + usedPosList.size() + " explosives!"), false);
             }
-            if (world.getBlockEntity(pos) instanceof RemoteExplosiveBlockEntity) {
-                world.setBlockState(pos, world.getBlockState(pos).with(RemoteExplosiveBlock.ARMED, true));
-                usedPosList.add(pos);
-            }
-        });
-        explosivePosList.removeAll(usedPosList);
-        nbt.putLongArray(NBT_TAG, explosivePosList.stream().mapToLong(BlockPos::asLong).toArray());
-        return TypedActionResult.consume(user.getStackInHand(hand));
+            explosivePosList.removeAll(usedPosList);
+            nbt.putLongArray(NBT_TAG, explosivePosList.stream().mapToLong(BlockPos::asLong).toArray());
+            return TypedActionResult.consume(user.getStackInHand(hand));
+        }
+        return super.use(world, user, hand);
     }
 }

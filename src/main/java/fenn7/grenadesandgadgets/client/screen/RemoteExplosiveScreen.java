@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 public class RemoteExplosiveScreen extends HandledScreen<RemoteExplosiveScreenHandler> {
     private static final Identifier SCREEN = new Identifier(GrenadesMod.MOD_ID, "textures/gui/remote_explosive_block_gui.png");
     private static final String TIME_TITLE = "container.grenadesandgadgets.time_ticks";
-    private static final String ARMED = "container.grenadesandgadgets.armed";
+    private static final String ARMED = "container.grenadesandgadgets.armed_remote";
     private static final int TPS = 20;
     private static final int INCREMENT_BUTTONS = 4;
     private static final int BUTTON_DIMENSION = 14;

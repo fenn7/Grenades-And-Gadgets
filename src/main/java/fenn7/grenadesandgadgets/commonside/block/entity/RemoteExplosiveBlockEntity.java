@@ -77,10 +77,11 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockE
         }
     }
 
-    public void detonate(World world, BlockPos pos) {
+    @Override
+    protected void handleDetonation(World world, BlockPos pos) {
         ItemStack stack = this.getStack(0);
         this.removeStack(0);
-        if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem && this.getLastUser() != null) {
+        if (stack.getItem() instanceof AbstractGrenadeItem grenadeItem) {
             var grenadeEntity = grenadeItem.createGrenadeAt(world, this.getLastUser(), stack);
             grenadeEntity.setItem(stack);
             GrenadeItem.addNbtModifier(stack, grenadeEntity);
@@ -90,24 +91,8 @@ public class RemoteExplosiveBlockEntity extends AbstractDisguisedExplosiveBlockE
             world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
             world.breakBlock(pos, false);
             world.spawnEntity(grenadeEntity);
-            //world.setBlockState(pos, Blocks.AIR.getDefaultState());
         } else {
-            Entity payload;
-            switch (PAYLOAD_TO_ENTITY.get(stack.getItem())) {
-                case "TNT" -> {
-                    payload = new TntEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.getLastUser());
-                    ((TntEntity) payload).setFuse(0);
-                }
-                default -> payload = null;
-            };
-            if (payload != null) {
-                payload.setNoGravity(true);
-                payload.setPosition(Vec3d.ofCenter(pos));
-                world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
-                world.breakBlock(pos, false);
-                world.spawnEntity(payload);
-                //world.setBlockState(pos, Blocks.AIR.getDefaultState());
-            }
+            this.handlePayload(stack, world, pos);
         }
     }
 
