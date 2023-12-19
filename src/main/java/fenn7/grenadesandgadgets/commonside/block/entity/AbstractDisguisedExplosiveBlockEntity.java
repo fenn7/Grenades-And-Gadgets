@@ -3,13 +3,17 @@ package fenn7.grenadesandgadgets.commonside.block.entity;
 import java.util.Map;
 import java.util.UUID;
 
+import fenn7.grenadesandgadgets.commonside.item.GrenadesModItems;
 import fenn7.grenadesandgadgets.commonside.item.custom.block.DisguisedExplosiveBlockItem;
+import fenn7.grenadesandgadgets.commonside.item.custom.misc.ClusterRoundItem;
 import fenn7.grenadesandgadgets.commonside.util.ImplementedInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MarkerEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -34,7 +38,8 @@ public abstract class AbstractDisguisedExplosiveBlockEntity extends BlockEntity 
     protected static final String LAST_USER = "last.user";
     protected static final Map<Item, String> PAYLOAD_TO_ENTITY = Map.of(
         Items.TNT, "TNT",
-        Items.TNT_MINECART, "TNT"
+        Items.TNT_MINECART, "TNT",
+        GrenadesModItems.CLUSTER_ROUND, "CLUSTER"
     );
     protected Item disguiseBlockItem;
     protected @Nullable PlayerEntity lastUser;
@@ -79,6 +84,10 @@ public abstract class AbstractDisguisedExplosiveBlockEntity extends BlockEntity 
                 payload = new TntEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.getLastUser());
                 ((TntEntity) payload).setFuse(0);
             }
+            case "CLUSTER" -> {
+                payload = new MarkerEntity(EntityType.ENDER_DRAGON, world);
+                ((ClusterRoundItem) stack.getItem()).explodeAtLocation(stack, Vec3d.ofCenter(pos), this.getLastUser());
+            }
             default -> payload = null;
         };
         if (payload != null) {
@@ -86,7 +95,9 @@ public abstract class AbstractDisguisedExplosiveBlockEntity extends BlockEntity 
             payload.setPosition(Vec3d.ofCenter(pos));
             world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.HOSTILE, 20.0F, 0.5F);
             world.breakBlock(pos, false);
-            world.spawnEntity(payload);
+            if (!(payload instanceof MarkerEntity)) {
+                world.spawnEntity(payload);
+            }
         }
     }
 
